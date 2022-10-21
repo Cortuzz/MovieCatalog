@@ -47,7 +47,7 @@ class RegistrationView(activity: MainActivity): Drawable {
     override fun Draw() {
         Column(                            // todo
             modifier = Modifier
-                .padding(top = 32.dp)
+                .padding(top = 56.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally) {
             Logo(

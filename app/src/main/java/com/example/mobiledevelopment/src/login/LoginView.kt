@@ -32,7 +32,7 @@ class LoginView(activity: MainActivity): Drawable {
     @Composable
     override fun Draw() {
         Column(
-            modifier = Modifier.padding(top = 32.dp),
+            modifier = Modifier.padding(top = 56.dp),
             horizontalAlignment = Alignment.CenterHorizontally) {
             Logo(Modifier, Alignment.Center)
             Fields()
