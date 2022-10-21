@@ -16,10 +16,14 @@ import com.example.mobiledevelopment.ui.theme.MobileDevelopmentTheme
 
 class MainActivity : ComponentActivity() {
     private lateinit var currentView: Drawable
+    private val authManager = TokenManager.getInstance(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setLoginView()
+
+        authManager.loadToken()
+        authManager.checkToken()
     }
 
     fun setLoginView() {
