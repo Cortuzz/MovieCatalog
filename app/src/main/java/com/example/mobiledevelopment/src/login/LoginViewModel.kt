@@ -7,16 +7,12 @@ import com.example.mobiledevelopment.src.registration.RegistrationRepository
 
 class LoginViewModel(private val view: LoginView, private val activity: MainActivity) {
     private val repository = LoginRepository()
+    private val fieldsModel = LoginFieldsProvider()
     var fullness = mutableStateOf(false)
-
-    private val viewFields = mutableMapOf(
-        ViewField.Login to "",
-        ViewField.Password to "",
-    )
 
     fun handleLoginClick() {
         repository.tryLoginUser(
-            fields = viewFields,
+            loginModel = fieldsModel.getModel(),
             onFailureAction = {
                 println("FAILED")
             },
@@ -31,11 +27,11 @@ class LoginViewModel(private val view: LoginView, private val activity: MainActi
     }
 
     fun getField(field: ViewField): String {
-        return viewFields[field]!!
+        return fieldsModel.getField(field)
     }
 
     fun changeField(field: ViewField, value: String) {
-        viewFields[field] = value
-        fullness.value =  "" !in viewFields.values
+        fieldsModel.changeField(field, value)
+        fullness.value =  "" !in fieldsModel.getFields().values
     }
 }

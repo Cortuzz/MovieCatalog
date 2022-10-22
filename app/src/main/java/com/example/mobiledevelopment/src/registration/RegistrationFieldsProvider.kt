@@ -1,9 +1,10 @@
 package com.example.mobiledevelopment.src.registration
 
 import com.example.mobiledevelopment.include.retrofit.UserRegisterModel
+import com.example.mobiledevelopment.src.domain.FieldsProvider
 import com.example.mobiledevelopment.src.registration.domain.ViewField
 
-class RegistrationFieldsProvider {
+class RegistrationFieldsProvider : FieldsProvider<ViewField, UserRegisterModel> {
     private val viewFields = mutableMapOf(
         ViewField.Login to "",
         ViewField.Email to "",
@@ -14,19 +15,19 @@ class RegistrationFieldsProvider {
         ViewField.Gender to ""
     )
 
-    fun changeField(field: ViewField, value: String) {
+    override fun changeField(field: ViewField, value: String) {
         viewFields[field] = value
     }
 
-    fun getField(field: ViewField): String {
+    override fun getField(field: ViewField): String {
         return viewFields[field]!!
     }
 
-    fun getFields(): Map<ViewField, String> {
+    override fun getFields(): Map<ViewField, String> {
         return viewFields
     }
     
-    fun getUserRegisterModel(): UserRegisterModel {
+    override fun getModel(): UserRegisterModel {
         return UserRegisterModel(
             userName = viewFields[ViewField.Login]!!,
             name = viewFields[ViewField.Name]!!,

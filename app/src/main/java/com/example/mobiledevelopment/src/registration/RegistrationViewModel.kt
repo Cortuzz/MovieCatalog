@@ -2,6 +2,7 @@ package com.example.mobiledevelopment.src.registration
 
 import androidx.compose.runtime.mutableStateOf
 import com.example.mobiledevelopment.src.MainActivity
+import com.example.mobiledevelopment.src.domain.FieldsProvider
 import com.example.mobiledevelopment.src.registration.domain.ViewField
 
 class RegistrationViewModel(private val view: RegistrationView, private val activity: MainActivity) {
@@ -11,7 +12,7 @@ class RegistrationViewModel(private val view: RegistrationView, private val acti
 
     fun handleRegistrationClick() {
         repository.registerUser(
-            registerModel = fieldsModel.getUserRegisterModel(),
+            registerModel = fieldsModel.getModel(),
             onFailureAction = {
             },
             onResponseAction = {

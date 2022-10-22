@@ -13,15 +13,10 @@ class LoginRepository {
     private val service = Common.retrofitService
 
     fun tryLoginUser(
-        fields: MutableMap<ViewField, String>,
+        loginModel: UserLoginModel,
         onResponseAction: () -> Unit,
         onFailureAction: () -> Unit,
     ) {
-        val loginModel = UserLoginModel(
-            username = fields[ViewField.Login]!!,
-            password = fields[ViewField.Password]!!,
-        )
-
         service.loginUser(loginModel).enqueue(object : Callback<UserTokenModel> {
             override fun onFailure(call: Call<UserTokenModel>, t: Throwable) {
                 onFailureAction()
