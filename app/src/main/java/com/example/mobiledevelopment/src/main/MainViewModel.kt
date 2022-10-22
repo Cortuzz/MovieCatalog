@@ -53,6 +53,38 @@ class MainViewModel(private val view: MainView, private val activity: MainActivi
         }
     }
 
+    fun fetchNextPage() {
+
+    }
+
+    fun addToFavourites(movieElementModel: MovieElementModel) {
+        val movieId = movieElementModel.id
+
+        repository.addMovieToFavourites(
+            id = movieId,
+            onFailureAction = {
+
+            },
+            onResponseAction = {
+                favouriteMovieList.add(movieElementModel)
+            }
+        )
+    }
+
+    fun removeFromFavourites(movieElementModel: MovieElementModel) {
+        val movieId = movieElementModel.id
+
+        repository.removeMovieFromFavourites(
+            id = movieId,
+            onFailureAction = {
+
+            },
+            onResponseAction = {
+                favouriteMovieList.remove(movieElementModel)
+            }
+        )
+    }
+
     fun getMovieList(): SnapshotStateList<MovieElementModel> {
         return movieList
     }

@@ -3,11 +3,7 @@ package com.example.mobiledevelopment.include.retrofit
 import androidx.compose.ui.graphics.Color
 import com.google.gson.JsonElement
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 
 data class GenreModel(
     var id: String,
@@ -123,5 +119,8 @@ interface RetrofitServices {
     fun getFavouritesMovies(@Header("Authorization") authToken: String): Call<MoviesListModel>
 
     @POST("favorites/{id}/add/")
-    fun addToFavourites(@Header("Authorization") authToken: String, @Path("id") id: String): Call<JsonElement>
+    fun addToFavourites(@Header("Authorization") authToken: String, @Path("id") id: String): Call<Void>
+
+    @DELETE("favorites/{id}/delete/")
+    fun removeFromFavourites(@Header("Authorization") authToken: String, @Path("id") id: String): Call<Void>
 }
