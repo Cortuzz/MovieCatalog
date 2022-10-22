@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.mobiledevelopment.src.domain.Drawable
 import com.example.mobiledevelopment.src.MainActivity
-import com.example.mobiledevelopment.src.login.domain.ViewField
+import com.example.mobiledevelopment.src.login.domain.*
 import com.example.mobiledevelopment.src.registration.RegistrationView
 import com.example.mobiledevelopment.ui.theme.composes.InputText
 import com.example.mobiledevelopment.ui.theme.composes.Logo
@@ -45,14 +45,14 @@ class LoginView(activity: MainActivity): Drawable {
     fun Fields() {
         Column(modifier = Modifier.padding(top = 48.dp)) {
             InputText(
-                label = "Логин",
+                label = loginText,
                 value = viewModel.getField(ViewField.Login),
                 {value -> viewModel.changeField(ViewField.Login, value)},
 
             )
             Spacer(Modifier.height(14.4.dp))
             InputText(
-                label = "Пароль",
+                label = passwordText,
                 value = viewModel.getField(ViewField.Password),
                 {value -> viewModel.changeField(ViewField.Password, value)},
                 isHidden = true
@@ -69,9 +69,9 @@ class LoginView(activity: MainActivity): Drawable {
                 .padding(bottom = 16.dp)
                 .fillMaxHeight()
         ) {
-            PrimaryButton(name = "Войти", action = { viewModel.handleLoginClick() }, isEnabled = viewModel.fullness)
+            PrimaryButton(name = signInText, action = { viewModel.handleLoginClick() }, isEnabled = viewModel.fullness)
             Spacer(Modifier.height(8.dp))
-            SecondaryButton(name = "Регистрация", action = { viewModel.handleRegistrationViewClick() })
+            SecondaryButton(name = goToRegisterText, action = { viewModel.handleRegistrationViewClick() })
         }
     }
 }

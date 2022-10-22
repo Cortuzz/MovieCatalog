@@ -21,8 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mobiledevelopment.src.domain.Drawable
 import com.example.mobiledevelopment.src.MainActivity
-import com.example.mobiledevelopment.src.registration.domain.GenderViewData
-import com.example.mobiledevelopment.src.registration.domain.ViewField
+import com.example.mobiledevelopment.src.registration.domain.*
 import com.example.mobiledevelopment.ui.theme.composes.InputText
 import com.example.mobiledevelopment.ui.theme.composes.Logo
 import com.example.mobiledevelopment.ui.theme.composes.PrimaryButton
@@ -69,7 +68,7 @@ class RegistrationView(activity: MainActivity): Drawable {
             horizontalArrangement = Arrangement.Start
         ) {
             Text(
-                text = "Регистрация",
+                text = registrationText,
                 fontFamily = IBMPlex,
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
@@ -84,7 +83,7 @@ class RegistrationView(activity: MainActivity): Drawable {
     @Composable
     fun Fields() {
         // todo
-        val names = listOf("Логин", "E-mail", "Имя", "Пароль", "Подтвердите пароль", "Дата рождения")
+        val names = listOf(loginText, emailText, nameText, passwordText, repeatPasswordText, birthDateText)
         val enums = listOf(ViewField.Login, ViewField.Email, ViewField.Name, ViewField.Password, ViewField.RepeatPassword, ViewField.DateOfBirth)
         val hidden = listOf(false, false, false, true, true, false)
 
@@ -109,8 +108,8 @@ class RegistrationView(activity: MainActivity): Drawable {
     fun GenderField() {
         val selectedValue = rememberSaveable { mutableStateOf("") }
         val items = listOf(
-            GenderViewData("Мужчина", RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp), 0.5f, 1.dp),
-            GenderViewData("Женщина", RoundedCornerShape(0.dp, 8.dp, 8.dp, 0.dp), 1f, 0.dp)
+            GenderViewData(maleOptionText, RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp), 0.5f, 1.dp),
+            GenderViewData(femaleOptionText, RoundedCornerShape(0.dp, 8.dp, 8.dp, 0.dp), 1f, 0.dp)
         )
 
         val isSelectedItem: (String) -> Boolean = { selectedValue.value == it }
@@ -178,9 +177,9 @@ class RegistrationView(activity: MainActivity): Drawable {
                 .padding(bottom = 16.dp)
                 .fillMaxHeight()
         ) {
-            PrimaryButton(name = "Зарегистрироваться", action = { viewModel.handleRegistrationClick() }, isEnabled = viewModel.fullness)
+            PrimaryButton(name = registerText, action = { viewModel.handleRegistrationClick() }, isEnabled = viewModel.fullness)
             Spacer(Modifier.height(8.dp))
-            SecondaryButton(name = "У меня уже есть аккаунт", action = { viewModel.handleLoginViewClick() })
+            SecondaryButton(name = goToLoginText, action = { viewModel.handleLoginViewClick() })
         }
 
         if (viewModel.fullness.value) {

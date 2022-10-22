@@ -11,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.ui.graphics.Brush
@@ -25,7 +24,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.*
@@ -34,6 +32,9 @@ import com.example.mobiledevelopment.include.retrofit.MovieElementModel
 import com.example.mobiledevelopment.src.MainActivity
 import com.example.mobiledevelopment.src.domain.Drawable
 import com.example.mobiledevelopment.src.main.domain.ColorGenerator
+import com.example.mobiledevelopment.src.main.domain.favoriteBlockText
+import com.example.mobiledevelopment.src.main.domain.galleryBlockText
+import com.example.mobiledevelopment.src.main.domain.noImageText
 import com.example.mobiledevelopment.ui.theme.AccentColor
 import com.example.mobiledevelopment.ui.theme.BackgroundColor
 import com.example.mobiledevelopment.ui.theme.IBMPlex
@@ -84,7 +85,7 @@ class MainView(activity: MainActivity): Drawable {
         Column(
             modifier = Modifier.padding(start = 16.dp)
         ) {
-            CategoryText(name = "Избранное")
+            CategoryText(name = favoriteBlockText)
             FavouritesContent(movies)
         }
     }
@@ -145,7 +146,7 @@ class MainView(activity: MainActivity): Drawable {
         Column(
             modifier = Modifier.padding(start = 16.dp)
         ) {
-            CategoryText(name = "Галерея")
+            CategoryText(name = galleryBlockText)
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -246,11 +247,11 @@ class MainView(activity: MainActivity): Drawable {
             Image(
                 painter = painterResource(id = R.drawable.logo_no_text),
                 modifier = Modifier.requiredSize(100.dp),
-                contentDescription = "No image",
+                contentDescription = noImageText,
                 colorFilter = ColorFilter.colorMatrix(matrix)
             )
 
-            Text(text = "No image",
+            Text(text = noImageText,
                 color = Color.Gray,
                 fontFamily = IBMPlex,
                 fontWeight = FontWeight.Medium,
