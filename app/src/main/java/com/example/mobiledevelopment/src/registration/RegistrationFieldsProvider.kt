@@ -3,7 +3,7 @@ package com.example.mobiledevelopment.src.registration
 import com.example.mobiledevelopment.include.retrofit.UserRegisterModel
 import com.example.mobiledevelopment.src.registration.domain.ViewField
 
-class RegistrationFieldsModel {
+class RegistrationFieldsProvider {
     private val viewFields = mutableMapOf(
         ViewField.Login to "",
         ViewField.Email to "",

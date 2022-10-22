@@ -6,7 +6,7 @@ import com.example.mobiledevelopment.src.registration.domain.ViewField
 
 class RegistrationViewModel(private val view: RegistrationView, private val activity: MainActivity) {
     private val repository = RegistrationRepository()
-    private val fieldsModel = RegistrationFieldsModel()
+    private val fieldsModel = RegistrationFieldsProvider()
     var fullness = mutableStateOf(false)
 
     fun handleRegistrationClick() {
