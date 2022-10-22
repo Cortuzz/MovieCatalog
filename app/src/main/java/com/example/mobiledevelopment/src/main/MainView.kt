@@ -4,6 +4,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -23,6 +24,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,10 +67,14 @@ class MainView(activity: MainActivity): Drawable {
         Box {
             MoviePoster(
                 url = movieElement.value!!.poster!!,
-                modifier = Modifier.fillMaxWidth().requiredHeight(320.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .requiredHeight(320.dp),
                 contentScale = ContentScale.FillWidth
             )
-            Box(modifier = Modifier.matchParentSize().background(gradient))
+            Box(modifier = Modifier
+                .matchParentSize()
+                .background(gradient))
         }
 
     }
@@ -85,26 +91,44 @@ class MainView(activity: MainActivity): Drawable {
 
     @Composable
     fun FavouritesContent(movies: SnapshotStateList<MovieElementModel>) {
+        val state = rememberLazyListState()
+        val startIndex by remember(remember { derivedStateOf { state.firstVisibleItemIndex } }) {
+            derivedStateOf {
+                state.layoutInfo.visibleItemsInfo.run {
+                    val firstVisibleIndex = state.firstVisibleItemIndex
+                    if (isEmpty()) -1 else firstVisibleIndex + (last().index - firstVisibleIndex) / 2
+                }
+            }
+        }
+
         LazyRow(
+            state = state,
             modifier = Modifier
                 .fillMaxHeight()
                 .padding(top = 8.dp)
         ) {
             items(movies.size) {
-                FavouriteMovieElement(movieElement = movies[it])
+                if (startIndex == it) 
+                    FavouriteMovieElement(movieElement = movies[it], 120.dp, 172.dp, 0.dp)
+                else
+                    FavouriteMovieElement(movieElement = movies[it])
             }
         }
     }
 
     @Composable
-    fun FavouriteMovieElement(movieElement: MovieElementModel) {
+    fun FavouriteMovieElement(
+        movieElement: MovieElementModel,
+        width: Dp = 100.dp,
+        height: Dp = 144.dp,
+        padding: Dp = 14.dp) {
         SubcomposeAsyncImage(
             model = "${movieElement.poster}",
             contentDescription = null,
             modifier = Modifier
-                .padding(end = 16.dp)
-                .requiredSize(100.dp, 144.dp)
-                ,
+                .padding(end = 16.dp, top = padding)
+                .requiredSize(width, height)
+                .clip(shape = RoundedCornerShape(16.dp)),
         ) {
             when (painter.state) {
                 is AsyncImagePainter.State.Loading -> {
@@ -185,7 +209,9 @@ class MainView(activity: MainActivity): Drawable {
         Row {
             MoviePoster(url = movieElement.poster!!, modifier = Modifier
                 .onGloballyPositioned { height.value = it.size.height }
-                .requiredSize(100.dp, 144.dp))
+                .requiredSize(100.dp, 144.dp)
+                .clip(shape = RoundedCornerShape(16.dp))
+            )
 
             Column(
                 modifier = Modifier
