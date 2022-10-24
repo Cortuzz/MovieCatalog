@@ -71,7 +71,8 @@ class MainView(activity: MainActivity): Drawable {
                 modifier = Modifier
                     .fillMaxWidth()
                     .requiredHeight(320.dp),
-                contentScale = ContentScale.FillWidth
+                contentScale = ContentScale.FillWidth,
+                showLoading = false
             )
             Box(modifier = Modifier
                 .matchParentSize()
@@ -123,7 +124,10 @@ class MainView(activity: MainActivity): Drawable {
         width: Dp = 100.dp,
         height: Dp = 144.dp,
         padding: Dp = 14.dp) {
+
+
         SubcomposeAsyncImage(
+            contentScale = ContentScale.FillBounds,
             model = "${movieElement.poster}",
             contentDescription = null,
             modifier = Modifier
@@ -236,17 +240,20 @@ class MainView(activity: MainActivity): Drawable {
     }
 
     @Composable
-    fun ErrorMoviePoster() {
+    fun ErrorMoviePoster(
+        modifier: Modifier = Modifier.requiredSize(100.dp),
+        arrangement: Arrangement.Vertical = Arrangement.Top
+    ) {
         val matrix = ColorMatrix()
         matrix.setToSaturation(0F)
 
         Column(
-            verticalArrangement = Arrangement.Top,
+            verticalArrangement = arrangement,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
                 painter = painterResource(id = R.drawable.logo_no_text),
-                modifier = Modifier.requiredSize(100.dp),
+                modifier = modifier,
                 contentDescription = noImageText,
                 colorFilter = ColorFilter.colorMatrix(matrix)
             )
@@ -266,7 +273,8 @@ class MainView(activity: MainActivity): Drawable {
     @Composable
     fun MoviePoster(url: String,
                     modifier: Modifier,
-                    contentScale: ContentScale = ContentScale.Fit
+                    contentScale: ContentScale = ContentScale.Fit,
+                    showLoading: Boolean = true
     ) {
         SubcomposeAsyncImage(
             model = url,
@@ -276,9 +284,17 @@ class MainView(activity: MainActivity): Drawable {
         ) {
             when (painter.state) {
                 is AsyncImagePainter.State.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.offset(y = 20.dp), color = AccentColor)
+                    if (showLoading)
+                        CircularProgressIndicator(modifier = Modifier.offset(y = 20.dp), color = AccentColor)
                 }
-                is AsyncImagePainter.State.Error -> ErrorMoviePoster()
+                is AsyncImagePainter.State.Error -> if (!showLoading) {
+                    ErrorMoviePoster(
+                        Modifier.requiredSize(200.dp),
+                        Arrangement.Center
+                    )
+                } else {
+                    ErrorMoviePoster()
+                }
                 else -> SubcomposeAsyncImageContent()
             }
         }
