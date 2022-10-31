@@ -1,10 +1,15 @@
 package com.example.mobiledevelopment.ui.theme
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 
 private val DarkColorPalette = darkColors(
         primary = Purple200,
@@ -41,4 +46,11 @@ fun MobileDevelopmentTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: 
             shapes = Shapes,
             content = content
     )
+}
+
+inline fun Modifier.noRippleClickable(crossinline onClick: ()->Unit): Modifier = composed {
+    clickable(indication = null,
+        interactionSource = remember { MutableInteractionSource() }) {
+        onClick()
+    }
 }
