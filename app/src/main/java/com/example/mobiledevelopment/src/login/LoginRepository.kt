@@ -16,6 +16,7 @@ class LoginRepository {
         loginModel: UserLoginModel,
         onResponseAction: () -> Unit,
         onFailureAction: () -> Unit,
+        onBadResponseAction: () -> Unit,
     ) {
         service.loginUser(loginModel).enqueue(object : Callback<UserTokenModel> {
             override fun onFailure(call: Call<UserTokenModel>, t: Throwable) {
@@ -24,7 +25,7 @@ class LoginRepository {
 
             override fun onResponse(call: Call<UserTokenModel>, response: Response<UserTokenModel>) {
                 if (!response.isSuccessful || response.body() == null) {
-                    onFailureAction()
+                    onBadResponseAction()
                     return
                 }
                 Common.userToken = response.body()!!.token

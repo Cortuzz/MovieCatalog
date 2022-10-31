@@ -1,29 +1,32 @@
 package com.example.mobiledevelopment.src.login
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.mobiledevelopment.src.MainActivity
+import com.example.mobiledevelopment.src.login.domain.AuthState
 import com.example.mobiledevelopment.src.login.domain.ViewField
 import com.example.mobiledevelopment.src.registration.RegistrationRepository
 
-class LoginViewModel(private val view: LoginView, private val activity: MainActivity) {
+class LoginViewModel {
     private val repository = LoginRepository()
     private val fieldsModel = LoginFieldsProvider()
+    var authState = mutableStateOf(AuthState.Idle)
     var fullness = mutableStateOf(false)
 
-    fun handleLoginClick() {
+    fun handleLoginClick(onResponse: () -> Unit) {
+        authState.value = AuthState.Loading
         repository.tryLoginUser(
             loginModel = fieldsModel.getModel(),
             onFailureAction = {
-                println("FAILED")
+                authState.value = AuthState.Error
+            },
+            onBadResponseAction = {
+                authState.value = AuthState.WrongData
             },
             onResponseAction = {
-                activity.setMainView()
+                onResponse()
             }
         )
-    }
-
-    fun handleRegistrationViewClick() {
-        activity.setRegistrationView()
     }
 
     fun getField(field: ViewField): String {

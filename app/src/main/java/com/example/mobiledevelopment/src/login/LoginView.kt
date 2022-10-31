@@ -1,42 +1,59 @@
 package com.example.mobiledevelopment.src.login
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.mobiledevelopment.src.domain.Drawable
 import com.example.mobiledevelopment.src.MainActivity
 import com.example.mobiledevelopment.src.login.domain.*
 import com.example.mobiledevelopment.src.registration.RegistrationView
-import com.example.mobiledevelopment.ui.theme.composes.InputText
-import com.example.mobiledevelopment.ui.theme.composes.Logo
-import com.example.mobiledevelopment.ui.theme.composes.PrimaryButton
-import com.example.mobiledevelopment.ui.theme.composes.SecondaryButton
+import com.example.mobiledevelopment.ui.theme.AccentColor
+import com.example.mobiledevelopment.ui.theme.composes.*
 
-class LoginView(activity: MainActivity): Drawable {
-    companion object {
-        private var instance: LoginView? = null
+class LoginView(private val navController: NavHostController): Drawable {
+    private var viewModel: LoginViewModel = LoginViewModel()
 
-        fun getInstance(activity: MainActivity): LoginView {
-            if (instance == null)
-                instance = LoginView(activity)
 
-            return instance as LoginView
-        }
+    @Composable
+    fun LoginFailDialog() {
+        if (viewModel.authState.value in listOf(AuthState.Idle, AuthState.Loading))
+            return
+
+        Dialog(
+            title = "Авторизация отклонена",
+            text = if (viewModel.authState.value == AuthState.Error)
+                "Нет подключения к интернету или сервер недоступен"
+                else "Введены некорректные данные",
+            onDismissRequest = {
+                viewModel.authState.value = AuthState.Idle
+            }
+        )
     }
-
-    private var viewModel: LoginViewModel = LoginViewModel(this, activity)
 
 
     @Composable
     override fun Draw() {
+        LoginFailDialog()
+
         Column(
             modifier = Modifier.padding(top = 56.dp),
             horizontalAlignment = Alignment.CenterHorizontally) {
             Logo(Modifier, Alignment.Center)
             Fields()
-
+            LoadingIndicator(
+                Modifier
+                    .requiredSize(100.dp)
+                    .padding(top = 20.dp)
+            ) { viewModel.authState.value == AuthState.Loading }
             Buttons()
         }
     }
@@ -63,15 +80,16 @@ class LoginView(activity: MainActivity): Drawable {
     @Composable
     fun Buttons() {
         Column(
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(bottom = 16.dp)
-                .fillMaxHeight()
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            PrimaryButton(name = signInText, action = { viewModel.handleLoginClick() }, isEnabled = viewModel.fullness)
+            PrimaryButton(name = signInText, action = { viewModel.handleLoginClick {navController.navigate("main_screen")} },
+                isEnabled = viewModel.fullness)
             Spacer(Modifier.height(8.dp))
-            SecondaryButton(name = goToRegisterText, action = { viewModel.handleRegistrationViewClick() })
+            SecondaryButton(name = goToRegisterText, action = { navController.navigate("registration_screen") })
         }
     }
 }
