@@ -1,9 +1,6 @@
 package com.example.mobiledevelopment.src.main
 
-import com.example.mobiledevelopment.include.retrofit.Common
-import com.example.mobiledevelopment.include.retrofit.MovieElementModel
-import com.example.mobiledevelopment.include.retrofit.MoviesListModel
-import com.example.mobiledevelopment.include.retrofit.MoviesPageListModel
+import com.example.mobiledevelopment.include.retrofit.*
 import com.example.mobiledevelopment.src.TokenManager
 import com.google.gson.JsonElement
 import retrofit2.Call
@@ -54,18 +51,48 @@ class MainRepository {
         })
     }
 
-    fun test() {
-        service.addToFavourites("Bearer ${Common.userToken}", "82c34463-daf4-4702-a2b8-08d9b9f3d2a2").enqueue(object : Callback<JsonElement> {
-            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
-                println()
+    fun setCurrentMovie(movieElementModel: MovieElementModel) {
+        Common.currentMovieId = movieElementModel.id
+    }
+
+    fun addMovieToFavourites(
+        id: String,
+        onResponseAction: (Response<Void>) -> Unit,
+        onFailureAction: () -> Unit,
+    ) {
+        service.addToFavourites("Bearer ${Common.userToken}", id).enqueue(object : Callback<Void> {
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                onFailureAction()
             }
 
-            override fun onResponse(call: Call<JsonElement>, response: Response<JsonElement>) {
-                if (!response.isSuccessful || response.body() == null) {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (!response.isSuccessful) {
+                    onFailureAction()
                     return
                 }
 
-                println(response.body())
+                onResponseAction(response)
+            }
+        })
+    }
+
+    fun removeMovieFromFavourites(
+        id: String,
+        onResponseAction: (Response<Void>) -> Unit,
+        onFailureAction: () -> Unit,
+    ) {
+        service.removeFromFavourites("Bearer ${Common.userToken}", id).enqueue(object : Callback<Void> {
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                onFailureAction()
+            }
+
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (!response.isSuccessful) {
+                    onFailureAction()
+                    return
+                }
+
+                onResponseAction(response)
             }
         })
     }
