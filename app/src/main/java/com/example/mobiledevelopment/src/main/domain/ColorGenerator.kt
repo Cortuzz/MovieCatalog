@@ -4,6 +4,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.math.MathUtils
 import com.example.mobiledevelopment.include.retrofit.ReviewShortModel
 import com.example.mobiledevelopment.ui.theme.AccentColor
+import java.lang.Float.NaN
+import kotlin.math.roundToInt
 
 class ColorGenerator {
     companion object {
@@ -14,7 +16,7 @@ class ColorGenerator {
             }
             averageRating /= reviews.size
 
-            return averageRating
+            return if (averageRating.isNaN()) NaN else (averageRating * 100.0).roundToInt() / 100.0f
         }
 
         fun getColor(rating: Float): Color {
@@ -23,11 +25,10 @@ class ColorGenerator {
 
             val clRating = MathUtils.clamp(rating, 0f, 10f)
 
-            return Color(
-                getRedLayer(clRating),
-                getGreenLayer(clRating),
-                getBlueLayer(clRating)
-            )
+            val r = MathUtils.clamp(getRedLayer(clRating), 0, 255)
+            val g = MathUtils.clamp(getGreenLayer(clRating), 0, 255)
+            val b = MathUtils.clamp(getBlueLayer(clRating), 0, 255)
+            return Color(r, g, b)
         }
 
         private fun getRedLayer(rating: Float): Int {
