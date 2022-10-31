@@ -44,21 +44,66 @@ class RegistrationView(activity: MainActivity): Drawable {
 
     @Composable
     override fun Draw() {
-        Column(                            // todo
+        RegistrationFailDialog()
+
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            LoadingIndicator(
+                Modifier.requiredSize(100.dp)
+            ) { viewModel.registrationState.value == RegistrationState.Loading }
+        }
+
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
-                .padding(top = 56.dp)
-                .verticalScroll(rememberScrollState()),
+                .padding(top = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally) {
             Logo(
-                Modifier
-                    .animateContentSize()
-                    .size(150.dp), Alignment.Center)
+                Modifier.size(150.dp), Alignment.Center)
 
             Label()
             Fields()
-
-            Buttons()
         }
+
+        Buttons()
+    }
+
+    @Composable
+    fun RegistrationFailDialog() {
+        if (viewModel.registrationState.value in listOf(RegistrationState.Idle, RegistrationState.Loading))
+            return
+
+        Dialog(
+            title = "Регистрация отклонена",
+            text = when (viewModel.registrationState.value) {
+                RegistrationState.Error -> "Нет подключения к интернету или сервер недоступен"
+                RegistrationState.UserExist -> "Пользователь с таким логином уже существует"
+                else -> "Произошла внутренняя ошибка приложения, отчет об ошибке отправлен разработчикам"
+            },
+            onDismissRequest = {
+                viewModel.registrationState.value = RegistrationState.Idle
+            }
+        )
+    }
+
+    @Composable
+    fun WrongFieldText(text: String, correct: MutableState<Boolean>) {
+        if (correct.value)
+            return
+
+        Text(
+            modifier = Modifier.padding(horizontal = 18.dp),
+            text = text,
+            color = AccentColor,
+            fontFamily = IBMPlex,
+            fontWeight = FontWeight.Normal,
+            fontSize = 14.sp,
+            lineHeight = 18.sp,
+            letterSpacing = 0.5.sp,
+        )
     }
 
     @Composable
@@ -82,20 +127,34 @@ class RegistrationView(activity: MainActivity): Drawable {
 
     @Composable
     fun Fields() {
-        // todo
+        // TODO
         val names = listOf(loginText, emailText, nameText, passwordText, repeatPasswordText, birthDateText)
         val enums = listOf(ViewField.Login, ViewField.Email, ViewField.Name, ViewField.Password, ViewField.RepeatPassword, ViewField.DateOfBirth)
         val hidden = listOf(false, false, false, true, true, false)
+        val text = listOf(
+            "Логин слишком короткий",
+            "Некорректный E-mail",
+            "Имя слишком короткое",
+            "Ненадежный пароль",
+            "Пароли не совпадают",
+            "Неверная дата рождения"
+        )
 
-        Column(modifier = Modifier.padding(top = 16.dp)) {
-
+        Column(modifier = Modifier
+            .padding(top = 16.dp, bottom = 132.dp)
+            .verticalScroll(rememberScrollState())) {
             for (i in 0 until(6)) {
                 InputText(
                     label = names[i],
-                    viewModel.getField(enums[i]),
-                    { value -> viewModel.changeField(enums[i], value)  },
-                    isHidden = hidden[i]
+                    viewModel.getMutableState(enums[i]),
+                    onChange = { viewModel.checkFullness() },
+                    isHidden = hidden[i],
+                    isDate = enums[i] == ViewField.DateOfBirth
                 )
+
+
+                Spacer(Modifier.height(2.dp))
+                WrongFieldText(text = text[i], correct = viewModel.isFieldCorrect(enums[i]))
                 Spacer(Modifier.height(16.dp))
             }
 
