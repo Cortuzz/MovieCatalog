@@ -1,36 +1,63 @@
 package com.example.mobiledevelopment.src.registration
 
+import android.util.JsonReader
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.mobiledevelopment.src.MainActivity
-import com.example.mobiledevelopment.src.domain.FieldsProvider
+import com.example.mobiledevelopment.src.main.domain.RegistrationState
 import com.example.mobiledevelopment.src.registration.domain.ViewField
+import com.google.gson.JsonParser
 
-class RegistrationViewModel(private val view: RegistrationView, private val activity: MainActivity) {
+
+class RegistrationViewModel {
     private val repository = RegistrationRepository()
     private val fieldsModel = RegistrationFieldsProvider()
+    var registrationState = mutableStateOf(RegistrationState.Idle)
+
     var fullness = mutableStateOf(false)
 
-    fun handleRegistrationClick() {
+    fun handleRegistrationClick(onResponse: () -> Unit) {
+        if (!fieldsModel.checkCorrect())
+            return
+
+        registrationState.value = RegistrationState.Loading
+
         repository.registerUser(
             registerModel = fieldsModel.getModel(),
+            onBadResponseAction = { code, body ->
+                if (code == 400 && body.string().contains("DuplicateUserName")) {
+                    registrationState.value = RegistrationState.UserExist
+                    return@registerUser
+                }
+                registrationState.value = RegistrationState.InternalError
+            },
             onFailureAction = {
+                  registrationState.value = RegistrationState.Error
             },
             onResponseAction = {
-                activity.setMainView()
+                onResponse()
             }
         )
     }
 
-    fun handleLoginViewClick() {
-        activity.setLoginView()
-    }
-
     fun changeField(field: ViewField, value: String) {
         fieldsModel.changeField(field, value)
-        fullness.value =  "" !in fieldsModel.getFields().values
+        checkFullness()
     }
 
     fun getField(field: ViewField): String {
         return fieldsModel.getField(field)
+    }
+
+    fun isFieldCorrect(field: ViewField): MutableState<Boolean> {
+        return fieldsModel.getCorrectValue(field)
+    }
+
+    fun checkFullness() {
+        fullness.value =  "" !in fieldsModel.getFields().values
+    }
+
+    fun getMutableState(field: ViewField): MutableState<String> {
+        return fieldsModel.getMutableState(field)
     }
 }
