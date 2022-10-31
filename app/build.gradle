@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.mobiledevelopment"
-        minSdk 31
+        minSdk 23
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -48,8 +48,10 @@ android {
 }
 
 dependencies {
-    def nav_version = "2.5.2"
+    def nav_version = "2.5.3"
 
+    implementation 'com.google.accompanist:accompanist-swiperefresh:0.24.13-rc'
+    implementation "com.google.accompanist:accompanist-flowlayout:0.27.0"
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
     implementation 'androidx.activity:activity-compose:1.6.0'
