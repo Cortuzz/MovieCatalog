@@ -1,5 +1,6 @@
 package com.example.mobiledevelopment.src.main
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.*
 import com.example.mobiledevelopment.R
 import com.example.mobiledevelopment.include.retrofit.MovieElementModel
@@ -35,10 +37,13 @@ import com.example.mobiledevelopment.src.main.domain.ColorGenerator
 import com.example.mobiledevelopment.src.main.domain.favoriteBlockText
 import com.example.mobiledevelopment.src.main.domain.galleryBlockText
 import com.example.mobiledevelopment.src.main.domain.noImageText
-import com.example.mobiledevelopment.ui.theme.AccentColor
-import com.example.mobiledevelopment.ui.theme.BackgroundColor
-import com.example.mobiledevelopment.ui.theme.IBMPlex
-import com.example.mobiledevelopment.ui.theme.OutlineColor
+import com.example.mobiledevelopment.src.utils.isScrolledToEnd
+import com.example.mobiledevelopment.ui.theme.*
+import com.example.mobiledevelopment.ui.theme.composes.ErrorMoviePoster
+import com.example.mobiledevelopment.ui.theme.composes.MoviePoster
+import com.example.mobiledevelopment.ui.theme.composes.RatingShape
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 class MainView(private val navController: NavHostController): Drawable {
     companion object {
@@ -132,6 +137,7 @@ class MainView(private val navController: NavHostController): Drawable {
             contentDescription = null,
             modifier = Modifier
                 .padding(end = 16.dp, top = padding)
+                .animateContentSize()
                 .requiredSize(width, height)
                 .clip(shape = RoundedCornerShape(16.dp)),
         ) {
@@ -140,8 +146,30 @@ class MainView(private val navController: NavHostController): Drawable {
                     CircularProgressIndicator(modifier = Modifier.offset(y = 20.dp), color = AccentColor)
                 }
                 is AsyncImagePainter.State.Error -> ErrorMoviePoster()
-                else -> SubcomposeAsyncImageContent()
+                else -> {
+                    SubcomposeAsyncImageContent()
+                    RemoveButton { viewModel.removeFromFavourites(movieElement) }
+                }
             }
+        }
+    }
+
+    @Composable
+    fun RemoveButton(onClick: () -> Unit) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 6.dp, end = 6.dp),
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.End
+        ) {
+            Image(
+                modifier = Modifier
+                    .requiredSize(16.dp)
+                    .clickable { onClick() },
+                painter = painterResource(id = R.drawable.remove_button),
+                contentDescription = "Remove",
+            )
         }
     }
 
@@ -207,7 +235,7 @@ class MainView(private val navController: NavHostController): Drawable {
         }
         parsedGenres = parsedGenres.dropLast(2)
 
-        val rating = ColorGenerator.getRating(movieElement.reviews!!)
+        val rating = ColorGenerator.getRating(movieElement.reviews ?: listOf())
         val height = remember { mutableStateOf(30) }
         val heightDp = with(LocalDensity.current) { height.value.toDp() }
 
@@ -216,6 +244,7 @@ class MainView(private val navController: NavHostController): Drawable {
                 .onGloballyPositioned { height.value = it.size.height }
                 .requiredSize(100.dp, 144.dp)
                 .clip(shape = RoundedCornerShape(16.dp))
+                .clickable { viewModel.openMovie(movieElement); navController.navigate("movie_screen") }
             )
 
             Column(
@@ -234,95 +263,7 @@ class MainView(private val navController: NavHostController): Drawable {
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
-                RatingShape(rating = rating)
-            }
-        }
-    }
-
-    @Composable
-    fun ErrorMoviePoster(
-        modifier: Modifier = Modifier.requiredSize(100.dp),
-        arrangement: Arrangement.Vertical = Arrangement.Top
-    ) {
-        val matrix = ColorMatrix()
-        matrix.setToSaturation(0F)
-
-        Column(
-            verticalArrangement = arrangement,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.logo_no_text),
-                modifier = modifier,
-                contentDescription = noImageText,
-                colorFilter = ColorFilter.colorMatrix(matrix)
-            )
-
-            Text(text = noImageText,
-                color = Color.Gray,
-                fontFamily = IBMPlex,
-                fontWeight = FontWeight.Medium,
-                fontSize = 18.sp,
-                lineHeight = 14.sp,
-                letterSpacing = 0.5.sp,
-            )
-        }
-
-    }
-
-    @Composable
-    fun MoviePoster(url: String,
-                    modifier: Modifier,
-                    contentScale: ContentScale = ContentScale.Fit,
-                    showLoading: Boolean = true
-    ) {
-        SubcomposeAsyncImage(
-            model = url,
-            contentDescription = null,
-            modifier = modifier,
-            contentScale = contentScale,
-        ) {
-            when (painter.state) {
-                is AsyncImagePainter.State.Loading -> {
-                    if (showLoading)
-                        CircularProgressIndicator(modifier = Modifier.offset(y = 20.dp), color = AccentColor)
-                }
-                is AsyncImagePainter.State.Error -> if (!showLoading) {
-                    ErrorMoviePoster(
-                        Modifier.requiredSize(200.dp),
-                        Arrangement.Center
-                    )
-                } else {
-                    ErrorMoviePoster()
-                }
-                else -> SubcomposeAsyncImageContent()
-            }
-        }
-    }
-
-    @Composable
-    fun RatingShape(rating: Float) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentSize(Alignment.BottomStart)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(height = 28.dp, width = 56.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(ColorGenerator.getColor(rating))
-            ) {
-                Text(
-                    modifier = Modifier.fillMaxSize(),
-                    text = if (rating.isNaN()) "—" else rating.toString(),
-                    color = Color.White,
-                    fontFamily = IBMPlex,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 16.sp,
-                    lineHeight = 20.sp,
-                    letterSpacing = 0.5.sp,
-                    textAlign = TextAlign.Center
-                )
+                RatingShape(rating = rating, modifier = Modifier.size(height = 28.dp, width = 56.dp))
             }
         }
     }
@@ -377,11 +318,27 @@ class MainView(private val navController: NavHostController): Drawable {
 
     @Composable
     override fun Draw() {
-        LazyColumn {
-            item { PromotedMovie(viewModel.getPromotedMovie()) }
-            item { Favourites(viewModel.getFavouriteMovieList()) }
-            item { Gallery(viewModel.getMovieList()) }
+        val scrollState = rememberLazyListState()
+        val endOfListReached by remember {
+            derivedStateOf {
+                scrollState.layoutInfo.visibleItemsInfo.lastIndex
+            }
         }
+
+        SwipeRefresh(
+            state = rememberSwipeRefreshState(false),
+            onRefresh = { viewModel.refresh() },
+        ) {
+            LazyColumn {
+                item { PromotedMovie(viewModel.getPromotedMovie()) }
+                item { Favourites(viewModel.getFavouriteMovieList()) }
+                item { Gallery(viewModel.getMovieList()) }
+                item { viewModel.fetchNextPage() }
+            }
+        }
+
+
+
 
         //Navigation()
     }

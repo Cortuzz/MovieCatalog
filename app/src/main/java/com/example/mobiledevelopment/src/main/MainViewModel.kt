@@ -10,22 +10,18 @@ import com.example.mobiledevelopment.include.retrofit.MoviesPageListModel
 import com.example.mobiledevelopment.src.MainActivity
 import java.util.Collections.shuffle
 
-class MainViewModel(private val view: MainView, private val activity: MainActivity) {
+class MainViewModel {
     private val repository: MainRepository = MainRepository()
     private var promotedMovie: MutableState<MovieElementModel?> = mutableStateOf(null)
     private var movieList = mutableStateListOf<MovieElementModel>()
     private var favouriteMovieList = mutableStateListOf<MovieElementModel>()
+    private var pageObtained = 1
 
     init {
-        repository.getMovies(1,
-            onResponseAction = {
-                parseMoviesModel(it.body() as MoviesPageListModel, true)
-            },
-            onFailureAction = {
-                // todo: throw Exception()
-            }
-        )
+       init()
+    }
 
+    private fun init() {
         repository.getFavouriteMovies(
             onResponseAction = {
                 val moviesPageModel = it.body() as MoviesListModel
@@ -41,8 +37,15 @@ class MainViewModel(private val view: MainView, private val activity: MainActivi
         )
     }
 
+    fun refresh() {
+        pageObtained = 1
+        favouriteMovieList.clear()
+        movieList.clear()
+        init()
+    }
+
     private fun parseMoviesModel(moviesPageModel: MoviesPageListModel, addToPromoted: Boolean = false) {
-        val movies = (moviesPageModel.movies).shuffled().toMutableList()
+        val movies = (moviesPageModel.movies).toMutableList()
 
         if (addToPromoted) {
             promotedMovie.value = movies.removeFirst()
@@ -54,7 +57,19 @@ class MainViewModel(private val view: MainView, private val activity: MainActivi
     }
 
     fun fetchNextPage() {
+        repository.getMovies(pageObtained,
+            onResponseAction = {
+                parseMoviesModel(it.body() as MoviesPageListModel, pageObtained == 1)
+                pageObtained++
+            },
+            onFailureAction = {
+                // todo: throw Exception()
+            }
+        )
+    }
 
+    fun openMovie(movieElementModel: MovieElementModel) {
+        repository.setCurrentMovie(movieElementModel)
     }
 
     fun addToFavourites(movieElementModel: MovieElementModel) {
