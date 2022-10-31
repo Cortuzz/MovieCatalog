@@ -100,6 +100,12 @@ data class MovieElementModel(
     var reviews: List<ReviewShortModel>?
 )
 
+data class ReviewModifyModel(
+    var reviewText: String,
+    var rating: Int,
+    var isAnonymous: Boolean
+)
+
 interface RetrofitServices {
     @GET("movies/details/{id}/")
     fun getMovie(@Path("id") id: String): Call<MovieDetailsModel>
@@ -124,4 +130,7 @@ interface RetrofitServices {
 
     @DELETE("favorites/{id}/delete/")
     fun removeFromFavourites(@Header("Authorization") authToken: String, @Path("id") id: String): Call<Void>
+
+    @POST("movie/{id}/review/add/")
+    fun addReview(@Header("Authorization") authToken: String, @Path("id") id: String, @Body reviewModel: ReviewModifyModel): Call<Void>
 }
