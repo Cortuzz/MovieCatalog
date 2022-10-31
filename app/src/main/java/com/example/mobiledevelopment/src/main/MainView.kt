@@ -40,19 +40,19 @@ import com.example.mobiledevelopment.ui.theme.BackgroundColor
 import com.example.mobiledevelopment.ui.theme.IBMPlex
 import com.example.mobiledevelopment.ui.theme.OutlineColor
 
-class MainView(activity: MainActivity): Drawable {
+class MainView(private val navController: NavHostController): Drawable {
     companion object {
         private var instance: MainView? = null
 
-        fun getInstance(activity: MainActivity): MainView {
+        fun getInstance(nav: NavHostController): MainView {
             if (instance == null)
-                instance = MainView(activity)
+                instance = MainView(nav)
 
             return instance as MainView
         }
     }
 
-    private val viewModel: MainViewModel = MainViewModel(this, activity)
+    private var viewModel: MainViewModel = MainViewModel()
 
     @Composable
     fun PromotedMovie(movieElement: MutableState<MovieElementModel?>) {

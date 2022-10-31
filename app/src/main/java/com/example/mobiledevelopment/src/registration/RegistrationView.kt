@@ -19,28 +19,17 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.mobiledevelopment.src.domain.Drawable
 import com.example.mobiledevelopment.src.MainActivity
+import com.example.mobiledevelopment.src.login.domain.AuthState
+import com.example.mobiledevelopment.src.main.domain.RegistrationState
 import com.example.mobiledevelopment.src.registration.domain.*
-import com.example.mobiledevelopment.ui.theme.composes.InputText
-import com.example.mobiledevelopment.ui.theme.composes.Logo
-import com.example.mobiledevelopment.ui.theme.composes.PrimaryButton
-import com.example.mobiledevelopment.ui.theme.composes.SecondaryButton
 import com.example.mobiledevelopment.ui.theme.*
+import com.example.mobiledevelopment.ui.theme.composes.*
 
-class RegistrationView(activity: MainActivity): Drawable {
-    companion object {
-        private var instance: RegistrationView? = null
-
-        fun getInstance(activity: MainActivity): RegistrationView {
-            if (instance == null)
-                instance = RegistrationView(activity)
-
-            return instance as RegistrationView
-        }
-    }
-
-    private val viewModel: RegistrationViewModel = RegistrationViewModel(this, activity)
+class RegistrationView(private val navController: NavHostController): Drawable {
+    private val viewModel: RegistrationViewModel = RegistrationViewModel()
 
     @Composable
     override fun Draw() {
@@ -236,40 +225,13 @@ class RegistrationView(activity: MainActivity): Drawable {
                 .padding(bottom = 16.dp)
                 .fillMaxHeight()
         ) {
-            PrimaryButton(name = registerText, action = { viewModel.handleRegistrationClick() }, isEnabled = viewModel.fullness)
+            PrimaryButton(name = registerText, action = {
+                viewModel.handleRegistrationClick {
+                    navController.navigate("main_screen")
+                } },
+                isEnabled = viewModel.fullness)
             Spacer(Modifier.height(8.dp))
-            SecondaryButton(name = goToLoginText, action = { viewModel.handleLoginViewClick() })
-        }
-
-        if (viewModel.fullness.value) {
-            AlertDialog(
-                onDismissRequest = {
-                viewModel.fullness.value = false
-            },
-                title = {
-                    Text(text = "Dialog Title")
-                },
-                text = {
-                    Text("Here is a text ")
-                },
-                confirmButton = {
-                    Button(
-
-                        onClick = {
-                            viewModel.fullness.value = false
-                        }) {
-                        Text("This is the Confirm Button")
-                    }
-                },
-                dismissButton = {
-                    Button(
-
-                        onClick = {
-                            viewModel.fullness.value = false
-                        }) {
-                        Text("This is the dismiss Button")
-                    }
-                })
+            SecondaryButton(name = goToLoginText, action = { navController.navigate("login_screen") })
         }
     }
 }
