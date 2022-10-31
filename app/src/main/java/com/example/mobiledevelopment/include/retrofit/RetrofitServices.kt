@@ -22,7 +22,7 @@ data class ReviewModel(
     var reviewText: String?,
     var isAnonymous: Boolean,
     var createDateTime: String,
-    var author: UserShortModel
+    var author: UserShortModel?
 )
 
 data class ReviewShortModel(
@@ -32,6 +32,7 @@ data class ReviewShortModel(
 
 data class MovieDetailsModel(
     var id: String,
+    var description: String?,
     var name: String?,
     var poster: String?,
     var year: Int,
