@@ -28,7 +28,10 @@ class TokenManager(private val activity: MainActivity) {
     }
     private val service = Common.retrofitService
 
-    fun checkToken() {
+    fun checkToken(
+        onFailureAction: () -> Unit = { baseOnFailureAction() },
+        onSuccessAction: (model: ProfileModel) -> Unit
+    ) {
         if (Common.userToken.isEmpty()) {
             onFailureAction()
             return
@@ -45,7 +48,7 @@ class TokenManager(private val activity: MainActivity) {
                     onFailureAction()
                     return
                 }
-                onSuccessAction()
+                response.body()?.let { onSuccessAction(it) }
             }
         })
     }
@@ -68,11 +71,7 @@ class TokenManager(private val activity: MainActivity) {
         }
     }
 
-    private fun onFailureAction() {
+    fun baseOnFailureAction() {
 
-    }
-
-    private fun onSuccessAction() {
-        activity.setMainView()
     }
 }
