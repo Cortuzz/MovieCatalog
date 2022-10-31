@@ -18,14 +18,16 @@ import com.example.mobiledevelopment.ui.theme.OutlineColor
 
 
 @Composable
-fun PrimaryButton(name: String, action: () -> Unit, isEnabled: MutableState<Boolean> = mutableStateOf(true)) {
+fun PrimaryButton(name: String,
+                  action: () -> Unit,
+                  isEnabled: MutableState<Boolean> = mutableStateOf(true),
+                  modifier: Modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+) {
     OutlinedButton(onClick = action,
         colors = getButtonColors(),
         enabled = isEnabled.value,
         border = BorderStroke(1.dp, if (isEnabled.value) AccentColor else OutlineColor),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+        modifier = modifier
     ) {
         ButtonText(text = name)
     }
@@ -33,15 +35,16 @@ fun PrimaryButton(name: String, action: () -> Unit, isEnabled: MutableState<Bool
 
 
 @Composable
-fun SecondaryButton(name: String, action: () -> Unit) {
+fun SecondaryButton(name: String,
+                    action: () -> Unit,
+                    modifier: Modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+) {
     TextButton(onClick = action,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.Transparent,
             contentColor = AccentColor
         ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+        modifier = modifier
     ) {
         ButtonText(text = name)
     }

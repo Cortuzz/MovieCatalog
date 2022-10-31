@@ -8,6 +8,7 @@ import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.font.FontWeight
@@ -15,6 +16,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mobiledevelopment.src.registration.domain.ViewField
 import com.example.mobiledevelopment.ui.theme.AccentColor
 import com.example.mobiledevelopment.ui.theme.IBMPlex
 import com.example.mobiledevelopment.ui.theme.OutlineColor
@@ -48,6 +50,45 @@ fun InputText(label: String, value: String, onChange: (value: String) -> Unit, i
 
         shape = RoundedCornerShape(8.dp)
     )
+}
+
+
+@Composable
+fun InputText(label: String, value: MutableState<String>, onChange: () -> Unit, isHidden: Boolean = false, isDate: Boolean = false) {
+    var focusState by rememberSaveable { mutableStateOf(false) }
+
+    Box {
+        OutlinedTextField(
+            placeholder = {
+                Text(
+                    text = if (focusState) "" else label,
+                    fontFamily = IBMPlex,
+                    fontWeight = FontWeight(400),
+                    fontSize = 14.sp,
+                    lineHeight = 12.sp,
+                    modifier = Modifier.offset(y = (-3).dp),
+                    color = TextColor
+                )
+            },
+
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).onFocusChanged {
+                    focus -> focusState = focus.isFocused }.height(50.dp),
+            colors = getInputTextColors(),
+            value = value.value,
+            onValueChange = { value.value = it; onChange() },
+            visualTransformation = if (isHidden) PasswordVisualTransformation() else VisualTransformation.None,
+
+            shape = RoundedCornerShape(8.dp)
+        )
+
+        Row(
+            modifier = Modifier.fillMaxSize().offset(y = 16.dp, x = (-34.25).dp),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (isDate) DatePicker(date = value)
+        }
+    }
 }
 
 
