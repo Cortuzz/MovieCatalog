@@ -13,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
@@ -46,7 +45,7 @@ fun Star(index: Int, rating: MutableState<Int>) {
             Image(
                 painter = painterResource(id = R.drawable.star_bg),
                 contentDescription = null,
-                modifier = Modifier.offset(x = -3.dp, y = (-4).dp)
+                modifier = Modifier.offset(x = (-3).dp, y = (-4).dp)
             )
 
             Image(

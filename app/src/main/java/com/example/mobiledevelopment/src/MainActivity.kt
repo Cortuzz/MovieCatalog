@@ -4,16 +4,11 @@ package com.example.mobiledevelopment.src
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.mobiledevelopment.src.domain.Drawable
-import com.example.mobiledevelopment.src.login.LoginView
-import com.example.mobiledevelopment.src.main.MainView
-import com.example.mobiledevelopment.src.movie.MovieView
-import com.example.mobiledevelopment.src.registration.RegistrationView
 import com.example.mobiledevelopment.ui.theme.BackgroundColor
 import com.example.mobiledevelopment.ui.theme.MobileDevelopmentTheme
 

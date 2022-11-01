@@ -7,8 +7,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.example.mobiledevelopment.include.retrofit.MovieElementModel
 import com.example.mobiledevelopment.include.retrofit.MoviesListModel
 import com.example.mobiledevelopment.include.retrofit.MoviesPageListModel
-import com.example.mobiledevelopment.src.MainActivity
-import java.util.Collections.shuffle
 
 class MainViewModel {
     private val repository: MainRepository = MainRepository()

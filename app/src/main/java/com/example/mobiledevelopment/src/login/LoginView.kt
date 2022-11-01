@@ -1,22 +1,13 @@
 package com.example.mobiledevelopment.src.login
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.mobiledevelopment.src.domain.Drawable
-import com.example.mobiledevelopment.src.MainActivity
 import com.example.mobiledevelopment.src.login.domain.*
-import com.example.mobiledevelopment.src.registration.RegistrationView
-import com.example.mobiledevelopment.ui.theme.AccentColor
 import com.example.mobiledevelopment.ui.theme.composes.*
 
 class LoginView(private val navController: NavHostController): Drawable {

@@ -2,11 +2,9 @@ package com.example.mobiledevelopment.src.movie
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -15,33 +13,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.mobiledevelopment.R
 import com.example.mobiledevelopment.include.retrofit.MovieDetailsModel
 import com.example.mobiledevelopment.include.retrofit.ReviewModel
-import com.example.mobiledevelopment.src.MainActivity
 import com.example.mobiledevelopment.src.domain.Drawable
-import com.example.mobiledevelopment.src.main.MainView
 import com.example.mobiledevelopment.src.utils.Utils
-import com.example.mobiledevelopment.ui.theme.*
+import com.example.mobiledevelopment.ui.theme.AccentColor
+import com.example.mobiledevelopment.ui.theme.DialogColor
+import com.example.mobiledevelopment.ui.theme.IBMPlex
+import com.example.mobiledevelopment.ui.theme.OutlineReviewColor
 import com.example.mobiledevelopment.ui.theme.composes.*
 import com.google.accompanist.flowlayout.FlowRow
-import java.util.*
 
 class MovieView(private val navController: NavHostController): Drawable {
     companion object {
@@ -60,7 +54,7 @@ class MovieView(private val navController: NavHostController): Drawable {
     }
 
     private val viewModel = MovieViewModel()
-    private var reviewDialogOpened = mutableStateOf(false);
+    private var reviewDialogOpened = mutableStateOf(false)
 
     @Composable
     fun Header(movieModelState: MutableState<MovieDetailsModel?>) {
@@ -75,11 +69,6 @@ class MovieView(private val navController: NavHostController): Drawable {
             contentScale = ContentScale.FillWidth,
             showLoading = false
         )
-    }
-
-    @Composable
-    fun Poster() {
-
     }
 
     @Composable
@@ -109,7 +98,7 @@ class MovieView(private val navController: NavHostController): Drawable {
 
     @Composable
     fun AboutPair(title: String, value: String?) {
-        Row() {
+        Row {
             AboutText(
                 text = title,
                 isTitle = true,
@@ -144,10 +133,9 @@ class MovieView(private val navController: NavHostController): Drawable {
     fun Genres(movieModelState: MutableState<MovieDetailsModel?>) {
         val movieModel = movieModelState.value ?: return
 
-        Column() {
+        Column {
             CategoryText(text = "Жанры")
-            FlowRow(
-            ) {
+            FlowRow {
                 for (genre in movieModel.genres) {
                     GenreBlock(text = genre.name ?: "")
                     Spacer(modifier = Modifier.width(8.dp))
@@ -256,7 +244,7 @@ class MovieView(private val navController: NavHostController): Drawable {
     fun Reviews(movieModelState: MutableState<MovieDetailsModel?>) {
         val movieModel = movieModelState.value ?: return
 
-        Column() {
+        Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -372,11 +360,6 @@ class MovieView(private val navController: NavHostController): Drawable {
 
             ReviewCheckboxContent(text = "Анонимный отзыв", checkboxState = viewModel.getReviewInputAnonymous())
         }
-    }
-
-    @Composable
-    fun TitleText() {
-
     }
 
     @Composable

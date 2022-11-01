@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
     private var retrofit: Retrofit? = null
-    var okHttpClient: OkHttpClient = UnsafeOkHttpClient.unsafeOkHttpClient
+    private var okHttpClient: OkHttpClient = UnsafeOkHttpClient.unsafeOkHttpClient
 
     fun getClient(baseUrl: String): Retrofit {
         if (retrofit == null) {

@@ -1,7 +1,5 @@
 package com.example.mobiledevelopment.include.retrofit
 
-import androidx.compose.ui.graphics.Color
-import com.google.gson.JsonElement
 import retrofit2.Call
 import retrofit2.http.*
 

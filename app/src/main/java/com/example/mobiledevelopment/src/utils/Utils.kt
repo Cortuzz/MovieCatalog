@@ -9,7 +9,7 @@ class Utils {
     companion object {
         @SuppressLint("SimpleDateFormat")
         fun isValidDate(date: String): Boolean {
-            val dateFormat = "dd.MM.yyyy";
+            val dateFormat = "dd.MM.yyyy"
 
             return try {
                 val s = date.split(".")
@@ -17,7 +17,7 @@ class Utils {
                     return false
 
                 val df: DateFormat = SimpleDateFormat(dateFormat)
-                df.setLenient(false)
+                df.isLenient = false
                 df.parse(date)
                 true
             } catch (_: Exception) {

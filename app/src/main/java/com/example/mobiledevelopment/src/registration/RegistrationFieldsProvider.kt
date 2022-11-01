@@ -1,14 +1,11 @@
 package com.example.mobiledevelopment.src.registration
 
-import android.annotation.SuppressLint
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.mobiledevelopment.include.retrofit.UserRegisterModel
 import com.example.mobiledevelopment.src.domain.FieldsProvider
 import com.example.mobiledevelopment.src.registration.domain.ViewField
 import com.example.mobiledevelopment.src.utils.Utils
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 
 class RegistrationFieldsProvider : FieldsProvider<ViewField, UserRegisterModel> {
     private val viewFields = mutableMapOf(

@@ -1,5 +1,6 @@
 package com.example.mobiledevelopment.include.retrofit
 
+import android.annotation.SuppressLint
 import okhttp3.OkHttpClient
 import java.security.SecureRandom
 import java.security.cert.CertificateException
@@ -18,8 +19,10 @@ object UnsafeOkHttpClient {
         // Create an ssl socket factory with our all-trusting manager
         get() = try {
             // Create a trust manager that does not validate certificate chains
-            val trustAllCerts: Array<TrustManager> = arrayOf<TrustManager>(
+            val trustAllCerts: Array<TrustManager> = arrayOf(
+                @SuppressLint("CustomX509TrustManager")
                 object : X509TrustManager {
+                    @SuppressLint("TrustAllX509TrustManager")
                     @Throws(CertificateException::class)
                     override fun checkClientTrusted(
                         chain: Array<X509Certificate?>?,
@@ -27,6 +30,7 @@ object UnsafeOkHttpClient {
                     ) {
                     }
 
+                    @SuppressLint("TrustAllX509TrustManager")
                     @Throws(CertificateException::class)
                     override fun checkServerTrusted(
                         chain: Array<X509Certificate?>?,
@@ -60,7 +64,7 @@ object UnsafeOkHttpClient {
             sslContext.init(null, trustAllCerts, SecureRandom())
 
             // Create an ssl socket factory with our all-trusting manager
-            val sslSocketFactory: SSLSocketFactory = sslContext.getSocketFactory()
+            val sslSocketFactory: SSLSocketFactory = sslContext.socketFactory
             val builder = OkHttpClient.Builder()
             builder.sslSocketFactory(
                 sslSocketFactory,

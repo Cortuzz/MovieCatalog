@@ -1,26 +1,18 @@
 package com.example.mobiledevelopment.ui.theme.composes
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.DialogProperties
-import com.example.mobiledevelopment.R
-import com.example.mobiledevelopment.ui.theme.*
+import com.example.mobiledevelopment.ui.theme.AccentColor
+import com.example.mobiledevelopment.ui.theme.DialogColor
+import com.example.mobiledevelopment.ui.theme.IBMPlex
+import com.example.mobiledevelopment.ui.theme.TextColor
 
 
 @Composable

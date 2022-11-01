@@ -1,12 +1,9 @@
 package com.example.mobiledevelopment.src.registration
 
-import android.util.JsonReader
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.example.mobiledevelopment.src.MainActivity
 import com.example.mobiledevelopment.src.main.domain.RegistrationState
 import com.example.mobiledevelopment.src.registration.domain.ViewField
-import com.google.gson.JsonParser
 
 
 class RegistrationViewModel {
@@ -43,10 +40,6 @@ class RegistrationViewModel {
     fun changeField(field: ViewField, value: String) {
         fieldsModel.changeField(field, value)
         checkFullness()
-    }
-
-    fun getField(field: ViewField): String {
-        return fieldsModel.getField(field)
     }
 
     fun isFieldCorrect(field: ViewField): MutableState<Boolean> {

@@ -4,7 +4,6 @@ import com.example.mobiledevelopment.include.retrofit.Common
 import com.example.mobiledevelopment.include.retrofit.UserLoginModel
 import com.example.mobiledevelopment.include.retrofit.UserTokenModel
 import com.example.mobiledevelopment.src.TokenManager
-import com.example.mobiledevelopment.src.login.domain.ViewField
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

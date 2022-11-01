@@ -1,8 +1,9 @@
 package com.example.mobiledevelopment.src.registration
 
-import com.example.mobiledevelopment.include.retrofit.*
+import com.example.mobiledevelopment.include.retrofit.Common
+import com.example.mobiledevelopment.include.retrofit.UserRegisterModel
+import com.example.mobiledevelopment.include.retrofit.UserTokenModel
 import com.example.mobiledevelopment.src.TokenManager
-import com.example.mobiledevelopment.src.registration.domain.ViewField
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback

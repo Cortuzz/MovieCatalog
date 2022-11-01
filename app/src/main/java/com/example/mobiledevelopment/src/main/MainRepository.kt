@@ -1,8 +1,9 @@
 package com.example.mobiledevelopment.src.main
 
-import com.example.mobiledevelopment.include.retrofit.*
-import com.example.mobiledevelopment.src.TokenManager
-import com.google.gson.JsonElement
+import com.example.mobiledevelopment.include.retrofit.Common
+import com.example.mobiledevelopment.include.retrofit.MovieElementModel
+import com.example.mobiledevelopment.include.retrofit.MoviesListModel
+import com.example.mobiledevelopment.include.retrofit.MoviesPageListModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
