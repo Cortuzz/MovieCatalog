@@ -143,7 +143,11 @@ class MainView(private val navController: NavHostController): Drawable {
                 .padding(end = 16.dp, top = padding)
                 .animateContentSize()
                 .requiredSize(width, height)
-                .clip(shape = RoundedCornerShape(16.dp)),
+                .clip(shape = RoundedCornerShape(16.dp))
+                .clickable {
+                    viewModel.openMovie(movieElement);
+                    navController.navigate("movie_screen")
+                }
         ) {
             when (painter.state) {
                 is AsyncImagePainter.State.Loading -> {
@@ -152,7 +156,13 @@ class MainView(private val navController: NavHostController): Drawable {
                 is AsyncImagePainter.State.Error -> ErrorMoviePoster()
                 else -> {
                     SubcomposeAsyncImageContent()
-                    RemoveButton { viewModel.removeFromFavourites(movieElement) }
+                    RemoveButton {
+                        viewModel.removeFromFavourites(movieElement) {
+                            navController.navigate("login_screen") {
+                                popUpTo(0)
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import com.example.mobiledevelopment.src.domain.Drawable
 import com.example.mobiledevelopment.src.main.domain.RegistrationState
 import com.example.mobiledevelopment.src.registration.domain.*
@@ -227,11 +228,17 @@ class RegistrationView(private val navController: NavHostController): Drawable {
         ) {
             PrimaryButton(name = registerText, action = {
                 viewModel.handleRegistrationClick {
-                    navController.navigate("main_screen")
+                    navController.navigate("main_screen") {
+                        popUpTo(0)
+                    }
                 } },
                 isEnabled = viewModel.fullness)
             Spacer(Modifier.height(8.dp))
-            SecondaryButton(name = goToLoginText, action = { navController.navigate("login_screen") })
+            SecondaryButton(name = goToLoginText, action = {
+                navController.navigate("login_screen") {
+                    popUpTo(0)
+                }
+            })
         }
     }
 }

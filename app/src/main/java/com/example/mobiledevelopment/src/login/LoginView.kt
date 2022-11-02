@@ -77,10 +77,18 @@ class LoginView(private val navController: NavHostController): Drawable {
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            PrimaryButton(name = signInText, action = { viewModel.handleLoginClick {navController.navigate("main_screen")} },
+            PrimaryButton(name = signInText, action = { viewModel.handleLoginClick {
+                navController.navigate("main_screen") {
+                    popUpTo(0)
+                }
+            } },
                 isEnabled = viewModel.fullness)
             Spacer(Modifier.height(8.dp))
-            SecondaryButton(name = goToRegisterText, action = { navController.navigate("registration_screen") })
+            SecondaryButton(name = goToRegisterText, action = {
+                navController.navigate("registration_screen") {
+                    popUpTo(0)
+                }
+            })
         }
     }
 }
