@@ -48,6 +48,8 @@ class TokenManager(private val activity: MainActivity) {
                     onFailureAction()
                     return
                 }
+
+                Common.userId = response.body()?.id ?: ""
                 response.body()?.let { onSuccessAction(it) }
             }
         })
