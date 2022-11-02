@@ -70,7 +70,7 @@ class MainViewModel {
         repository.setCurrentMovie(movieElementModel)
     }
 
-    fun addToFavourites(movieElementModel: MovieElementModel) {
+    fun addToFavourites(movieElementModel: MovieElementModel, onUnauthorized: () -> Unit) {
         val movieId = movieElementModel.id
 
         repository.addMovieToFavourites(
@@ -78,20 +78,20 @@ class MainViewModel {
             onFailureAction = {
 
             },
+            onBadResponseAction = { if (it == 401) onUnauthorized() },
             onResponseAction = {
                 favouriteMovieList.add(movieElementModel)
             }
         )
     }
 
-    fun removeFromFavourites(movieElementModel: MovieElementModel) {
+    fun removeFromFavourites(movieElementModel: MovieElementModel, onUnauthorized: () -> Unit) {
         val movieId = movieElementModel.id
 
         repository.removeMovieFromFavourites(
             id = movieId,
-            onFailureAction = {
-
-            },
+            onFailureAction = { },
+            onBadResponseAction =  { if (it == 401) onUnauthorized() },
             onResponseAction = {
                 favouriteMovieList.remove(movieElementModel)
             }

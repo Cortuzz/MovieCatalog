@@ -60,6 +60,7 @@ class MainRepository {
         id: String,
         onResponseAction: (Response<Void>) -> Unit,
         onFailureAction: () -> Unit,
+        onBadResponseAction: (Int) -> Unit
     ) {
         service.addToFavourites("Bearer ${Common.userToken}", id).enqueue(object : Callback<Void> {
             override fun onFailure(call: Call<Void>, t: Throwable) {
@@ -68,7 +69,7 @@ class MainRepository {
 
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (!response.isSuccessful) {
-                    onFailureAction()
+                    onBadResponseAction(response.code())
                     return
                 }
 
@@ -80,6 +81,7 @@ class MainRepository {
     fun removeMovieFromFavourites(
         id: String,
         onResponseAction: (Response<Void>) -> Unit,
+        onBadResponseAction: (Int) -> Unit,
         onFailureAction: () -> Unit,
     ) {
         service.removeFromFavourites("Bearer ${Common.userToken}", id).enqueue(object : Callback<Void> {
@@ -89,7 +91,7 @@ class MainRepository {
 
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (!response.isSuccessful) {
-                    onFailureAction()
+                    onBadResponseAction(response.code())
                     return
                 }
 

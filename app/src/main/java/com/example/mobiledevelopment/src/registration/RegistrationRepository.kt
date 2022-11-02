@@ -35,17 +35,4 @@ class RegistrationRepository {
             }
         })
     }
-
-//    fun test() {
-//        service.getMovie("b6c5228b-91fb-43a1-a2ac-08d9b9f3d2a2").enqueue(object :
-//            Callback<MovieDetailsModel> {
-//            override fun onFailure(call: Call<MovieDetailsModel>, t: Throwable) {
-//
-//            }
-//
-//            override fun onResponse(call: Call<MovieDetailsModel>, response: Response<MovieDetailsModel>) {
-//                println(response.body())
-//            }
-//        })
-//    }
 }
