@@ -1,6 +1,7 @@
 package com.example.mobiledevelopment.ui.theme.composes
 
 import android.app.DatePickerDialog
+import android.view.ContextThemeWrapper
 import android.widget.DatePicker
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -15,19 +16,14 @@ import java.util.*
 
 @Composable
 fun DatePicker(date: MutableState<String>, modifier: Modifier = Modifier) {
-    // Fetching the Local Context
     val mContext = LocalContext.current
 
-    // Declaring integer values
-    // for year, month and day
     val mYear: Int
     val mMonth: Int
     val mDay: Int
 
-    // Initializing a Calendar
     val mCalendar = Calendar.getInstance()
 
-    // Fetching current year, month and day
     val parsedDate = Utils.tryParseDate(date.value)
 
     if (parsedDate.isNullOrEmpty()) {
@@ -39,20 +35,17 @@ fun DatePicker(date: MutableState<String>, modifier: Modifier = Modifier) {
         mMonth = parsedDate[1] - 1
         mDay = parsedDate[0]
     }
-
     mCalendar.time = Date()
 
-    // Declaring a string value to
-    // store date in string format
 
-    // Declaring DatePickerDialog and setting
-    // initial values as current values (present year, month and day)
     val mDatePickerDialog = DatePickerDialog(
-        mContext,
+        ContextThemeWrapper(mContext, R.style.Theme_MobileDevelopment_Calendar),
         { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
             date.value = "$mDayOfMonth.${mMonth+1}.$mYear"
         }, mYear, mMonth, mDay
     )
+
+    mDatePickerDialog.window?.setBackgroundDrawableResource(R.drawable.shape)
 
     Image(
         modifier = modifier.clickable {  mDatePickerDialog.show() },

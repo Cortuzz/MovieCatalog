@@ -9,7 +9,7 @@ val Teal200 = Color(0xFF03DAC5)
 
 val AccentColor = Color(0xFFEF3A01)
 val BackgroundColor = Color(0xFF150D0B)
-val DialogColor = Color(0xFF30201D)
+val DialogColor = Color(0xFF282828)
 val OutlineColor = Color(0xFFB7B7B7)
 val TextColor = Color(0xFFD1D1D1)
 val SelectedTextColor = Color(0xFFE7E7E7)
