@@ -4,23 +4,37 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.mobiledevelopment.include.retrofit.MovieDetailsModel
 import com.example.mobiledevelopment.include.retrofit.ReviewModifyModel
+import com.example.mobiledevelopment.src.movie.domain.ReviewCheckerService
 
 class MovieViewModel {
     private var movieModel: MutableState<MovieDetailsModel?> = mutableStateOf(null)
     private val repository = MovieRepository()
+    private var reviewDialogOpened = mutableStateOf(false)
     private var reviewInputText = mutableStateOf("")
     private var reviewInputRating = mutableStateOf(0)
     private var reviewInputAnonymous = mutableStateOf(false)
+    private var isReviewAdded = mutableStateOf(false)
+    private val reviewChecker = ReviewCheckerService()
 
     fun getMovie() {
         repository.getMovie(
             onResponseAction = {
-                movieModel.value = it.body()
+                val movie = it.body()
+                isReviewAdded.value = reviewChecker.isReviewsContainsId(
+                    repository.getUserId(),
+                    movie?.reviews
+                )
+                reviewChecker.placeMyReviewToTop(repository.getUserId(), movie?.reviews)
+                movieModel.value = movie
             },
             onFailureAction = {
 
             }
         )
+    }
+
+    fun getReviewDialogState(): MutableState<Boolean> {
+        return reviewDialogOpened
     }
 
     fun getReviewInputText(): MutableState<String> {
@@ -46,9 +60,25 @@ class MovieViewModel {
         repository.sendReview(
             movieModel.value!!.id,
             reviewModel,
-            onResponseAction = {getMovie()},
+            onResponseAction = {
+                getMovie()
+                isReviewAdded.value = true
+            },
             onBadResponseAction = { if (it == 401) onUnauthorized() },
-            onFailureAction = {}
+            onFailureAction = { }
+        )
+    }
+
+    fun deleteReview(id: String, onUnauthorized: () -> Unit) {
+        if (movieModel.value == null) return
+
+        repository.deleteReview(
+            id,
+            onResponseAction = {
+                movieModel.value?.reviews?.removeFirst()
+            },
+            onBadResponseAction = { if (it == 401) onUnauthorized() },
+            onFailureAction = { }
         )
     }
 
@@ -64,5 +94,9 @@ class MovieViewModel {
 
     fun compareIds(id: String): Boolean {
         return id == repository.getUserId()
+    }
+
+    fun getClientReviewState(): MutableState<Boolean> {
+        return isReviewAdded
     }
 }

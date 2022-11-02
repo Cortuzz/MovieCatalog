@@ -20,7 +20,8 @@ data class ReviewModel(
     var reviewText: String?,
     var isAnonymous: Boolean,
     var createDateTime: String,
-    var author: UserShortModel?
+    var author: UserShortModel?,
+    var isMine: Boolean?
 )
 
 data class ReviewShortModel(
@@ -36,7 +37,7 @@ data class MovieDetailsModel(
     var year: Int,
     var country: String?,
     var genres: List<GenreModel>,
-    var reviews: List<ReviewModel>,
+    var reviews: MutableList<ReviewModel>,
     var time: Int,
     var tagline: String?,
     var director: String?,
@@ -101,7 +102,7 @@ data class MovieElementModel(
 data class ReviewModifyModel(
     var reviewText: String,
     var rating: Int,
-    var isAnonymous: Boolean
+    var isAnonymous: Boolean,
 )
 
 interface RetrofitServices {
@@ -131,4 +132,7 @@ interface RetrofitServices {
 
     @POST("movie/{id}/review/add/")
     fun addReview(@Header("Authorization") authToken: String, @Path("id") id: String, @Body reviewModel: ReviewModifyModel): Call<Void>
+
+    @DELETE("movie/{movieId}/review/{reviewId}/delete/")
+    fun deleteReview(@Header("Authorization") authToken: String, @Path("movieId") movieId: String, @Path("reviewId") reviewId: String): Call<Void>
 }
