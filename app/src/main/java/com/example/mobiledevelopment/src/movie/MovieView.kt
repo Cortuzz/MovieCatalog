@@ -30,10 +30,7 @@ import com.example.mobiledevelopment.include.retrofit.MovieDetailsModel
 import com.example.mobiledevelopment.include.retrofit.ReviewModel
 import com.example.mobiledevelopment.src.domain.Drawable
 import com.example.mobiledevelopment.src.utils.Utils
-import com.example.mobiledevelopment.ui.theme.AccentColor
-import com.example.mobiledevelopment.ui.theme.DialogColor
-import com.example.mobiledevelopment.ui.theme.IBMPlex
-import com.example.mobiledevelopment.ui.theme.OutlineReviewColor
+import com.example.mobiledevelopment.ui.theme.*
 import com.example.mobiledevelopment.ui.theme.composes.*
 import com.google.accompanist.flowlayout.FlowRow
 
@@ -322,7 +319,10 @@ class MovieView(private val navController: NavHostController): Drawable {
             buttons = {
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     PrimaryButton(name = "Сохранить",
-                        action = { viewModel.sendReview {navController.navigate("login_screen")} },
+                        action = {
+                            viewModel.sendReview { navigateToLogin() }
+                            viewModel.getReviewDialogState().value = false
+                         },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(4.dp))
