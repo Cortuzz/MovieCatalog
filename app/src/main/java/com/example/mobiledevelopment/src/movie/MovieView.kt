@@ -50,12 +50,11 @@ class MovieView(private val navController: NavHostController): Drawable {
         }
     }
 
-    private val viewModel = MovieViewModel()
-    private var reviewDialogOpened = mutableStateOf(false)
+    private var viewModel = MovieViewModel()
 
     @Composable
-    fun Header(movieModelState: MutableState<MovieDetailsModel?>) {
-        val movieModel = movieModelState.value ?: return
+    fun Header() {
+        val movieModel = viewModel.getMovieModel().value ?: return
 
         MoviePoster(
             url = movieModel.poster ?: "",
@@ -69,14 +68,14 @@ class MovieView(private val navController: NavHostController): Drawable {
     }
 
     @Composable
-    fun Description(movieModelState: MutableState<MovieDetailsModel?>) {
-        val description = movieModelState.value?.description ?: return
+    fun Description() {
+        val description = viewModel.getMovieModel().value?.description ?: return
         DescriptionText(text = description)
     }
 
     @Composable
-    fun About(movieModelState: MutableState<MovieDetailsModel?>) {
-        val movieModel = movieModelState.value ?: return
+    fun About() {
+        val movieModel = viewModel.getMovieModel().value ?: return
 
         Column {
             CategoryText(text = "О фильме")
@@ -98,7 +97,6 @@ class MovieView(private val navController: NavHostController): Drawable {
         Row {
             AboutText(
                 text = title,
-                isTitle = true,
                 color = Color(0xFFB3B3B3)
             )
 
@@ -106,7 +104,6 @@ class MovieView(private val navController: NavHostController): Drawable {
 
             AboutText(
                 text = if (value.isNullOrBlank()) "Нет информации" else value,
-                isTitle = false,
                 color = Color.White
             )
         }
@@ -122,13 +119,13 @@ class MovieView(private val navController: NavHostController): Drawable {
                 .background(color = AccentColor)
                 .wrapContentWidth(),
         ) {
-            AboutText(text = text, isTitle = false, align = TextAlign.Center, Color.White, modifier = Modifier.offset(y = 3.dp))
+            AboutText(text = text, align = TextAlign.Center, Color.White, modifier = Modifier.offset(y = 3.dp))
         }
     }
 
     @Composable
-    fun Genres(movieModelState: MutableState<MovieDetailsModel?>) {
-        val movieModel = movieModelState.value ?: return
+    fun Genres() {
+        val movieModel = viewModel.getMovieModel().value ?: return
 
         Column {
             CategoryText(text = "Жанры")
@@ -175,10 +172,18 @@ class MovieView(private val navController: NavHostController): Drawable {
             ) {
                 Avatar(url = review.author?.avatar ?: "")
                 Spacer(modifier = Modifier.width(8.dp))
-                CategoryText(
-                    text = review.author?.nickName ?: "Анонимный пользователь",
-                    modifier = Modifier.offset(y = (-1).dp)
-                )
+                Column(
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    CategoryText(
+                        text = review.author?.nickName ?: "Анонимный пользователь",
+                        modifier = Modifier.offset(y = (-1).dp)
+                    )
+
+                    if (viewModel.compareIds(review.author?.userId ?: ""))
+                        AboutText(text = "мой отзыв", color = OutlineColor)
+                }
+
             }
             
             RatingShape(
@@ -196,16 +201,41 @@ class MovieView(private val navController: NavHostController): Drawable {
     @Composable
     fun ReviewFooter(review: ReviewModel) {
         Row(
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth().requiredHeight(24.dp)
         ) {
             AboutText(
                 text = Utils.parseTimestamp(review.createDateTime),
-                isTitle = false,
-                color = Color(0xFFB7B7B7)
+                color = Color(0xFFB7B7B7),
+                modifier = Modifier.offset(y = 5.dp)
+            )
+            if (viewModel.compareIds(review.author?.userId ?: ""))
+                EditReviewBlock(review)
+        }
+    }
+
+    @Composable
+    fun EditReviewBlock(review: ReviewModel) {
+        Row {
+            Image(
+                painter = painterResource(id = R.drawable.edit_review_button),
+                contentDescription = "Edit review",
+                modifier = Modifier.clickable {  }
+            )
+
+            Spacer(Modifier.width(8.dp))
+
+            Image(
+                painter = painterResource(id = R.drawable.delete_review_button),
+                contentDescription = "Delete review",
+                modifier = Modifier.clickable {
+                    viewModel.deleteReview(review.id) // todo: не удаляются визуально
+                    { navigateToLogin() }
+                }
             )
         }
     }
-    
+
     @Composable
     fun Review(review: ReviewModel) {
         Box(
@@ -223,23 +253,26 @@ class MovieView(private val navController: NavHostController): Drawable {
                 Spacer(modifier = Modifier.height(4.dp))
 
                 ReviewFooter(review = review)
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(2.dp))
             }
         }
     }
 
     @Composable
     fun AddReviewButton() {
+        if (viewModel.getClientReviewState().value)
+            return
+
         Image(
             painter = painterResource(id = R.drawable.plus),
             contentDescription = "Добавить",
-            modifier = Modifier.clickable { reviewDialogOpened.value = true }
+            modifier = Modifier.clickable { viewModel.getReviewDialogState().value = true }
         )
     }
 
     @Composable
-    fun Reviews(movieModelState: MutableState<MovieDetailsModel?>) {
-        val movieModel = movieModelState.value ?: return
+    fun Reviews() {
+        val movieModel = viewModel.getMovieModel().value ?: return
 
         Column {
             Row(
@@ -261,23 +294,23 @@ class MovieView(private val navController: NavHostController): Drawable {
     }
 
     @Composable
-    fun MainContent(movieModel: MutableState<MovieDetailsModel?>) {
-        if (movieModel.value == null)
+    fun MainContent() {
+        if (viewModel.getMovieModel().value == null)
             return
 
         Column(
             modifier = Modifier.padding(horizontal = 16.dp)
         ) {
-            Description(movieModel)
+            Description()
             Spacer(modifier = Modifier.height(16.dp))
 
-            About(movieModel)
+            About()
             Spacer(modifier = Modifier.height(16.dp))
 
-            Genres(movieModel)
+            Genres()
             Spacer(modifier = Modifier.height(16.dp))
 
-            Reviews(movieModel)
+            Reviews()
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
@@ -286,16 +319,16 @@ class MovieView(private val navController: NavHostController): Drawable {
     override fun Draw() {
         val movieModel = viewModel.getMovieModel()
 
-        if (reviewDialogOpened.value) {
-            ReviewDialog { reviewDialogOpened.value = false }
+        if (viewModel.getReviewDialogState().value) {
+            ReviewDialog { viewModel.getReviewDialogState().value = false }
         }
 
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
-            Header(movieModel)
+            Header()
             Spacer(modifier = Modifier.height(15.3.dp))
-            MainContent(movieModel)
+            MainContent()
         }
 
     }
@@ -335,6 +368,12 @@ class MovieView(private val navController: NavHostController): Drawable {
                 }
             }
         )
+    }
+
+    private fun navigateToLogin() {
+        navController.navigate("login_screen") {
+            popUpTo(0)
+        }
     }
 
     @Composable
@@ -378,7 +417,6 @@ class MovieView(private val navController: NavHostController): Drawable {
     @Composable
     fun AboutText(
         text: String,
-        isTitle: Boolean,
         align: TextAlign = TextAlign.Start,
         color: Color,
         modifier: Modifier = Modifier
