@@ -2,6 +2,7 @@ package com.example.mobiledevelopment.ui.theme.composes
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -59,7 +60,7 @@ fun ButtonText(text: String) {
         fontSize = 16.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.5.sp,
-        modifier = Modifier.padding(top = 3.dp, bottom = 3.dp)
+        modifier = Modifier.padding(top = 3.dp, bottom = 3.dp).offset(y = (-1.5).dp)
     )
 }
 
