@@ -339,9 +339,9 @@ class MainView(private val navController: NavHostController): Drawable {
             }
         }
 
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(false),
-            onRefresh = { viewModel.refresh() },
+    PullRefresh(onRefresh = { viewModel.refresh { navToLogin() } }) {
+        LazyColumn(
+            state = state
         ) {
             LazyColumn {
                 item { PromotedMovie(viewModel.getPromotedMovie()) }
