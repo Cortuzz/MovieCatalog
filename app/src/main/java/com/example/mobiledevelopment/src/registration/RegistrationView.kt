@@ -148,74 +148,11 @@ class RegistrationView(private val navController: NavHostController): Drawable {
                 Spacer(Modifier.height(16.dp))
             }
 
-            GenderField()
-            Spacer(Modifier.height(32.dp))
-        }
+        GenderField { field, str -> viewModel.changeField(field, str) }
+        Spacer(Modifier.height(32.dp))
     }
+}
 
-    @Composable
-    fun GenderField() {
-        val selectedValue = rememberSaveable { mutableStateOf("") }
-        val items = listOf(
-            GenderViewData(maleOptionText, RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp), 0.5f, 1.dp),
-            GenderViewData(femaleOptionText, RoundedCornerShape(0.dp, 8.dp, 8.dp, 0.dp), 1f, 0.dp)
-        )
-
-        val isSelectedItem: (String) -> Boolean = { selectedValue.value == it }
-        val onChangeState: (GenderViewData) -> Unit = {
-            selectedValue.value = it.name
-            viewModel.changeField(ViewField.Gender, items.indexOf(it).toString())
-        }
-
-        Row(
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 15.dp, end = 16.dp)
-        ) {
-
-
-            items.forEach { item ->
-                OutlinedButton(
-                    onClick = { onChangeState(item) },
-                    modifier = Modifier
-                        .fillMaxWidth(item.fraction)
-                        .offset(x = item.offset)
-                        .selectable(
-                            selected = isSelectedItem(item.name),
-                            onClick = { onChangeState(item) },
-                            role = Role.RadioButton
-                        ),
-
-                    enabled = !isSelectedItem(item.name),
-                    colors = getRadioButtonColor(),
-                    border = BorderStroke(1.dp, OutlineColor),
-                    shape = item.shape
-                ) {
-                    Text(
-                        text = item.name,
-                        fontFamily = IBMPlex,
-                        fontWeight = FontWeight(400),
-                        fontSize = 14.sp,
-                        lineHeight = 18.sp,
-                        letterSpacing = 0.5.sp,
-                        modifier = Modifier.padding(top = 1.dp, bottom = 5.dp)
-                    )
-                }
-            }
-        }
-
-    }
-    
-    @Composable
-    private fun getRadioButtonColor(): ButtonColors {
-        return ButtonDefaults.buttonColors(
-            contentColor = TextColor,
-            backgroundColor = Color.Transparent,
-            disabledContentColor = SelectedTextColor,
-            disabledBackgroundColor = AccentColor
-        )
-    }
 
     @Composable
     fun Buttons() {
