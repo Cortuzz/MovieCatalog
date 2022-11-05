@@ -79,41 +79,24 @@ class RegistrationView(private val navController: NavHostController): Drawable {
         )
     }
 
-    @Composable
-    fun WrongFieldText(text: String, correct: MutableState<Boolean>) {
-        if (correct.value)
-            return
-
+@Composable
+fun Label() {
+    Row(
+        modifier = Modifier.fillMaxWidth().requiredHeight(32.dp),
+        horizontalArrangement = Arrangement.Start
+    ) {
         Text(
-            modifier = Modifier.padding(horizontal = 18.dp),
-            text = text,
-            color = AccentColor,
+            text = registrationText,
             fontFamily = IBMPlex,
-            fontWeight = FontWeight.Normal,
-            fontSize = 14.sp,
-            lineHeight = 18.sp,
+            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp,
+            lineHeight = 32.sp,
             letterSpacing = 0.5.sp,
+            color = AccentColor,
+            modifier = Modifier.padding(start = 16.dp)
         )
     }
-
-    @Composable
-    fun Label() {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
-        ) {
-            Text(
-                text = registrationText,
-                fontFamily = IBMPlex,
-                fontWeight = FontWeight.Bold,
-                fontSize = 24.sp,
-                lineHeight = 32.sp,
-                letterSpacing = 0.5.sp,
-                color = AccentColor,
-                modifier = Modifier.padding(start = 16.dp)
-            )
-        }
-    }
+}
 
     @Composable
     fun Fields() {
