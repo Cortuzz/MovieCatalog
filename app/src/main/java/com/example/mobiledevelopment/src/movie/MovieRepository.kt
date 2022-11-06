@@ -1,5 +1,6 @@
 package com.example.mobiledevelopment.src.movie
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.mobiledevelopment.include.retrofit.*
@@ -17,15 +18,18 @@ class MovieRepository {
     ) {
         service.getMovie(Common.currentMovieId).enqueue(object : Callback<MovieDetailsModel> {
             override fun onFailure(call: Call<MovieDetailsModel>, t: Throwable) {
+                Log.e("Network manager", "Fetching movie failed with exception: $t")
                 onFailureAction()
             }
 
             override fun onResponse(call: Call<MovieDetailsModel>, response: Response<MovieDetailsModel>) {
                 if (!response.isSuccessful || response.body() == null) {
+                    Log.w("Network manager", "Fetching movies failed with response: ${response.errorBody()?.charStream()?.readText()}")
                     onFailureAction()
                     return
                 }
 
+                Log.i("Network manager", "Movie successfully fetched. Response: ${response.body()}")
                 onResponseAction(response)
             }
         })
@@ -40,15 +44,18 @@ class MovieRepository {
     ) {
         service.addReview( "Bearer ${Common.userToken}",id, reviewModifyModel).enqueue(object : Callback<Void> {
             override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e("Network manager", "Sending review failed with exception: $t")
                 onFailureAction()
             }
 
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (!response.isSuccessful) {
+                    Log.w("Network manager", "Sending review failed with response: ${response.errorBody()?.charStream()?.readText()}")
                     onBadResponseAction(response.code())
                     return
                 }
 
+                Log.i("Network manager", "Review successfully sent. Response: ${response.body()}")
                 onResponseAction()
             }
         })
@@ -62,15 +69,18 @@ class MovieRepository {
     ) {
         service.deleteReview( "Bearer ${Common.userToken}", Common.currentMovieId, id).enqueue(object : Callback<Void> {
             override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e("Network manager", "Deleting review failed with exception: $t")
                 onFailureAction()
             }
 
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (!response.isSuccessful) {
+                    Log.w("Network manager", "Deleting review failed with response: ${response.errorBody()?.charStream()?.readText()}")
                     onBadResponseAction(response.code())
                     return
                 }
 
+                Log.i("Network manager", "Review successfully deleted. Response: ${response.body()}")
                 onResponseAction()
             }
         })
