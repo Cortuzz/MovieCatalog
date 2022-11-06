@@ -30,32 +30,22 @@ import com.example.mobiledevelopment.include.retrofit.MovieDetailsModel
 import com.example.mobiledevelopment.include.retrofit.ReviewModel
 import com.example.mobiledevelopment.src.domain.Drawable
 import com.example.mobiledevelopment.src.utils.Utils
+import com.example.mobiledevelopment.src.utils.noRippleClickable
 import com.example.mobiledevelopment.ui.theme.*
 import com.example.mobiledevelopment.ui.theme.composes.*
 import com.google.accompanist.flowlayout.FlowRow
 
-class MovieView(private val navController: NavHostController): Drawable {
-    companion object {
-        private var instance: MovieView? = null
 
-        fun getInstance(nav: NavHostController): MovieView {
-            if (instance == null)
-                instance = MovieView(nav)
 
-            val view = (instance as MovieView)
-            view.viewModel.getMovie()
-            view.viewModel.clearReview()
+private var viewModel = MovieViewModel()
+private lateinit var navigateToMain: () -> Unit
+private lateinit var navigateToLogin: () -> Unit
 
-            return instance as MovieView
-        }
-    }
+@Composable
+fun Header() {
+    val movieModel = viewModel.getMovieModel().value ?: return
 
-    private var viewModel = MovieViewModel()
-
-    @Composable
-    fun Header() {
-        val movieModel = viewModel.getMovieModel().value ?: return
-
+    Box(modifier = Modifier.requiredHeight(250.dp)) {
         MoviePoster(
             url = movieModel.poster ?: "",
             modifier = Modifier
@@ -65,386 +55,386 @@ class MovieView(private val navController: NavHostController): Drawable {
             contentScale = ContentScale.FillWidth,
             showLoading = false
         )
+
+        LabelText(text = movieModel.name ?: "")
     }
+}
 
-    @Composable
-    fun Description() {
-        val description = viewModel.getMovieModel().value?.description ?: return
-        DescriptionText(text = description)
-    }
-
-    @Composable
-    fun About() {
-        val movieModel = viewModel.getMovieModel().value ?: return
-
-        Column {
-            CategoryText(text = "О фильме")
-            Spacer(modifier = Modifier.height(8.dp))
-
-            AboutPair(title = "Год", value = movieModel.year.toString())
-            AboutPair(title = "Страна", value = movieModel.country)
-            AboutPair(title = "Время", value = "${movieModel.time} мин.")
-            AboutPair(title = "Слоган", value = movieModel.tagline)
-            AboutPair(title = "Режиссер", value = movieModel.director)
-            AboutPair(title = "Бюджет", value = Utils.parseMoney(movieModel.budget))
-            AboutPair(title = "Сборы в мире", value = Utils.parseMoney(movieModel.fees))
-            AboutPair(title = "Возраст", value = "${movieModel.ageLimit}+")
-        }
-    }
-
-    @Composable
-    fun AboutPair(title: String, value: String?) {
-        Row {
-            AboutText(
-                text = title,
-                color = Color(0xFFB3B3B3)
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            AboutText(
-                text = if (value.isNullOrBlank()) "Нет информации" else value,
-                color = Color.White
-            )
-        }
-    }
-
-    @Composable
-    fun GenreBlock(text: String) {
-        Box(
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .requiredHeight(height = 27.dp)
-                .clip(shape = RoundedCornerShape(8.dp))
-                .background(color = AccentColor)
-                .wrapContentWidth(),
-        ) {
-            AboutText(text = text, align = TextAlign.Center, Color.White, modifier = Modifier.offset(y = 3.dp))
-        }
-    }
-
-    @Composable
-    fun Genres() {
-        val movieModel = viewModel.getMovieModel().value ?: return
-
-        Column {
-            CategoryText(text = "Жанры")
-            FlowRow {
-                for (genre in movieModel.genres) {
-                    GenreBlock(text = genre.name ?: "")
-                    Spacer(modifier = Modifier.width(8.dp))
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun Avatar(url: String) {
-        SubcomposeAsyncImage(
-            model = url,
-            contentDescription = null,
-            modifier = Modifier
-                .requiredSize(40.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.FillBounds
-        ) {
-            when (painter.state) {
-                is AsyncImagePainter.State.Error -> {
-                    Image(
-                        painter = painterResource(id = R.drawable.avatar), 
-                        contentDescription = "No avatar"
-                    )
-                }
-                else -> SubcomposeAsyncImageContent()
-            }
-        }
-    }
-    
-    @Composable
-    fun ReviewHeader(review: ReviewModel) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Avatar(url = review.author?.avatar ?: "")
-                Spacer(modifier = Modifier.width(8.dp))
-                Column(
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    CategoryText(
-                        text = review.author?.nickName ?: "Анонимный пользователь",
-                        modifier = Modifier.offset(y = (-1).dp)
-                    )
-
-                    if (viewModel.compareIds(review.author?.userId ?: ""))
-                        AboutText(text = "мой отзыв", color = OutlineColor)
-                }
-
-            }
-            
-            RatingShape(
-                rating = review.rating,
-                modifier = Modifier.size(height = 28.dp, width = 42.dp),
-            )
-        }
-    }
-
-    @Composable
-    fun ReviewBody(review: ReviewModel) {
-        DescriptionText(text = review.reviewText ?: "")
-    }
-
-    @Composable
-    fun ReviewFooter(review: ReviewModel) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth().requiredHeight(24.dp)
-        ) {
-            AboutText(
-                text = Utils.parseTimestamp(review.createDateTime),
-                color = Color(0xFFB7B7B7),
-                modifier = Modifier.offset(y = 5.dp)
-            )
-            if (viewModel.compareIds(review.author?.userId ?: ""))
-                EditReviewBlock(review)
-        }
-    }
-
-    @Composable
-    fun EditReviewBlock(review: ReviewModel) {
-        Row {
-            Image(
-                painter = painterResource(id = R.drawable.edit_review_button),
-                contentDescription = "Edit review",
-                modifier = Modifier.clickable {  }
-            )
-
-            Spacer(Modifier.width(8.dp))
-
-            Image(
-                painter = painterResource(id = R.drawable.delete_review_button),
-                contentDescription = "Delete review",
-                modifier = Modifier.clickable {
-                    viewModel.deleteReview(review.id) // todo: не удаляются визуально
-                    { navigateToLogin() }
-                }
-            )
-        }
-    }
-
-    @Composable
-    fun Review(review: ReviewModel) {
-        Box(
-            modifier = Modifier
-                .border(BorderStroke(1.dp, OutlineReviewColor), RoundedCornerShape(8.dp))
-                .fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier.padding(8.dp)
-            ) {
-                ReviewHeader(review = review)
-                Spacer(modifier = Modifier.height(8.dp))
-
-                ReviewBody(review = review)
-                Spacer(modifier = Modifier.height(4.dp))
-
-                ReviewFooter(review = review)
-                Spacer(modifier = Modifier.height(2.dp))
-            }
-        }
-    }
-
-    @Composable
-    fun AddReviewButton() {
-        if (viewModel.getClientReviewState().value)
-            return
-
-        Image(
-            painter = painterResource(id = R.drawable.plus),
-            contentDescription = "Добавить",
-            modifier = Modifier.clickable { viewModel.getReviewDialogState().value = true }
-        )
-    }
-
-    @Composable
-    fun Reviews() {
-        val movieModel = viewModel.getMovieModel().value ?: return
-
-        Column {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                CategoryText(text = "Отзывы")
-                AddReviewButton()
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            for (review in movieModel.reviews) {
-                Review(review = review)
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-        }
-    }
-
-    @Composable
-    fun MainContent() {
-        if (viewModel.getMovieModel().value == null)
-            return
-
-        Column(
-            modifier = Modifier.padding(horizontal = 16.dp)
-        ) {
-            Description()
-            Spacer(modifier = Modifier.height(16.dp))
-
-            About()
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Genres()
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Reviews()
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-    }
-
-    @Composable
-    override fun Draw() {
-        val movieModel = viewModel.getMovieModel()
-
-        if (viewModel.getReviewDialogState().value) {
-            ReviewDialog { viewModel.getReviewDialogState().value = false }
-        }
-
-        Column(
-            modifier = Modifier.verticalScroll(rememberScrollState())
-        ) {
-            Header()
-            Spacer(modifier = Modifier.height(15.3.dp))
-            MainContent()
-        }
-
-    }
-
-    @OptIn(ExperimentalComposeUiApi::class)
-    @Composable
-    fun ReviewDialog(onDismissRequest: () -> Unit) {
-        AlertDialog(
-            properties = DialogProperties(
-                usePlatformDefaultWidth = false,
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 0.dp),
-            backgroundColor = DialogColor,
-            shape = RoundedCornerShape(16.dp),
-            onDismissRequest = onDismissRequest,
-            text = {
-                ReviewDialogContent()
-            },
-            buttons = {
-                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    PrimaryButton(name = "Сохранить",
-                        action = {
-                            viewModel.sendReview { navigateToLogin() }
-                            viewModel.getReviewDialogState().value = false
-                         },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    SecondaryButton(name = "Очистить",
-                        action = { viewModel.clearReview() },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-            }
-        )
-    }
-
-    private fun navigateToLogin() {
-        navController.navigate("login_screen") {
-            popUpTo(0)
-        }
-    }
-
-    @Composable
-    fun ReviewDialogContent() {
-        Column {
-            Text(
-                text = "Оставить отзыв",
-                color = Color.White,
-                fontFamily = IBMPlex,
-                fontWeight = FontWeight.Bold,
-                fontSize = 24.sp,
-                lineHeight = 32.sp,
-                letterSpacing = 0.5.sp,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-
-            StarBlock(rating = viewModel.getReviewInputRating())
-            Spacer(modifier = Modifier.height(10.dp))
-
-            ReviewTextField(label = "Отзыв", value = viewModel.getReviewInputText()) { }
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ReviewCheckboxContent(text = "Анонимный отзыв", checkboxState = viewModel.getReviewInputAnonymous())
-        }
-    }
-
-    @Composable
-    fun DescriptionText(text: String) {
-        Text(
-            text = text,
-            color = Color.White,
-            fontFamily = IBMPlex,
-            fontWeight = FontWeight.Normal,
-            fontSize = 14.sp,
-            lineHeight = 18.sp,
-            letterSpacing = 0.5.sp,
-        )
-    }
-
-    @Composable
-    fun AboutText(
-        text: String,
-        align: TextAlign = TextAlign.Start,
-        color: Color,
-        modifier: Modifier = Modifier
+@Composable
+fun LabelText(text: String) {
+    Column(
+        modifier = Modifier.fillMaxHeight(),
+        verticalArrangement = Arrangement.Bottom
     ) {
         Text(
-            textAlign = align,
-            modifier = modifier.defaultMinSize(minWidth = 100.dp),
             text = text,
-            color = color,
+            fontSize = 36.sp,
+            fontWeight = FontWeight.Bold,
             fontFamily = IBMPlex,
-            fontWeight = FontWeight.Medium,
-            fontSize = 12.sp,
-            lineHeight = 15.sp,
-            letterSpacing = 0.5.sp,
+            lineHeight = 40.sp,
+            color = Color.White,
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
         )
     }
+}
 
-    @Composable
-    fun CategoryText(text: String, modifier: Modifier = Modifier) {
+@Composable
+fun Description() {
+    val description = viewModel.getMovieModel().value?.description ?: return
+    DescriptionText(text = description)
+}
+
+@Composable
+fun About() {
+    val movieModel = viewModel.getMovieModel().value ?: return
+
+    Column {
+        CategoryText(text = "О фильме")
+        Spacer(modifier = Modifier.height(8.dp))
+
+        AboutPair(title = "Год", value = movieModel.year.toString())
+        AboutPair(title = "Страна", value = movieModel.country)
+        AboutPair(title = "Время", value = "${movieModel.time} мин.")
+        AboutPair(title = "Слоган", value = movieModel.tagline)
+        AboutPair(title = "Режиссер", value = movieModel.director)
+        AboutPair(title = "Бюджет", value = Utils.parseMoney(movieModel.budget))
+        AboutPair(title = "Сборы в мире", value = Utils.parseMoney(movieModel.fees))
+        AboutPair(title = "Возраст", value = "${movieModel.ageLimit}+")
+    }
+}
+
+@Composable
+fun AboutPair(title: String, value: String?) {
+    Row {
+        AboutText(
+            text = title,
+            color = Color(0xFFB3B3B3)
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        AboutText(
+            text = if (value.isNullOrBlank()) "Нет информации" else value,
+            color = Color.White
+        )
+    }
+}
+
+@Composable
+fun GenreBlock(text: String) {
+    Box(
+        modifier = Modifier
+            .padding(top = 8.dp)
+            .requiredHeight(height = 27.dp)
+            .clip(shape = RoundedCornerShape(8.dp))
+            .background(color = AccentColor)
+            .wrapContentWidth(),
+    ) {
+        AboutText(text = text, align = TextAlign.Center, Color.White, modifier = Modifier.offset(y = 3.dp))
+    }
+}
+
+@Composable
+fun Genres() {
+    val movieModel = viewModel.getMovieModel().value ?: return
+
+    Column {
+        CategoryText(text = "Жанры")
+        FlowRow {
+            for (genre in movieModel.genres) {
+                GenreBlock(text = genre.name ?: "")
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun ReviewHeader(review: ReviewModel) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Avatar(
+                url = if (review.isAnonymous) "" else review.author?.avatar ?: "",
+                Modifier.requiredSize(40.dp).clip(CircleShape))
+
+            Spacer(modifier = Modifier.width(8.dp))
+            Column(
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                CategoryText(
+                    text = if (review.isAnonymous) "Анонимный пользователь" else review.author?.nickName ?: "Анонимный пользователь",
+                    modifier = Modifier.offset(y = (-1).dp)
+                )
+
+                if (viewModel.compareIds(review.author?.userId ?: ""))
+                    AboutText(text = "мой отзыв", color = OutlineColor)
+            }
+
+        }
+
+        RatingShape(
+            rating = review.rating,
+            modifier = Modifier.size(height = 28.dp, width = 42.dp),
+        )
+    }
+}
+
+@Composable
+fun ReviewBody(review: ReviewModel) {
+    DescriptionText(text = review.reviewText ?: "")
+}
+
+@Composable
+fun ReviewFooter(review: ReviewModel) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .requiredHeight(24.dp)
+    ) {
+        AboutText(
+            text = Utils.parseTimestamp(review.createDateTime),
+            color = Color(0xFFB7B7B7),
+            modifier = Modifier.offset(y = 5.dp)
+        )
+        if (viewModel.compareIds(review.author?.userId ?: ""))
+            EditReviewBlock(review)
+    }
+}
+
+@Composable
+fun EditReviewBlock(review: ReviewModel) {
+    Row {
+        Image(
+            painter = painterResource(id = R.drawable.edit_review_button),
+            contentDescription = "Edit review",
+            modifier = Modifier.noRippleClickable {  }
+        )
+
+        Spacer(Modifier.width(8.dp))
+
+        Image(
+            painter = painterResource(id = R.drawable.delete_review_button),
+            contentDescription = "Delete review",
+            modifier = Modifier.noRippleClickable {
+                viewModel.deleteReview(review.id)
+                { navigateToLogin() }
+            }
+        )
+    }
+}
+
+@Composable
+fun Review(review: ReviewModel) {
+    Box(
+        modifier = Modifier
+            .border(BorderStroke(1.dp, OutlineReviewColor), RoundedCornerShape(8.dp))
+            .fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(8.dp)
+        ) {
+            ReviewHeader(review = review)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ReviewBody(review = review)
+            Spacer(modifier = Modifier.height(4.dp))
+
+            ReviewFooter(review = review)
+            Spacer(modifier = Modifier.height(2.dp))
+        }
+    }
+}
+
+@Composable
+fun AddReviewButton() {
+    if (viewModel.getClientReviewState().value)
+        return
+
+    Image(
+        painter = painterResource(id = R.drawable.plus),
+        contentDescription = "Добавить",
+        modifier = Modifier.noRippleClickable { viewModel.getReviewDialogState().value = true }
+    )
+}
+
+@Composable
+fun Reviews() {
+    val reviews = viewModel.getReviewList()
+
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            CategoryText(text = "Отзывы")
+            AddReviewButton()
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        for (review in reviews) {
+            Review(review = review)
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+    }
+}
+
+@Composable
+fun MainContent() {
+    if (viewModel.getMovieModel().value == null)
+        return
+
+    Column(
+        modifier = Modifier.padding(horizontal = 16.dp)
+    ) {
+        Description()
+        Spacer(modifier = Modifier.height(16.dp))
+
+        About()
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Genres()
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Reviews()
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+fun MovieScreen(navToLogin: () -> Unit, navToMain: () -> Unit) {
+    viewModel.getMovie()
+    navigateToLogin = navToLogin
+    navigateToMain = navToMain
+
+    if (viewModel.getReviewDialogState().value)
+        ReviewDialog { viewModel.getReviewDialogState().value = false }
+
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = Modifier.verticalScroll(scrollState)
+    ) {
+        Header()
+        Spacer(modifier = Modifier.height(15.3.dp))
+        MainContent()
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun ReviewDialog(onDismissRequest: () -> Unit) {
+    AlertDialog(
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 0.dp),
+        backgroundColor = DialogColor,
+        shape = RoundedCornerShape(16.dp),
+        onDismissRequest = onDismissRequest,
+        text = {
+            ReviewDialogContent()
+        },
+        buttons = {
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                PrimaryButton(name = "Сохранить",
+                    action = {
+                        viewModel.sendReview { navigateToLogin() }
+                        viewModel.getReviewDialogState().value = false
+                     },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+
+                SecondaryButton(name = "Очистить",
+                    action = { viewModel.clearReview() },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+    )
+}
+
+@Composable
+fun ReviewDialogContent() {
+    Column {
         Text(
-            modifier = modifier,
-            text = text,
+            text = "Оставить отзыв",
             color = Color.White,
             fontFamily = IBMPlex,
-            fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
-            lineHeight = 20.sp,
+            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp,
+            lineHeight = 32.sp,
             letterSpacing = 0.5.sp,
+            modifier = Modifier.padding(bottom = 16.dp)
         )
+        Spacer(modifier = Modifier.height(4.dp))
+
+        StarBlock(rating = viewModel.getReviewInputRating())
+        Spacer(modifier = Modifier.height(10.dp))
+
+        ReviewTextField(label = "Отзыв", value = viewModel.getReviewInputText()) { }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        ReviewCheckboxContent(text = "Анонимный отзыв", checkboxState = viewModel.getReviewInputAnonymous())
     }
+}
+
+@Composable
+fun DescriptionText(text: String) {
+    Text(
+        text = text,
+        color = Color.White,
+        fontFamily = IBMPlex,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 18.sp,
+        letterSpacing = 0.5.sp,
+    )
+}
+
+@Composable
+fun AboutText(
+    text: String,
+    align: TextAlign = TextAlign.Start,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        textAlign = align,
+        modifier = modifier.defaultMinSize(minWidth = 100.dp),
+        text = text,
+        color = color,
+        fontFamily = IBMPlex,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp,
+        lineHeight = 15.sp,
+        letterSpacing = 0.5.sp,
+    )
+}
+
+@Composable
+fun CategoryText(text: String, modifier: Modifier = Modifier) {
+    Text(
+        modifier = modifier,
+        text = text,
+        color = Color.White,
+        fontFamily = IBMPlex,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.5.sp,
+    )
 }

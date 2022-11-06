@@ -1,5 +1,6 @@
 package com.example.mobiledevelopment.src.main
 
+import android.util.Log
 import com.example.mobiledevelopment.include.retrofit.Common
 import com.example.mobiledevelopment.include.retrofit.MovieElementModel
 import com.example.mobiledevelopment.include.retrofit.MoviesListModel
@@ -18,15 +19,18 @@ class MainRepository {
     ) {
         service.getMoviesList(page).enqueue(object : Callback<MoviesPageListModel> {
             override fun onFailure(call: Call<MoviesPageListModel>, t: Throwable) {
+                Log.e("Network manager", "Fetching movies failed with exception: $t")
                 onFailureAction()
             }
 
             override fun onResponse(call: Call<MoviesPageListModel>, response: Response<MoviesPageListModel>) {
                 if (!response.isSuccessful || response.body() == null) {
+                    Log.w("Network manager", "Fetching movies failed with response: ${response.errorBody()?.charStream()?.readText()}")
                     onFailureAction()
                     return
                 }
 
+                Log.i("Network manager", "Movies fetched successfully. Response: ${response.body()}")
                 onResponseAction(response)
             }
         })
@@ -35,18 +39,22 @@ class MainRepository {
     fun getFavouriteMovies(
         onResponseAction: (Response<MoviesListModel>) -> Unit,
         onFailureAction: () -> Unit,
+        onBadResponseAction: (Int) -> Unit
     ) {
         service.getFavouritesMovies("Bearer ${Common.userToken}").enqueue(object : Callback<MoviesListModel> {
             override fun onFailure(call: Call<MoviesListModel>, t: Throwable) {
                 onFailureAction()
+                Log.e("Network manager", "Fetching favourites movies failed with exception: $t")
             }
 
             override fun onResponse(call: Call<MoviesListModel>, response: Response<MoviesListModel>) {
                 if (!response.isSuccessful || response.body() == null) {
-                    onFailureAction()
+                    Log.w("Network manager", "Fetching favourites movies failed with code ${response.code()} and response: ${response.errorBody()?.charStream()?.readText()}")
+                    onBadResponseAction(response.code())
                     return
                 }
 
+                Log.i("Network manager", "Favourites movies fetched successfully. Code: ${response.code()} Response: ${response.body()}")
                 onResponseAction(response)
             }
         })
@@ -86,15 +94,18 @@ class MainRepository {
     ) {
         service.removeFromFavourites("Bearer ${Common.userToken}", id).enqueue(object : Callback<Void> {
             override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e("Network manager", "Removing movie from favourites failed with exception: $t")
                 onFailureAction()
             }
 
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (!response.isSuccessful) {
+                    Log.w("Network manager", "Removing movie from favourites failed with code ${response.code()} and response: ${response.errorBody()?.charStream()?.readText()}")
                     onBadResponseAction(response.code())
                     return
                 }
 
+                Log.i("Network manager", "Movie removed from favourites successfully. Code: ${response.code()} Response: ${response.body()}")
                 onResponseAction(response)
             }
         })

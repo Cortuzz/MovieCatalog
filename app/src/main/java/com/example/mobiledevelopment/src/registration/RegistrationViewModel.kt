@@ -2,16 +2,18 @@ package com.example.mobiledevelopment.src.registration
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.unit.dp
 import com.example.mobiledevelopment.src.main.domain.RegistrationState
 import com.example.mobiledevelopment.src.registration.domain.ViewField
 
 
 class RegistrationViewModel {
     private val repository = RegistrationRepository()
-    private val fieldsModel = RegistrationFieldsProvider()
+    private var fieldsModel = RegistrationFieldsProvider()
     var registrationState = mutableStateOf(RegistrationState.Idle)
 
     var fullness = mutableStateOf(false)
+    var logoSize = mutableStateOf(0.dp)
 
     fun handleRegistrationClick(onResponse: () -> Unit) {
         if (!fieldsModel.checkCorrect())
@@ -32,6 +34,9 @@ class RegistrationViewModel {
                   registrationState.value = RegistrationState.Error
             },
             onResponseAction = {
+                registrationState.value = RegistrationState.Idle
+                fullness.value = false
+                fieldsModel = RegistrationFieldsProvider()
                 onResponse()
             }
         )
@@ -52,5 +57,13 @@ class RegistrationViewModel {
 
     fun getMutableState(field: ViewField): MutableState<String> {
         return fieldsModel.getMutableState(field)
+    }
+
+    fun handleLoginScreenClick() {
+        logoSize.value = 170.dp
+    }
+
+    fun restoreSize() {
+        logoSize.value = 100.dp
     }
 }

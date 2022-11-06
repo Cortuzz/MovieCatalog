@@ -1,5 +1,8 @@
 package com.example.mobiledevelopment.src.main
 
+import android.util.Log
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -13,13 +16,14 @@ class MainViewModel {
     private var promotedMovie: MutableState<MovieElementModel?> = mutableStateOf(null)
     private var movieList = mutableStateListOf<MovieElementModel>()
     private var favouriteMovieList = mutableStateListOf<MovieElementModel>()
-    private var pageObtained = 1
+    private var pageObtained = mutableStateOf(1)
+    private var totalPages = mutableStateOf(0)
 
     init {
-       init()
+       init { }
     }
 
-    private fun init() {
+    private fun init(onUnauthorized: () -> Unit) {
         repository.getFavouriteMovies(
             onResponseAction = {
                 val moviesPageModel = it.body() as MoviesListModel
@@ -29,23 +33,27 @@ class MainViewModel {
                     favouriteMovieList.add(movie)
                 }
             },
+            onBadResponseAction = {
+                if (it == 401) onUnauthorized()
+            },
             onFailureAction = {
 
             }
         )
     }
 
-    fun refresh() {
-        pageObtained = 1
+    fun refresh(onUnauthorized: () -> Unit) {
+        pageObtained.value = 1
         favouriteMovieList.clear()
         movieList.clear()
-        init()
+        init(onUnauthorized)
     }
 
-    private fun parseMoviesModel(moviesPageModel: MoviesPageListModel, addToPromoted: Boolean = false) {
+    private fun parseMoviesModel(moviesPageModel: MoviesPageListModel) {
         val movies = (moviesPageModel.movies).toMutableList()
+        totalPages.value = moviesPageModel.pageInfo.pageCount
 
-        if (addToPromoted) {
+        if (pageObtained.value == 1) {
             promotedMovie.value = movies.removeFirst()
         }
 
@@ -55,10 +63,10 @@ class MainViewModel {
     }
 
     fun fetchNextPage() {
-        repository.getMovies(pageObtained,
+        repository.getMovies(pageObtained.value,
             onResponseAction = {
-                parseMoviesModel(it.body() as MoviesPageListModel, pageObtained == 1)
-                pageObtained++
+                parseMoviesModel(it.body() as MoviesPageListModel)
+                pageObtained.value++
             },
             onFailureAction = {
                 // todo: throw Exception()
@@ -96,6 +104,14 @@ class MainViewModel {
                 favouriteMovieList.remove(movieElementModel)
             }
         )
+    }
+
+    fun getCurrentPage(): MutableState<Int> {
+        return pageObtained
+    }
+
+    fun getTotalPages(): MutableState<Int> {
+        return totalPages
     }
 
     fun getMovieList(): SnapshotStateList<MovieElementModel> {

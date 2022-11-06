@@ -2,6 +2,7 @@ package com.example.mobiledevelopment.src
 
 import com.example.mobiledevelopment.include.retrofit.Common
 import com.example.mobiledevelopment.include.retrofit.ProfileModel
+import com.example.mobiledevelopment.ui.theme.composes.dropAllStates
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,7 +30,7 @@ class TokenManager(private val activity: MainActivity) {
     private val service = Common.retrofitService
 
     fun checkToken(
-        onFailureAction: () -> Unit = { baseOnFailureAction() },
+        onFailureAction: () -> Unit = {  },
         onSuccessAction: (model: ProfileModel) -> Unit
     ) {
         if (Common.userToken.isEmpty()) {
@@ -55,8 +56,15 @@ class TokenManager(private val activity: MainActivity) {
         })
     }
 
+    fun dropToken() {
+        Common.userId = ""
+        Common.userToken = ""
+        saveToken()
+        dropAllStates()
+    }
 
     fun saveToken() {
+        checkToken {  }
         val file = File(activity.filesDir, TOKEN_NAME)
         file.setWritable(true)
         file.writeText(Common.userToken)
@@ -71,9 +79,5 @@ class TokenManager(private val activity: MainActivity) {
                 break
             }
         }
-    }
-
-    fun baseOnFailureAction() {
-
     }
 }

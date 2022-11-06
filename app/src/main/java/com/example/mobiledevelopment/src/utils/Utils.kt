@@ -1,12 +1,29 @@
 package com.example.mobiledevelopment.src.utils
 
 import android.annotation.SuppressLint
+import android.content.res.Resources.NotFoundException
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
 class Utils {
     companion object {
+        private val genders = listOf("Мужчина", "Женщина")
+
+        fun isValidEmail(email: String): Boolean {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        }
+
+        fun parseGender(gender: Int): String {
+            if (gender >= 2) return ""
+            return genders[gender]
+        }
+
+        fun parseGenderToInt(gender: String): Int {
+            if (gender !in genders) throw NotFoundException()
+            return genders.indexOf(gender)
+        }
+
         @SuppressLint("SimpleDateFormat")
         fun isValidDate(date: String): Boolean {
             val dateFormat = "dd.MM.yyyy"
@@ -56,6 +73,16 @@ class Utils {
         fun parseTimestamp(value: String): String {
             val date = value.split("T")[0]
             return date.split("-").reversed().joinToString(".")
+        }
+
+        fun formatDate(date: String?): String? {
+            val sDate = date?.split('.')?.reversed()?.toMutableList()
+            if (sDate.isNullOrEmpty() || sDate.size != 3) return null
+
+            sDate[1] = sDate[1].padStart(2, '0')
+            sDate[2] = sDate[2].padStart(2, '0')
+
+            return sDate.joinToString("-")
         }
     }
 }
