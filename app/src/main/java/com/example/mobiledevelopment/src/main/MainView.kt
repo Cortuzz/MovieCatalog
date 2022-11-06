@@ -30,7 +30,7 @@ import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.mobiledevelopment.R
-import com.example.mobiledevelopment.src.domain.utils.RatingProviderService
+import com.example.mobiledevelopment.src.domain.utils.services.RatingProviderService
 import com.example.mobiledevelopment.src.domain.composes.*
 import com.example.mobiledevelopment.src.domain.main.favoriteBlockText
 import com.example.mobiledevelopment.src.domain.main.galleryBlockText

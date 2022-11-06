@@ -11,12 +11,12 @@ import androidx.compose.material.darkColors
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.mobiledevelopment.src.domain.utils.TokenManager
+import com.example.mobiledevelopment.src.domain.utils.services.TokenProviderService
 import com.example.mobiledevelopment.ui.theme.AccentColor
 import com.example.mobiledevelopment.ui.theme.BackgroundColor
 
 class Application : ComponentActivity() {
-    private val authManager = TokenManager.getInstance(this)
+    private val authManager = TokenProviderService.getInstance(this)
     private lateinit var navController: NavHostController
 
     override fun onCreate(savedInstanceState: Bundle?) {

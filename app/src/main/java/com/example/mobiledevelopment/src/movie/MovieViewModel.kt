@@ -28,12 +28,12 @@ class MovieViewModel: ViewModel() {
 
         repository.getMovie(
             onResponseAction = {
-                val movie = it.body()
+                val movie = it
                 isReviewAdded.value = reviewChecker.isReviewsContainsId(
                     repository.getUserId(),
-                    movie?.reviews
+                    movie.reviews
                 )
-                reviewChecker.placeMyReviewToTop(repository.getUserId(), movie?.reviews)
+                reviewChecker.placeMyReviewToTop(repository.getUserId(), movie.reviews)
                 movieModel.value = movie
                 parseMovieModel()
             },
@@ -48,6 +48,14 @@ class MovieViewModel: ViewModel() {
             reviewsModel.add(review)
         }
         movieModel.value?.reviews = mutableListOf()
+    }
+
+    fun addToFavourites(onUnauthorized: () -> Unit) {
+        repository.addMovieToFavourites(
+            onFailureAction = {  },
+            onBadResponseAction = { if (it == 401) onUnauthorized() },
+            onResponseAction = {  }
+        )
     }
 
     fun getReviewDialogState(): MutableState<Boolean> {

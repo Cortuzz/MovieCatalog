@@ -13,8 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.mobiledevelopment.R
-import com.example.mobiledevelopment.src.domain.utils.DateProviderService
-import com.example.mobiledevelopment.src.domain.utils.Utils
+import com.example.mobiledevelopment.src.domain.utils.services.DateProviderService
 import java.util.*
 
 @Composable

@@ -22,7 +22,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.mobiledevelopment.R
 import com.example.mobiledevelopment.src.domain.composes.*
 import com.example.mobiledevelopment.src.domain.models.ReviewModel
-import com.example.mobiledevelopment.src.domain.utils.DateProviderService
+import com.example.mobiledevelopment.src.domain.utils.services.DateProviderService
 import com.example.mobiledevelopment.src.domain.utils.Utils
 import com.example.mobiledevelopment.src.domain.utils.noRippleClickable
 import com.example.mobiledevelopment.ui.theme.*

@@ -5,34 +5,36 @@ import com.example.mobiledevelopment.src.domain.models.MovieDetailsModel
 import com.example.mobiledevelopment.src.domain.models.ReviewModifyModel
 import com.example.mobiledevelopment.src.domain.retrofit.Common
 import com.example.mobiledevelopment.src.domain.utils.SharedStorage
+import com.example.mobiledevelopment.src.domain.utils.services.RequestsProviderService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class MovieRepository {
-    private val service = Common.retrofitService
+    private val service = RequestsProviderService()
 
     fun getMovie(
-        onResponseAction: (Response<MovieDetailsModel>) -> Unit,
+        onResponseAction: (MovieDetailsModel) -> Unit,
         onFailureAction: () -> Unit,
     ) {
-        service.getMovie(SharedStorage.currentMovieId).enqueue(object : Callback<MovieDetailsModel> {
-            override fun onFailure(call: Call<MovieDetailsModel>, t: Throwable) {
-                Log.e("Network manager", "Fetching movie failed with exception: $t")
-                onFailureAction()
-            }
+        service.getMovie(
+            onFailureAction = { onFailureAction() },
+            onResponseAction = { _, body -> onResponseAction(body) },
+            onBadResponseAction = { _, _ -> onFailureAction() }
+        )
+    }
 
-            override fun onResponse(call: Call<MovieDetailsModel>, response: Response<MovieDetailsModel>) {
-                if (!response.isSuccessful || response.body() == null) {
-                    Log.w("Network manager", "Fetching movies failed with response: ${response.errorBody()?.charStream()?.readText()}")
-                    onFailureAction()
-                    return
-                }
-
-                Log.i("Network manager", "Movie successfully fetched. Response: ${response.body()}")
-                onResponseAction(response)
-            }
-        })
+    fun addMovieToFavourites(
+        onResponseAction: (Int) -> Unit,
+        onFailureAction: () -> Unit,
+        onBadResponseAction: (Int) -> Unit
+    ) {
+        service.addMovieToFavourites(
+            id = SharedStorage.currentMovieId,
+            onBadResponseAction = { code, _ -> onBadResponseAction(code) },
+            onFailureAction = { onFailureAction() },
+            onResponseAction = { code -> onResponseAction(code) }
+        )
     }
 
     fun sendReview(
@@ -42,23 +44,13 @@ class MovieRepository {
         onFailureAction: () -> Unit,
         onBadResponseAction: (Int) -> Unit
     ) {
-        service.addReview( "Bearer ${SharedStorage.userToken}",id, reviewModifyModel).enqueue(object : Callback<Void> {
-            override fun onFailure(call: Call<Void>, t: Throwable) {
-                Log.e("Network manager", "Sending review failed with exception: $t")
-                onFailureAction()
-            }
-
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                if (!response.isSuccessful) {
-                    Log.w("Network manager", "Sending review failed with response: ${response.errorBody()?.charStream()?.readText()}")
-                    onBadResponseAction(response.code())
-                    return
-                }
-
-                Log.i("Network manager", "Review successfully sent. Response: ${response.body()}")
-                onResponseAction()
-            }
-        })
+        service.sendReview(
+            id = id,
+            reviewModifyModel = reviewModifyModel,
+            onBadResponseAction = { code, _ -> onBadResponseAction(code) },
+            onFailureAction = { onFailureAction() },
+            onResponseAction = { onResponseAction() }
+        )
     }
 
     fun deleteReview(
@@ -67,23 +59,12 @@ class MovieRepository {
         onFailureAction: () -> Unit,
         onBadResponseAction: (Int) -> Unit
     ) {
-        service.deleteReview( "Bearer ${SharedStorage.userToken}", SharedStorage.currentMovieId, id).enqueue(object : Callback<Void> {
-            override fun onFailure(call: Call<Void>, t: Throwable) {
-                Log.e("Network manager", "Deleting review failed with exception: $t")
-                onFailureAction()
-            }
-
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                if (!response.isSuccessful) {
-                    Log.w("Network manager", "Deleting review failed with response: ${response.errorBody()?.charStream()?.readText()}")
-                    onBadResponseAction(response.code())
-                    return
-                }
-
-                Log.i("Network manager", "Review successfully deleted. Response: ${response.body()}")
-                onResponseAction()
-            }
-        })
+        service.deleteReview(
+            id = id,
+            onResponseAction = { onResponseAction() },
+            onFailureAction = { onFailureAction() },
+            onBadResponseAction = { code, _, -> onBadResponseAction(code) }
+        )
     }
 
     fun getUserId(): String {

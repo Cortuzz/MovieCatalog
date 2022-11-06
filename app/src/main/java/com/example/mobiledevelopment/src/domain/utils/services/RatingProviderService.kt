@@ -1,4 +1,4 @@
-package com.example.mobiledevelopment.src.domain.utils
+package com.example.mobiledevelopment.src.domain.utils.services
 
 import androidx.compose.ui.graphics.Color
 import androidx.core.math.MathUtils

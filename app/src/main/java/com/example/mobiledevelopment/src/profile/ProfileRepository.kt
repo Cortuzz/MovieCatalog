@@ -1,37 +1,30 @@
 package com.example.mobiledevelopment.src.profile
 
 import com.example.mobiledevelopment.src.domain.retrofit.Common
-import com.example.mobiledevelopment.src.domain.utils.TokenManager
+import com.example.mobiledevelopment.src.domain.utils.services.TokenProviderService
 import com.example.mobiledevelopment.src.domain.models.ProfileModel
 import com.example.mobiledevelopment.src.domain.utils.SharedStorage
+import com.example.mobiledevelopment.src.domain.utils.services.RequestsProviderService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class ProfileRepository {
-    private val service = Common.retrofitService
+    private val service = RequestsProviderService()
 
     fun getProfile(
         onResponseAction: (ProfileModel) -> Unit,
         onFailureAction: () -> Unit,
         onBadResponseAction: (Int) -> Unit
     ) {
-        service.getProfile("Bearer ${SharedStorage.userToken}").enqueue(object :
-            Callback<ProfileModel> {
-            override fun onFailure(call: Call<ProfileModel>, t: Throwable) {
-                onFailureAction()
+        service.getProfile(
+            onBadResponseAction = { code, _ -> onBadResponseAction(code) },
+            onFailureAction = { onFailureAction() },
+            onResponseAction = { _, body ->
+                onResponseAction(body)
+                SharedStorage.userId = body.id
             }
-
-            override fun onResponse(call: Call<ProfileModel>, response: Response<ProfileModel>) {
-                if (!response.isSuccessful || response.body() == null) {
-                    onBadResponseAction(response.code())
-                    return
-                }
-
-                SharedStorage.userId = response.body()?.id ?: ""
-                response.body()?.let { onResponseAction(it) }
-            }
-        })
+        )
     }
 
     fun updateProfile(
@@ -40,34 +33,20 @@ class ProfileRepository {
         onBadResponseAction: (Int) -> Unit,
         profileModel: ProfileModel
     ) {
-        service.updateProfile("Bearer ${SharedStorage.userToken}", profileModel).enqueue(object :
-            Callback<Void> {
-            override fun onFailure(call: Call<Void>, t: Throwable) {
-                onFailureAction()
-            }
-
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                if (!response.isSuccessful) {
-                    onBadResponseAction(response.code())
-                    return
-                }
-
-                onResponseAction()
-            }
-        })
+        service.updateProfile(
+            onResponseAction = { onResponseAction() },
+            onFailureAction = { onFailureAction() },
+            onBadResponseAction = { code, _ -> onBadResponseAction(code) },
+            profileModel = profileModel
+        )
     }
 
     fun logout(action: () -> Unit) {
-        service.logout("Bearer ${SharedStorage.userToken}").enqueue(object : Callback<Void> {
-            override fun onFailure(call: Call<Void>, t: Throwable) {
-                action()
-
-            }
-
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                action()
-            }
-        })
-        TokenManager.getInstance().dropToken()
+        service.logout(
+            onBadResponseAction = { _, _ -> action() },
+            onFailureAction = { action() },
+            onResponseAction = { action() }
+        )
+        TokenProviderService.getInstance().dropToken()
     }
 }
