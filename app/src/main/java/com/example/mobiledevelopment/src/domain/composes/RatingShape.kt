@@ -13,7 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mobiledevelopment.src.domain.utils.ColorGenerator
+import com.example.mobiledevelopment.src.domain.utils.RatingProviderService
 import com.example.mobiledevelopment.ui.theme.IBMPlex
 
 @Composable
@@ -25,7 +25,7 @@ fun RatingShape(rating: Float, modifier: Modifier) {
         Box(
             modifier = modifier
                 .clip(RoundedCornerShape(16.dp))
-                .background(ColorGenerator.getColor(rating))
+                .background(RatingProviderService.getColor(rating))
         ) {
             Text(
                 modifier = Modifier.fillMaxSize(),
@@ -47,7 +47,7 @@ fun RatingShape(rating: Int, modifier: Modifier) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
-            .background(ColorGenerator.getColor(rating.toFloat()))
+            .background(RatingProviderService.getColor(rating.toFloat()))
     ) {
         Text(
             modifier = Modifier.fillMaxSize(),

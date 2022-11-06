@@ -30,7 +30,7 @@ import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.mobiledevelopment.R
-import com.example.mobiledevelopment.src.domain.utils.ColorGenerator
+import com.example.mobiledevelopment.src.domain.utils.RatingProviderService
 import com.example.mobiledevelopment.src.domain.composes.*
 import com.example.mobiledevelopment.src.domain.main.favoriteBlockText
 import com.example.mobiledevelopment.src.domain.main.galleryBlockText
@@ -248,7 +248,7 @@ fun MovieElement(movieElement: MovieElementModel) {
     }
     parsedGenres = parsedGenres.dropLast(2)
 
-    val rating = ColorGenerator.getRating(movieElement.reviews ?: listOf())
+    val rating = RatingProviderService.getRating(movieElement.reviews ?: listOf())
     val height = remember { mutableStateOf(30) }
     val positioned = remember { mutableStateOf(false) }
     val heightDp = with(LocalDensity.current) { height.value.toDp() }

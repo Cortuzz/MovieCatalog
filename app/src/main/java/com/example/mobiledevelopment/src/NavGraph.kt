@@ -15,14 +15,10 @@ import com.google.accompanist.navigation.material.ExperimentalMaterialNavigation
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 
 
-@OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
 fun SetupNavGraph(
     navController: NavHostController
 ) {
-    val bottomSheetNavigator = rememberBottomSheetNavigator()
-    val bottomNavController = rememberNavController(bottomSheetNavigator)
-
     val navigateToLogin = { navController.navigate("login_screen") { popUpTo(0) } }
     val navigateToRegistration = { navController.navigate("registration_screen") { popUpTo(0) } }
     val navigateToMain = { navController.navigate("main_screen") { popUpTo(0) } }

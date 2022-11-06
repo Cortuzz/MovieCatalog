@@ -5,9 +5,6 @@ object Common {
 
     private const val COMMON_URL = "https://react-midterm.kreosoft.space/api/"
     private const val SERVER_URL = "https:/192.168.1.65:7268/api/"
-    var userToken: String = ""
-    var currentMovieId: String = ""
-    var userId: String = ""
 
     val retrofitService: RetrofitServices
         get() = RetrofitClient.getClient(if (COMMON_API) COMMON_URL else SERVER_URL)

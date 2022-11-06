@@ -7,7 +7,7 @@ import com.example.mobiledevelopment.ui.theme.AccentColor
 import java.lang.Float.NaN
 import kotlin.math.roundToInt
 
-class ColorGenerator {
+class RatingProviderService {
     companion object {
         fun getRating(reviews: List<ReviewShortModel>): Float {
             var averageRating = 0f

@@ -5,6 +5,7 @@ import com.example.mobiledevelopment.src.domain.retrofit.Common
 import com.example.mobiledevelopment.src.domain.utils.TokenManager
 import com.example.mobiledevelopment.src.domain.models.UserRegisterModel
 import com.example.mobiledevelopment.src.domain.models.UserTokenModel
+import com.example.mobiledevelopment.src.domain.utils.SharedStorage
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -33,7 +34,7 @@ class RegistrationRepository {
                     return
                 }
                 Log.i("Network manager", "Registration successful. Response: ${response.body()}")
-                Common.userToken = response.body()!!.token
+                SharedStorage.userToken = response.body()!!.token
                 TokenManager.getInstance().saveToken()
                 onResponseAction()
             }

@@ -34,12 +34,12 @@ class TokenManager(private val activity: Application) {
         onFailureAction: () -> Unit = {  },
         onSuccessAction: (model: ProfileModel) -> Unit
     ) {
-        if (Common.userToken.isEmpty()) {
+        if (SharedStorage.userToken.isEmpty()) {
             onFailureAction()
             return
         }
 
-        service.getProfile("Bearer ${Common.userToken}").enqueue(object :
+        service.getProfile("Bearer ${SharedStorage.userToken}").enqueue(object :
             Callback<ProfileModel> {
             override fun onFailure(call: Call<ProfileModel>, t: Throwable) {
                 onFailureAction()
@@ -51,15 +51,15 @@ class TokenManager(private val activity: Application) {
                     return
                 }
 
-                Common.userId = response.body()?.id ?: ""
+                SharedStorage.userId = response.body()?.id ?: ""
                 response.body()?.let { onSuccessAction(it) }
             }
         })
     }
 
     fun dropToken() {
-        Common.userId = ""
-        Common.userToken = ""
+        SharedStorage.userId = ""
+        SharedStorage.userToken = ""
         saveToken()
         dropAllStates()
     }
@@ -68,7 +68,7 @@ class TokenManager(private val activity: Application) {
         checkToken {  }
         val file = File(activity.filesDir, TOKEN_NAME)
         file.setWritable(true)
-        file.writeText(Common.userToken)
+        file.writeText(SharedStorage.userToken)
     }
 
     fun loadToken() {
@@ -76,7 +76,7 @@ class TokenManager(private val activity: Application) {
 
         for (file in files) {
             if (file.name == TOKEN_NAME) {
-                Common.userToken = file.readText()
+                SharedStorage.userToken = file.readText()
                 break
             }
         }

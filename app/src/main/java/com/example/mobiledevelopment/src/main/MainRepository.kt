@@ -5,6 +5,7 @@ import com.example.mobiledevelopment.src.domain.models.MovieElementModel
 import com.example.mobiledevelopment.src.domain.models.MoviesListModel
 import com.example.mobiledevelopment.src.domain.models.MoviesPageListModel
 import com.example.mobiledevelopment.src.domain.retrofit.Common
+import com.example.mobiledevelopment.src.domain.utils.SharedStorage
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -41,7 +42,7 @@ class MainRepository {
         onFailureAction: () -> Unit,
         onBadResponseAction: (Int) -> Unit
     ) {
-        service.getFavouritesMovies("Bearer ${Common.userToken}").enqueue(object : Callback<MoviesListModel> {
+        service.getFavouritesMovies("Bearer ${SharedStorage.userToken}").enqueue(object : Callback<MoviesListModel> {
             override fun onFailure(call: Call<MoviesListModel>, t: Throwable) {
                 onFailureAction()
                 Log.e("Network manager", "Fetching favourites movies failed with exception: $t")
@@ -61,7 +62,7 @@ class MainRepository {
     }
 
     fun setCurrentMovie(movieElementModel: MovieElementModel) {
-        Common.currentMovieId = movieElementModel.id
+        SharedStorage.currentMovieId = movieElementModel.id
     }
 
     fun addMovieToFavourites(
@@ -70,7 +71,7 @@ class MainRepository {
         onFailureAction: () -> Unit,
         onBadResponseAction: (Int) -> Unit
     ) {
-        service.addToFavourites("Bearer ${Common.userToken}", id).enqueue(object : Callback<Void> {
+        service.addToFavourites("Bearer ${SharedStorage.userToken}", id).enqueue(object : Callback<Void> {
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 onFailureAction()
             }
@@ -92,7 +93,7 @@ class MainRepository {
         onBadResponseAction: (Int) -> Unit,
         onFailureAction: () -> Unit,
     ) {
-        service.removeFromFavourites("Bearer ${Common.userToken}", id).enqueue(object : Callback<Void> {
+        service.removeFromFavourites("Bearer ${SharedStorage.userToken}", id).enqueue(object : Callback<Void> {
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 Log.e("Network manager", "Removing movie from favourites failed with exception: $t")
                 onFailureAction()
