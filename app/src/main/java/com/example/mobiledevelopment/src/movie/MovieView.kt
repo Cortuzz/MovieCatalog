@@ -7,8 +7,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -21,14 +19,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
-import androidx.navigation.NavHostController
-import coil.compose.AsyncImagePainter
-import coil.compose.SubcomposeAsyncImage
-import coil.compose.SubcomposeAsyncImageContent
 import com.example.mobiledevelopment.R
-import com.example.mobiledevelopment.include.retrofit.MovieDetailsModel
-import com.example.mobiledevelopment.include.retrofit.ReviewModel
-import com.example.mobiledevelopment.src.domain.Drawable
+import com.example.mobiledevelopment.src.domain.composes.*
+import com.example.mobiledevelopment.src.domain.retrofit.ReviewModel
 import com.example.mobiledevelopment.src.utils.Utils
 import com.example.mobiledevelopment.src.utils.noRippleClickable
 import com.example.mobiledevelopment.ui.theme.*

@@ -1,8 +1,8 @@
 package com.example.mobiledevelopment.src.profile
 
-import com.example.mobiledevelopment.include.retrofit.Common
-import com.example.mobiledevelopment.include.retrofit.ProfileModel
-import com.example.mobiledevelopment.src.TokenManager
+import com.example.mobiledevelopment.src.domain.retrofit.Common
+import com.example.mobiledevelopment.src.domain.retrofit.ProfileModel
+import com.example.mobiledevelopment.src.domain.TokenManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

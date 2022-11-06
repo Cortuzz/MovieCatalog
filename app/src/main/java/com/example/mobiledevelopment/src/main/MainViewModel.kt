@@ -1,15 +1,12 @@
 package com.example.mobiledevelopment.src.main
 
-import android.util.Log
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.example.mobiledevelopment.include.retrofit.MovieElementModel
-import com.example.mobiledevelopment.include.retrofit.MoviesListModel
-import com.example.mobiledevelopment.include.retrofit.MoviesPageListModel
+import com.example.mobiledevelopment.src.domain.retrofit.MovieElementModel
+import com.example.mobiledevelopment.src.domain.retrofit.MoviesListModel
+import com.example.mobiledevelopment.src.domain.retrofit.MoviesPageListModel
 
 class MainViewModel {
     private val repository: MainRepository = MainRepository()

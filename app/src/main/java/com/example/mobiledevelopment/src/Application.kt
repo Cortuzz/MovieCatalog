@@ -1,70 +1,40 @@
 package com.example.mobiledevelopment.src
 
-import androidx.compose.runtime.Composable
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.darkColors
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.mobiledevelopment.src.login.LoginScreen
-import com.example.mobiledevelopment.src.main.MainScreen
-import com.example.mobiledevelopment.src.movie.MovieScreen
-import com.example.mobiledevelopment.src.profile.ProfileScreen
-import com.example.mobiledevelopment.src.registration.RegistrationScreen
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
+import com.example.mobiledevelopment.src.domain.TokenManager
+import com.example.mobiledevelopment.ui.theme.AccentColor
+import com.example.mobiledevelopment.ui.theme.BackgroundColor
 
+class Application : ComponentActivity() {
+    private val authManager = TokenManager.getInstance(this)
+    private lateinit var navController: NavHostController
 
-@OptIn(ExperimentalMaterialNavigationApi::class)
-@Composable
-fun SetupNavGraph(
-    navController: NavHostController
-) {
-    val bottomSheetNavigator = rememberBottomSheetNavigator()
-    val bottomNavController = rememberNavController(bottomSheetNavigator)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        authManager.loadToken()
 
-    val navigateToLogin = { navController.navigate("login_screen") { popUpTo(0) } }
-    val navigateToRegistration = { navController.navigate("registration_screen") { popUpTo(0) } }
-    val navigateToMain = { navController.navigate("main_screen") { popUpTo(0) } }
-    val navigateToProfile = { navController.navigate("profile_screen") { popUpTo(0) } }
-    val navigateToMovie = { navController.navigate("movie_screen") }
+        setContent {
+            MaterialTheme(colors = darkColors(primary = AccentColor, secondary = AccentColor)) {
+                navController = rememberNavController()
+                authManager.checkToken { navController.navigate("main_screen") {
+                    popUpTo(0)
+                } }
 
-    NavHost(
-        navController = navController,
-        startDestination = Screen.Login.route
-    ) {
-        composable(route = Screen.Login.route) {
-            LoginScreen(
-                navToMain = navigateToMain,
-                navToRegistration = navigateToRegistration
-            )
-        }
-        composable(route = Screen.Registration.route) {
-            RegistrationScreen(
-                navToLogin = navigateToLogin,
-                navToMain = navigateToMain
-            )
-        }
-        composable(route = Screen.Main.route) {
-
-            MainScreen(
-                navToLogin = navigateToLogin,
-                navToMovie = navigateToMovie,
-                navToProfile = navigateToProfile
-            )
-        }
-        composable(route = Screen.Profile.route) {
-            ProfileScreen(
-                navToLogin = navigateToLogin,
-                navToMain = navigateToMain
-            )
-        }
-        composable(route = Screen.Movie.route) {
-            //viewModel.getMovie()
-            //viewModel.clearReview()
-            MovieScreen(
-                navToLogin = navigateToLogin,
-                navToMain = navigateToMain
-            )
+                Surface(color = BackgroundColor,
+                    modifier = Modifier.fillMaxSize()) {
+                    SetupNavGraph(navController = navController)
+                }
+            }
         }
     }
 }

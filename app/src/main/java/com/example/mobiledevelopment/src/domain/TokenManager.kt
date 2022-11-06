@@ -1,19 +1,20 @@
-package com.example.mobiledevelopment.src
+package com.example.mobiledevelopment.src.domain
 
-import com.example.mobiledevelopment.include.retrofit.Common
-import com.example.mobiledevelopment.include.retrofit.ProfileModel
-import com.example.mobiledevelopment.ui.theme.composes.dropAllStates
+import com.example.mobiledevelopment.src.domain.retrofit.Common
+import com.example.mobiledevelopment.src.domain.retrofit.ProfileModel
+import com.example.mobiledevelopment.src.Application
+import com.example.mobiledevelopment.src.domain.composes.dropAllStates
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 
-class TokenManager(private val activity: MainActivity) {
+class TokenManager(private val activity: Application) {
     companion object {
         private const val TOKEN_NAME = "auth.token"
         private var instance: TokenManager? = null
 
-        fun getInstance(activity: MainActivity): TokenManager {
+        fun getInstance(activity: Application): TokenManager {
             if (instance == null)
                 instance = TokenManager(activity)
 

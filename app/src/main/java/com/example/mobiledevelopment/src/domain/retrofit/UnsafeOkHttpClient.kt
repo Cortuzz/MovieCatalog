@@ -1,4 +1,4 @@
-package com.example.mobiledevelopment.include.retrofit
+package com.example.mobiledevelopment.src.domain.retrofit
 
 import android.annotation.SuppressLint
 import okhttp3.OkHttpClient

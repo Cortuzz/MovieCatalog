@@ -2,7 +2,7 @@ package com.example.mobiledevelopment.src.domain
 
 import androidx.compose.ui.graphics.Color
 import androidx.core.math.MathUtils
-import com.example.mobiledevelopment.include.retrofit.ReviewShortModel
+import com.example.mobiledevelopment.src.domain.retrofit.ReviewShortModel
 import com.example.mobiledevelopment.ui.theme.AccentColor
 import java.lang.Float.NaN
 import kotlin.math.roundToInt

@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.mobiledevelopment.src.domain.composes.*
 import com.example.mobiledevelopment.src.domain.login.*
 import com.example.mobiledevelopment.ui.theme.composes.*
 

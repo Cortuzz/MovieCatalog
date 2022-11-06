@@ -1,4 +1,4 @@
-package com.example.mobiledevelopment.ui.theme.composes
+package com.example.mobiledevelopment.src.domain.composes
 
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.shape.RoundedCornerShape

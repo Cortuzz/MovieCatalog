@@ -1,4 +1,4 @@
-package com.example.mobiledevelopment.include.retrofit
+package com.example.mobiledevelopment.src.domain.retrofit
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

@@ -1,6 +1,6 @@
 package com.example.mobiledevelopment.src.domain.login
 
-import com.example.mobiledevelopment.include.retrofit.UserLoginModel
+import com.example.mobiledevelopment.src.domain.retrofit.UserLoginModel
 import com.example.mobiledevelopment.src.domain.FieldsProvider
 
 class LoginFieldsProvider: FieldsProvider<ViewField, UserLoginModel> {

@@ -1,10 +1,9 @@
 package com.example.mobiledevelopment.src.movie
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import com.example.mobiledevelopment.include.retrofit.*
-import com.example.mobiledevelopment.src.TokenManager
+import com.example.mobiledevelopment.src.domain.retrofit.Common
+import com.example.mobiledevelopment.src.domain.retrofit.MovieDetailsModel
+import com.example.mobiledevelopment.src.domain.retrofit.ReviewModifyModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

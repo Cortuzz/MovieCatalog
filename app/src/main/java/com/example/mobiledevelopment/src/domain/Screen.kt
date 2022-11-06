@@ -1,4 +1,4 @@
-package com.example.mobiledevelopment.src
+package com.example.mobiledevelopment.src.domain
 
 sealed class Screen(val route: String) {
     object Login: Screen(route = "login_screen")

@@ -1,6 +1,6 @@
 package com.example.mobiledevelopment.src.domain.movie
 
-import com.example.mobiledevelopment.include.retrofit.ReviewModel
+import com.example.mobiledevelopment.src.domain.retrofit.ReviewModel
 
 class ReviewCheckerService {
     fun isReviewsContainsId(id: String, reviews: List<ReviewModel>?): Boolean {
