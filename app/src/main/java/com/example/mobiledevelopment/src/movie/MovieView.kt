@@ -1,15 +1,24 @@
 package com.example.mobiledevelopment.src.movie
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -35,7 +44,78 @@ private lateinit var navigateToMain: () -> Unit
 private lateinit var navigateToLogin: () -> Unit
 
 @Composable
-fun Header() {
+fun HeaderPopup(value: Boolean) {
+    val alpha by animateFloatAsState(
+        targetValue = if (value) 1f else 0f,
+        animationSpec = tween(1000)
+    )
+
+    Row(
+        modifier = Modifier
+            .offset(y = 36.dp)
+            .padding(start = 20.dp, end = 18.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        BackButton()
+        FavouriteButton()
+    }
+
+
+    Box(
+        modifier = Modifier.alpha(alpha)
+    ) {
+        Row(
+            modifier = Modifier
+                .requiredHeight(80.dp)
+                .fillMaxWidth()
+                .clip(shape = RoundedCornerShape(16.dp))
+                .background(BackgroundColor)
+                .padding(top = 36.dp)
+                .padding(start = 20.dp, end = 18.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                modifier = Modifier.requiredSize(312.dp, 32.dp)
+            ){
+                BackButton()
+                Spacer(modifier = Modifier.width(13.dp))
+                TitleText(
+                    text = viewModel.getMovieModel().value?.name ?: "",
+                )
+            }
+
+            Spacer(Modifier.width(10.dp))
+            FavouriteButton()
+        }
+    }
+
+}
+
+@Composable
+fun BackButton() {
+    Image(
+        painter = painterResource(id = R.drawable.back_button),
+        contentDescription = "Back button",
+        modifier = Modifier
+            .offset(y = 10.dp)
+            .noRippleClickable { navigateToMain() }
+    )
+}
+
+@Composable
+fun FavouriteButton() {
+    Image(
+        painter = painterResource(id = R.drawable.heart),
+        contentDescription = "Favourite button",
+        modifier = Modifier
+            .offset(y = 10.dp)
+            .noRippleClickable { }
+    )
+}
+
+@Composable
+fun Header(headerState: Boolean) {
     val movieModel = viewModel.getMovieModel().value ?: return
 
     Box(modifier = Modifier.requiredHeight(250.dp)) {
@@ -49,14 +129,19 @@ fun Header() {
             showLoading = false
         )
 
-        LabelText(text = movieModel.name ?: "")
+        LabelText(text = movieModel.name ?: "", headerState)
     }
 }
 
 @Composable
-fun LabelText(text: String) {
+fun LabelText(text: String, value: Boolean) {
+    val alpha by animateFloatAsState(
+        targetValue = if (value) 1f else 0f,
+        animationSpec = tween(1000)
+    )
+
     Column(
-        modifier = Modifier.fillMaxHeight(),
+        modifier = Modifier.fillMaxHeight().alpha(alpha),
         verticalArrangement = Arrangement.Bottom
     ) {
         Text(
@@ -155,7 +240,9 @@ fun ReviewHeader(review: ReviewModel) {
         ) {
             Avatar(
                 url = if (review.isAnonymous) "" else review.author?.avatar ?: "",
-                Modifier.requiredSize(40.dp).clip(CircleShape))
+                Modifier
+                    .requiredSize(40.dp)
+                    .clip(CircleShape))
 
             Spacer(modifier = Modifier.width(8.dp))
             Column(
@@ -312,15 +399,19 @@ fun MovieScreen(navToLogin: () -> Unit, navToMain: () -> Unit) {
     if (viewModel.getReviewDialogState().value)
         ReviewDialog { viewModel.getReviewDialogState().value = false }
 
-    val scrollState = rememberScrollState()
+    val scrollState = rememberLazyListState()
+    val value = remember { derivedStateOf { scrollState.firstVisibleItemIndex } }.value != 0 ||
+            remember { derivedStateOf { scrollState.firstVisibleItemScrollOffset } }.value > 0
 
-    Column(
-        modifier = Modifier.verticalScroll(scrollState)
+    LazyColumn(
+        state = scrollState
     ) {
-        Header()
-        Spacer(modifier = Modifier.height(15.3.dp))
-        MainContent()
+        item { Header(!value) }
+        item { Spacer(modifier = Modifier.height(15.3.dp)) }
+        item { MainContent() }
     }
+
+    HeaderPopup(value)
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -361,18 +452,23 @@ fun ReviewDialog(onDismissRequest: () -> Unit) {
 }
 
 @Composable
+fun TitleText(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text = text,
+        color = Color.White,
+        fontFamily = IBMPlex,
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+        lineHeight = 32.sp,
+        letterSpacing = 0.5.sp,
+        modifier = modifier
+    )
+}
+
+@Composable
 fun ReviewDialogContent() {
     Column {
-        Text(
-            text = "Оставить отзыв",
-            color = Color.White,
-            fontFamily = IBMPlex,
-            fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
-            lineHeight = 32.sp,
-            letterSpacing = 0.5.sp,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        TitleText(text = "Оставить отзыв", Modifier.padding(bottom = 16.dp))
         Spacer(modifier = Modifier.height(4.dp))
 
         StarBlock(rating = viewModel.getReviewInputRating())

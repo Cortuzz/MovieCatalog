@@ -4,15 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.mobiledevelopment.src.domain.utils.Screen
 import com.example.mobiledevelopment.src.login.LoginScreen
 import com.example.mobiledevelopment.src.main.MainScreen
 import com.example.mobiledevelopment.src.movie.MovieScreen
 import com.example.mobiledevelopment.src.profile.ProfileScreen
 import com.example.mobiledevelopment.src.registration.RegistrationScreen
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 
 
 @Composable

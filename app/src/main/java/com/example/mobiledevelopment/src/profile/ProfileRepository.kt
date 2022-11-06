@@ -1,13 +1,9 @@
 package com.example.mobiledevelopment.src.profile
 
-import com.example.mobiledevelopment.src.domain.retrofit.Common
-import com.example.mobiledevelopment.src.domain.utils.services.TokenProviderService
 import com.example.mobiledevelopment.src.domain.models.ProfileModel
 import com.example.mobiledevelopment.src.domain.utils.SharedStorage
 import com.example.mobiledevelopment.src.domain.utils.services.RequestsProviderService
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.mobiledevelopment.src.domain.utils.services.TokenProviderService
 
 class ProfileRepository {
     private val service = RequestsProviderService()

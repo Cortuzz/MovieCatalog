@@ -1,14 +1,9 @@
 package com.example.mobiledevelopment.src.movie
 
-import android.util.Log
 import com.example.mobiledevelopment.src.domain.models.MovieDetailsModel
 import com.example.mobiledevelopment.src.domain.models.ReviewModifyModel
-import com.example.mobiledevelopment.src.domain.retrofit.Common
 import com.example.mobiledevelopment.src.domain.utils.SharedStorage
 import com.example.mobiledevelopment.src.domain.utils.services.RequestsProviderService
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MovieRepository {
     private val service = RequestsProviderService()
@@ -63,7 +58,7 @@ class MovieRepository {
             id = id,
             onResponseAction = { onResponseAction() },
             onFailureAction = { onFailureAction() },
-            onBadResponseAction = { code, _, -> onBadResponseAction(code) }
+            onBadResponseAction = { code, _ -> onBadResponseAction(code) }
         )
     }
 

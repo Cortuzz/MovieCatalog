@@ -1,15 +1,9 @@
 package com.example.mobiledevelopment.src.login
 
-import android.util.Log
-import com.example.mobiledevelopment.src.domain.retrofit.Common
-import com.example.mobiledevelopment.src.domain.utils.services.TokenProviderService
 import com.example.mobiledevelopment.src.domain.models.UserLoginModel
-import com.example.mobiledevelopment.src.domain.models.UserTokenModel
 import com.example.mobiledevelopment.src.domain.utils.SharedStorage
 import com.example.mobiledevelopment.src.domain.utils.services.RequestsProviderService
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.mobiledevelopment.src.domain.utils.services.TokenProviderService
 
 class LoginRepository {
     private val service = RequestsProviderService()

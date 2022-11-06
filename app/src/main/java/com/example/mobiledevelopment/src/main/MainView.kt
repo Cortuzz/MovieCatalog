@@ -109,37 +109,58 @@ fun FavouritesContent(movies: SnapshotStateList<MovieElementModel>) {
         }
     }
 
-    LazyRow(
-        state = state,
-        modifier = Modifier
-            .requiredHeight(180.dp)
-            .padding(top = 8.dp)
-    ) {
-        items(movies.size) {
-            val height by animateDpAsState(
-                targetValue = if (startIndex == it) 172.dp else 144.dp,
-                animationSpec = tween(300),
-            )
-            val width by animateDpAsState(
-                targetValue = if (startIndex == it) 120.dp else 100.dp,
-                animationSpec = tween(300),
-            )
-            val padding by animateDpAsState(
-                targetValue = if (startIndex == it) 0.dp else 14.dp,
-                animationSpec = tween(300),
-            )
+    Box {
+        if (movies.size == 0) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .requiredHeight(180.dp)
+                    .padding(top = 8.dp)
+                    .offset(y = (-10).dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                NoDataText(text = "Вы еще ничего не\nдобавили в избранное")
+            }
+        }
 
-            val modifier = Modifier
-                .padding(end = 16.dp, top = padding)
-                .animateContentSize()
-                .requiredSize(width, height)
-                .clip(shape = RoundedCornerShape(16.dp))
-                .noRippleClickable {
-                    viewModel.openMovie(movies[it])
-                    navigateToMovie()
-                }
+        LazyRow(
+            state = state,
+            modifier = Modifier
+                .requiredHeight(180.dp)
+                .fillMaxWidth()
+                .padding(top = 8.dp)
+        ) {
+            item {
 
-            FavouriteMovieElement(movieElement = movies[it], modifier)
+            }
+
+            items(movies.size) {
+                val height by animateDpAsState(
+                    targetValue = if (startIndex == it) 172.dp else 144.dp,
+                    animationSpec = tween(300),
+                )
+                val width by animateDpAsState(
+                    targetValue = if (startIndex == it) 120.dp else 100.dp,
+                    animationSpec = tween(300),
+                )
+                val padding by animateDpAsState(
+                    targetValue = if (startIndex == it) 0.dp else 14.dp,
+                    animationSpec = tween(300),
+                )
+
+                val modifier = Modifier
+                    .padding(end = 16.dp, top = padding)
+                    .animateContentSize()
+                    .requiredSize(width, height)
+                    .clip(shape = RoundedCornerShape(16.dp))
+                    .noRippleClickable {
+                        viewModel.openMovie(movies[it])
+                        navigateToMovie()
+                    }
+
+                FavouriteMovieElement(movieElement = movies[it], modifier)
+            }
         }
     }
 }
@@ -259,7 +280,7 @@ fun MovieElement(movieElement: MovieElementModel) {
             navigateToMovie()
         }
     ) {
-        MoviePoster(url = movieElement.poster!!, modifier = Modifier
+        MoviePoster(url = movieElement.poster ?: "", modifier = Modifier
             .onGloballyPositioned {
                 height.value = it.size.height
                 positioned.value = true
@@ -276,7 +297,7 @@ fun MovieElement(movieElement: MovieElementModel) {
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                TitleText(name = movieElement.name!!)
+                TitleText(name = movieElement.name ?: "Нет названия")
                 Spacer(modifier = Modifier.height(3.dp))
                 DescriptionText(name = "${movieElement.year} • ${movieElement.country}")
                 Spacer(modifier = Modifier.height(3.dp))
@@ -335,17 +356,22 @@ fun MoviesLoadingIndicator() {
         LoadingIndicator(modifier = Modifier.requiredSize(150.dp)) { !isEndObtained }
         if (isEndObtained) {
             Spacer(Modifier.height(25.dp))
-            Text(
-                text = "Больше фильмов нет\nНо скоро появятся",
-                fontFamily = IBMPlex,
-                fontWeight = FontWeight.Bold,
-                fontSize = 24.sp,
-                letterSpacing = 0.5.sp,
-                textAlign = TextAlign.Center,
-                color = Color.White
-            )
+            NoDataText(text = "Больше фильмов нет\nНо скоро появятся")
         }
     }
+}
+
+@Composable 
+fun NoDataText(text: String) {
+    Text(
+        text = text,
+        fontFamily = IBMPlex,
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+        letterSpacing = 0.5.sp,
+        textAlign = TextAlign.Center,
+        color = Color.White
+    )
 }
 
 @Composable
