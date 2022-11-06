@@ -30,11 +30,12 @@ import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.mobiledevelopment.R
-import com.example.mobiledevelopment.src.domain.utils.RatingProviderService
+import com.example.mobiledevelopment.src.domain.utils.services.RatingProviderService
 import com.example.mobiledevelopment.src.domain.composes.*
-import com.example.mobiledevelopment.src.domain.main.favoriteBlockText
-import com.example.mobiledevelopment.src.domain.main.galleryBlockText
+import com.example.mobiledevelopment.src.domain.main.*
 import com.example.mobiledevelopment.src.domain.models.MovieElementModel
+import com.example.mobiledevelopment.src.domain.profile.profileText
+import com.example.mobiledevelopment.src.domain.utils.Utils
 import com.example.mobiledevelopment.src.domain.utils.noRippleClickable
 import com.example.mobiledevelopment.ui.theme.*
 
@@ -73,7 +74,7 @@ fun PromotedMovie(movieElement: MutableState<MovieElementModel?>) {
                     .offset(y = 244.dp),
                 horizontalArrangement = Arrangement.Center) {
                 PrimaryButton(
-                    name = "Смотреть",
+                    name = promotedMovieButtonText,
                     action = {
                         if (movieElement.value != null) {
                             viewModel.openMovie(movieElement.value!!)
@@ -109,37 +110,58 @@ fun FavouritesContent(movies: SnapshotStateList<MovieElementModel>) {
         }
     }
 
-    LazyRow(
-        state = state,
-        modifier = Modifier
-            .requiredHeight(180.dp)
-            .padding(top = 8.dp)
-    ) {
-        items(movies.size) {
-            val height by animateDpAsState(
-                targetValue = if (startIndex == it) 172.dp else 144.dp,
-                animationSpec = tween(300),
-            )
-            val width by animateDpAsState(
-                targetValue = if (startIndex == it) 120.dp else 100.dp,
-                animationSpec = tween(300),
-            )
-            val padding by animateDpAsState(
-                targetValue = if (startIndex == it) 0.dp else 14.dp,
-                animationSpec = tween(300),
-            )
+    Box {
+        if (movies.size == 0) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .fillMaxSize()
+                    .requiredHeight(180.dp)
+                    .padding(top = 8.dp)
+                    .offset(y = (-10).dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                NoDataText(text = noFavouritesMoviesText)
+            }
+        }
 
-            val modifier = Modifier
-                .padding(end = 16.dp, top = padding)
-                .animateContentSize()
-                .requiredSize(width, height)
-                .clip(shape = RoundedCornerShape(16.dp))
-                .noRippleClickable {
-                    viewModel.openMovie(movies[it])
-                    navigateToMovie()
-                }
+        LazyRow(
+            state = state,
+            modifier = Modifier
+                .requiredHeight(180.dp)
+                .fillMaxWidth()
+                .padding(top = 8.dp)
+        ) {
+            item {
 
-            FavouriteMovieElement(movieElement = movies[it], modifier)
+            }
+
+            items(movies.size) {
+                val height by animateDpAsState(
+                    targetValue = if (startIndex == it) 172.dp else 144.dp,
+                    animationSpec = tween(300),
+                )
+                val width by animateDpAsState(
+                    targetValue = if (startIndex == it) 120.dp else 100.dp,
+                    animationSpec = tween(300),
+                )
+                val padding by animateDpAsState(
+                    targetValue = if (startIndex == it) 0.dp else 14.dp,
+                    animationSpec = tween(300),
+                )
+
+                val modifier = Modifier
+                    .padding(end = 16.dp, top = padding)
+                    .requiredSize(width, height)
+                    .clip(shape = RoundedCornerShape(16.dp))
+                    .noRippleClickable {
+                        viewModel.openMovie(movies[it])
+                        navigateToMovie()
+                    }
+
+                FavouriteMovieElement(movieElement = movies[it], modifier)
+            }
         }
     }
 }
@@ -183,7 +205,7 @@ fun RemoveButton(onClick: () -> Unit) {
                 .requiredSize(16.dp)
                 .noRippleClickable { onClick() },
             painter = painterResource(id = R.drawable.remove_button),
-            contentDescription = "Remove",
+            contentDescription = removeText,
         )
     }
 }
@@ -242,12 +264,6 @@ fun DescriptionText(name: String) {
 
 @Composable
 fun MovieElement(movieElement: MovieElementModel) {
-    var parsedGenres = ""
-    for (genre in movieElement.genres!!) {
-        parsedGenres += "${genre.name}, " // todo: переделать
-    }
-    parsedGenres = parsedGenres.dropLast(2)
-
     val rating = RatingProviderService.getRating(movieElement.reviews ?: listOf())
     val height = remember { mutableStateOf(30) }
     val positioned = remember { mutableStateOf(false) }
@@ -259,7 +275,7 @@ fun MovieElement(movieElement: MovieElementModel) {
             navigateToMovie()
         }
     ) {
-        MoviePoster(url = movieElement.poster!!, modifier = Modifier
+        MoviePoster(url = movieElement.poster ?: "", modifier = Modifier
             .onGloballyPositioned {
                 height.value = it.size.height
                 positioned.value = true
@@ -276,11 +292,11 @@ fun MovieElement(movieElement: MovieElementModel) {
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                TitleText(name = movieElement.name!!)
+                TitleText(name = movieElement.name ?: noTitleText)
                 Spacer(modifier = Modifier.height(3.dp))
                 DescriptionText(name = "${movieElement.year} • ${movieElement.country}")
                 Spacer(modifier = Modifier.height(3.dp))
-                DescriptionText(name = parsedGenres)
+                DescriptionText(name = Utils.parseGenres(movieElement.genres ?: listOf()))
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -307,16 +323,18 @@ fun Navigation() {
 
         ) {
             NavigationButton(
-                name = "Главное",
+                name = mainText,
                 onClick = {  },
-                painter = painterResource(id = R.drawable.main_page),
+                painter = painterResource(id = R.drawable.main_page_active),
                 fraction = 0.5f,
+                color = AccentColor
             )
             NavigationButton(
-                name = "Профиль",
+                name = profileText,
                 onClick = { navigateToProfile() },
                 painter = painterResource(id = R.drawable.profile_page),
                 fraction = 1f,
+                color = OutlineColor
             )
         }
     }
@@ -335,17 +353,22 @@ fun MoviesLoadingIndicator() {
         LoadingIndicator(modifier = Modifier.requiredSize(150.dp)) { !isEndObtained }
         if (isEndObtained) {
             Spacer(Modifier.height(25.dp))
-            Text(
-                text = "Больше фильмов нет\nНо скоро появятся",
-                fontFamily = IBMPlex,
-                fontWeight = FontWeight.Bold,
-                fontSize = 24.sp,
-                letterSpacing = 0.5.sp,
-                textAlign = TextAlign.Center,
-                color = Color.White
-            )
+            NoDataText(text = noMoviesText)
         }
     }
+}
+
+@Composable 
+fun NoDataText(text: String) {
+    Text(
+        text = text,
+        fontFamily = IBMPlex,
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+        letterSpacing = 0.5.sp,
+        textAlign = TextAlign.Center,
+        color = Color.White
+    )
 }
 
 @Composable

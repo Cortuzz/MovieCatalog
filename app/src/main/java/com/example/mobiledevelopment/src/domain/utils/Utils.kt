@@ -1,9 +1,6 @@
 package com.example.mobiledevelopment.src.domain.utils
 
-import android.annotation.SuppressLint
-import android.content.res.Resources.NotFoundException
-import java.text.DateFormat
-import java.text.SimpleDateFormat
+import com.example.mobiledevelopment.src.domain.models.GenreModel
 import java.util.*
 
 class Utils {
@@ -15,6 +12,15 @@ class Utils {
         fun parseMoney(value: Int?): String? {
             if (value == null) return null
             return "$" + String.format(Locale.US, "%,d", value).replace(",", " ")
+        }
+
+        fun parseGenres(genres: List<GenreModel>): String {
+            var parsedGenres = ""
+            for (genre in genres) {
+                parsedGenres += "${genre.name}, "
+            }
+            parsedGenres = parsedGenres.dropLast(2)
+            return parsedGenres
         }
     }
 }

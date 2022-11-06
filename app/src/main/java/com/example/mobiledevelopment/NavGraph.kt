@@ -1,23 +1,21 @@
-package com.example.mobiledevelopment.src
+package com.example.mobiledevelopment
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.mobiledevelopment.src.domain.utils.Screen
 import com.example.mobiledevelopment.src.login.LoginScreen
 import com.example.mobiledevelopment.src.main.MainScreen
 import com.example.mobiledevelopment.src.movie.MovieScreen
 import com.example.mobiledevelopment.src.profile.ProfileScreen
 import com.example.mobiledevelopment.src.registration.RegistrationScreen
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 
 
 @Composable
 fun SetupNavGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    startDestination: String
 ) {
     val navigateToLogin = { navController.navigate("login_screen") { popUpTo(0) } }
     val navigateToRegistration = { navController.navigate("registration_screen") { popUpTo(0) } }
@@ -27,7 +25,7 @@ fun SetupNavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Login.route
+        startDestination = startDestination
     ) {
         composable(route = Screen.Login.route) {
             LoginScreen(

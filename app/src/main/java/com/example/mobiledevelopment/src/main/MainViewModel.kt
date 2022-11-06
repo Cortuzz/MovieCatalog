@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.example.mobiledevelopment.src.domain.models.MovieElementModel
-import com.example.mobiledevelopment.src.domain.models.MoviesListModel
 import com.example.mobiledevelopment.src.domain.models.MoviesPageListModel
 
 class MainViewModel {
@@ -23,7 +22,7 @@ class MainViewModel {
     private fun init(onUnauthorized: () -> Unit) {
         repository.getFavouriteMovies(
             onResponseAction = {
-                val moviesPageModel = it.body() as MoviesListModel
+                val moviesPageModel = it
                 val movies = moviesPageModel.movies
 
                 for (movie in movies) {
@@ -62,7 +61,7 @@ class MainViewModel {
     fun fetchNextPage() {
         repository.getMovies(pageObtained.value,
             onResponseAction = {
-                parseMoviesModel(it.body() as MoviesPageListModel)
+                parseMoviesModel(it)
                 pageObtained.value++
             },
             onFailureAction = {
@@ -75,21 +74,6 @@ class MainViewModel {
         repository.setCurrentMovie(movieElementModel)
     }
 
-    fun addToFavourites(movieElementModel: MovieElementModel, onUnauthorized: () -> Unit) {
-        val movieId = movieElementModel.id
-
-        repository.addMovieToFavourites(
-            id = movieId,
-            onFailureAction = {
-
-            },
-            onBadResponseAction = { if (it == 401) onUnauthorized() },
-            onResponseAction = {
-                favouriteMovieList.add(movieElementModel)
-            }
-        )
-    }
-
     fun removeFromFavourites(movieElementModel: MovieElementModel, onUnauthorized: () -> Unit) {
         val movieId = movieElementModel.id
 
@@ -97,9 +81,7 @@ class MainViewModel {
             id = movieId,
             onFailureAction = { },
             onBadResponseAction =  { if (it == 401) onUnauthorized() },
-            onResponseAction = {
-                favouriteMovieList.remove(movieElementModel)
-            }
+            onResponseAction = { favouriteMovieList.remove(movieElementModel) }
         )
     }
 

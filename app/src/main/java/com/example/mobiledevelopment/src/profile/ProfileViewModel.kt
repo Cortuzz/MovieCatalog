@@ -3,8 +3,8 @@ package com.example.mobiledevelopment.src.profile
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.mobiledevelopment.src.domain.models.ProfileModel
-import com.example.mobiledevelopment.src.domain.utils.DateProviderService
-import com.example.mobiledevelopment.src.domain.utils.GenderProviderService
+import com.example.mobiledevelopment.src.domain.utils.services.DateProviderService
+import com.example.mobiledevelopment.src.domain.utils.services.GenderProviderService
 import com.example.mobiledevelopment.src.domain.utils.Utils
 
 class ProfileViewModel {

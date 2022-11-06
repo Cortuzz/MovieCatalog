@@ -1,7 +1,7 @@
 package com.example.mobiledevelopment.src.domain.retrofit
 
 object Common {
-    private const val COMMON_API = true
+    private const val COMMON_API = false
 
     private const val COMMON_URL = "https://react-midterm.kreosoft.space/api/"
     private const val SERVER_URL = "https:/192.168.1.65:7268/api/"

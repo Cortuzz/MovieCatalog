@@ -72,11 +72,11 @@ fun RegistrationFailDialog() {
         return
 
     Dialog(
-        title = "Регистрация отклонена",
+        title = errorTitleText,
         text = when (viewModel.registrationState.value) {
-            RegistrationState.Error -> "Нет подключения к интернету или сервер недоступен"
-            RegistrationState.UserExist -> "Пользователь с таким логином уже существует"
-            else -> "Произошла внутренняя ошибка приложения, отчет об ошибке отправлен разработчикам"
+            RegistrationState.Error -> errorNoInternetConnectionText
+            RegistrationState.UserExist -> errorDuplicateUserText
+            else -> internalErrorText
         },
         onDismissRequest = {
             viewModel.registrationState.value = RegistrationState.Idle
@@ -105,33 +105,23 @@ fun Label() {
 
 @Composable
 fun Fields() {
-    // TODO
-    val names = listOf(loginText, emailText, nameText, passwordText, repeatPasswordText, birthDateText)
-    val enums = listOf(ViewField.Login, ViewField.Email, ViewField.Name, ViewField.Password, ViewField.RepeatPassword, ViewField.DateOfBirth)
-    val hidden = listOf(false, false, false, true, true, false)
-    val text = listOf(
-        "Логин слишком короткий",
-        "Некорректный E-mail",
-        "Имя слишком короткое",
-        "Ненадежный пароль",
-        "Пароли не совпадают",
-        "Неверная дата рождения"
-    )
-
     Column(modifier = Modifier
         .padding(top = 16.dp, bottom = 132.dp)
         .verticalScroll(rememberScrollState())) {
-        for (i in 0 until(6)) {
+        for (field in viewFieldModels) {
             InputText(
-                label = names[i],
-                viewModel.getMutableState(enums[i]),
+                label = field.name,
+                viewModel.getMutableState(field.viewField),
                 onChange = { viewModel.checkFullness() },
-                isHidden = hidden[i],
-                isDate = enums[i] == ViewField.DateOfBirth
+                isHidden = field.isHidden,
+                isDate = field.viewField == ViewField.DateOfBirth
             )
 
             Spacer(Modifier.height(2.dp))
-            WrongFieldText(text = text[i], correct = viewModel.isFieldCorrect(enums[i]))
+            WrongFieldText(
+                text = field.errorText,
+                correct = viewModel.isFieldCorrect(field.viewField)
+            )
             Spacer(Modifier.height(14.dp))
         }
 

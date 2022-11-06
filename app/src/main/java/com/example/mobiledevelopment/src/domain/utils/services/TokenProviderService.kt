@@ -1,31 +1,32 @@
-package com.example.mobiledevelopment.src.domain.utils
+package com.example.mobiledevelopment.src.domain.utils.services
 
+import androidx.activity.ComponentActivity
 import com.example.mobiledevelopment.src.domain.retrofit.Common
-import com.example.mobiledevelopment.src.Application
 import com.example.mobiledevelopment.src.domain.composes.dropAllStates
 import com.example.mobiledevelopment.src.domain.models.ProfileModel
+import com.example.mobiledevelopment.src.domain.utils.SharedStorage
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 
-class TokenManager(private val activity: Application) {
+class TokenProviderService(private val activity: ComponentActivity) {
     companion object {
         private const val TOKEN_NAME = "auth.token"
-        private var instance: TokenManager? = null
+        private var instance: TokenProviderService? = null
 
-        fun getInstance(activity: Application): TokenManager {
+        fun getInstance(activity: ComponentActivity): TokenProviderService {
             if (instance == null)
-                instance = TokenManager(activity)
+                instance = TokenProviderService(activity)
 
-            return instance as TokenManager
+            return instance as TokenProviderService
         }
 
-        fun getInstance(): TokenManager {
+        fun getInstance(): TokenProviderService {
             if (instance == null)
                 throw IllegalStateException("The initial initialization must belong to the activity")
 
-            return instance as TokenManager
+            return instance as TokenProviderService
         }
     }
     private val service = Common.retrofitService
@@ -55,6 +56,21 @@ class TokenManager(private val activity: Application) {
                 response.body()?.let { onSuccessAction(it) }
             }
         })
+    }
+
+    fun checkTokenSynchronously(): Boolean {
+        if (SharedStorage.userToken.isEmpty())
+            return false
+
+        try {
+            val callback = service.getProfile("Bearer ${SharedStorage.userToken}").execute()
+            if (!callback.isSuccessful)
+                return false
+
+            return true
+        } catch (e: Exception) {
+            return false
+        }
     }
 
     fun dropToken() {

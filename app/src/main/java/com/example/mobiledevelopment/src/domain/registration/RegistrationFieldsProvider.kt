@@ -1,11 +1,10 @@
 package com.example.mobiledevelopment.src.domain.registration
 
-import android.widget.DatePicker
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.mobiledevelopment.src.domain.utils.FieldsProvider
 import com.example.mobiledevelopment.src.domain.models.UserRegisterModel
-import com.example.mobiledevelopment.src.domain.utils.DateProviderService
+import com.example.mobiledevelopment.src.domain.utils.services.DateProviderService
 import com.example.mobiledevelopment.src.domain.utils.Utils
 
 class RegistrationFieldsProvider : FieldsProvider<ViewField, UserRegisterModel> {

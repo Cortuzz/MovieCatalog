@@ -4,18 +4,18 @@ import com.example.mobiledevelopment.src.domain.models.ReviewModel
 
 
 class ReviewCheckerService {
-    fun isReviewsContainsId(id: String, reviews: List<ReviewModel>?): Boolean {
-        if (reviews.isNullOrEmpty()) return false
+    fun isReviewsContainsId(id: String, reviews: List<ReviewModel>?): String? {
+        if (reviews.isNullOrEmpty()) return null
 
         for (review in reviews) {
             if (review.author?.userId != id)
                 continue
 
             review.isMine = true
-            return true
+            return review.id
         }
 
-        return false
+        return null
     }
 
     fun placeMyReviewToTop(id: String, reviews: MutableList<ReviewModel>?) {
