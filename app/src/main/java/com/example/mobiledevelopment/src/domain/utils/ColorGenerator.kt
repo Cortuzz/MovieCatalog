@@ -1,8 +1,8 @@
-package com.example.mobiledevelopment.src.domain
+package com.example.mobiledevelopment.src.domain.utils
 
 import androidx.compose.ui.graphics.Color
 import androidx.core.math.MathUtils
-import com.example.mobiledevelopment.src.domain.retrofit.ReviewShortModel
+import com.example.mobiledevelopment.src.domain.models.ReviewShortModel
 import com.example.mobiledevelopment.ui.theme.AccentColor
 import java.lang.Float.NaN
 import kotlin.math.roundToInt

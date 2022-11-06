@@ -11,7 +11,7 @@ import androidx.compose.material.darkColors
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.mobiledevelopment.src.domain.TokenManager
+import com.example.mobiledevelopment.src.domain.utils.TokenManager
 import com.example.mobiledevelopment.ui.theme.AccentColor
 import com.example.mobiledevelopment.ui.theme.BackgroundColor
 

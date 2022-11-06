@@ -2,9 +2,9 @@ package com.example.mobiledevelopment.src.domain.registration
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.example.mobiledevelopment.src.domain.retrofit.UserRegisterModel
-import com.example.mobiledevelopment.src.domain.FieldsProvider
-import com.example.mobiledevelopment.src.utils.Utils
+import com.example.mobiledevelopment.src.domain.utils.FieldsProvider
+import com.example.mobiledevelopment.src.domain.models.UserRegisterModel
+import com.example.mobiledevelopment.src.domain.utils.Utils
 
 class RegistrationFieldsProvider : FieldsProvider<ViewField, UserRegisterModel> {
     private val viewFields = mutableMapOf(

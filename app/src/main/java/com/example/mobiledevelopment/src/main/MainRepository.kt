@@ -1,10 +1,10 @@
 package com.example.mobiledevelopment.src.main
 
 import android.util.Log
+import com.example.mobiledevelopment.src.domain.models.MovieElementModel
+import com.example.mobiledevelopment.src.domain.models.MoviesListModel
+import com.example.mobiledevelopment.src.domain.models.MoviesPageListModel
 import com.example.mobiledevelopment.src.domain.retrofit.Common
-import com.example.mobiledevelopment.src.domain.retrofit.MovieElementModel
-import com.example.mobiledevelopment.src.domain.retrofit.MoviesListModel
-import com.example.mobiledevelopment.src.domain.retrofit.MoviesPageListModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

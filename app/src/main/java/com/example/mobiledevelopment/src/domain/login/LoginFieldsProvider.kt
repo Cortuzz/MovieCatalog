@@ -1,7 +1,7 @@
 package com.example.mobiledevelopment.src.domain.login
 
-import com.example.mobiledevelopment.src.domain.retrofit.UserLoginModel
-import com.example.mobiledevelopment.src.domain.FieldsProvider
+import com.example.mobiledevelopment.src.domain.utils.FieldsProvider
+import com.example.mobiledevelopment.src.domain.models.UserLoginModel
 
 class LoginFieldsProvider: FieldsProvider<ViewField, UserLoginModel> {
     private val viewFields = mutableMapOf(

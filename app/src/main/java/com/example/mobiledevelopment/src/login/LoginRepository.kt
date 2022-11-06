@@ -2,9 +2,9 @@ package com.example.mobiledevelopment.src.login
 
 import android.util.Log
 import com.example.mobiledevelopment.src.domain.retrofit.Common
-import com.example.mobiledevelopment.src.domain.retrofit.UserLoginModel
-import com.example.mobiledevelopment.src.domain.retrofit.UserTokenModel
-import com.example.mobiledevelopment.src.domain.TokenManager
+import com.example.mobiledevelopment.src.domain.utils.TokenManager
+import com.example.mobiledevelopment.src.domain.models.UserLoginModel
+import com.example.mobiledevelopment.src.domain.models.UserTokenModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

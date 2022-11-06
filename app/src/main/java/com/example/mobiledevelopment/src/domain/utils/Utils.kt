@@ -1,4 +1,4 @@
-package com.example.mobiledevelopment.src.utils
+package com.example.mobiledevelopment.src.domain.utils
 
 import android.annotation.SuppressLint
 import android.content.res.Resources.NotFoundException

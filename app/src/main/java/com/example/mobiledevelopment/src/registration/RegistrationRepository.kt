@@ -2,9 +2,9 @@ package com.example.mobiledevelopment.src.registration
 
 import android.util.Log
 import com.example.mobiledevelopment.src.domain.retrofit.Common
-import com.example.mobiledevelopment.src.domain.retrofit.UserRegisterModel
-import com.example.mobiledevelopment.src.domain.retrofit.UserTokenModel
-import com.example.mobiledevelopment.src.domain.TokenManager
+import com.example.mobiledevelopment.src.domain.utils.TokenManager
+import com.example.mobiledevelopment.src.domain.models.UserRegisterModel
+import com.example.mobiledevelopment.src.domain.models.UserTokenModel
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback

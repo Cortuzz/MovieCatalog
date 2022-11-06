@@ -4,9 +4,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.example.mobiledevelopment.src.domain.retrofit.MovieElementModel
-import com.example.mobiledevelopment.src.domain.retrofit.MoviesListModel
-import com.example.mobiledevelopment.src.domain.retrofit.MoviesPageListModel
+import com.example.mobiledevelopment.src.domain.models.MovieElementModel
+import com.example.mobiledevelopment.src.domain.models.MoviesListModel
+import com.example.mobiledevelopment.src.domain.models.MoviesPageListModel
 
 class MainViewModel {
     private val repository: MainRepository = MainRepository()

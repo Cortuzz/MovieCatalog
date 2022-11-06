@@ -1,4 +1,4 @@
-package com.example.mobiledevelopment.src.utils
+package com.example.mobiledevelopment.src.domain.utils
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

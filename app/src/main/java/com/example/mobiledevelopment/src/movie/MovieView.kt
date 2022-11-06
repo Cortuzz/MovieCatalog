@@ -21,11 +21,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.example.mobiledevelopment.R
 import com.example.mobiledevelopment.src.domain.composes.*
-import com.example.mobiledevelopment.src.domain.retrofit.ReviewModel
-import com.example.mobiledevelopment.src.utils.Utils
-import com.example.mobiledevelopment.src.utils.noRippleClickable
+import com.example.mobiledevelopment.src.domain.models.ReviewModel
+import com.example.mobiledevelopment.src.domain.utils.Utils
+import com.example.mobiledevelopment.src.domain.utils.noRippleClickable
 import com.example.mobiledevelopment.ui.theme.*
-import com.example.mobiledevelopment.ui.theme.composes.*
 import com.google.accompanist.flowlayout.FlowRow
 
 

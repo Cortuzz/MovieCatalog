@@ -2,8 +2,8 @@ package com.example.mobiledevelopment.src.profile
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.example.mobiledevelopment.src.domain.retrofit.ProfileModel
-import com.example.mobiledevelopment.src.utils.Utils
+import com.example.mobiledevelopment.src.domain.models.ProfileModel
+import com.example.mobiledevelopment.src.domain.utils.Utils
 
 class ProfileViewModel {
     private val repository = ProfileRepository()

@@ -1,9 +1,9 @@
-package com.example.mobiledevelopment.src.domain
+package com.example.mobiledevelopment.src.domain.utils
 
 import com.example.mobiledevelopment.src.domain.retrofit.Common
-import com.example.mobiledevelopment.src.domain.retrofit.ProfileModel
 import com.example.mobiledevelopment.src.Application
 import com.example.mobiledevelopment.src.domain.composes.dropAllStates
+import com.example.mobiledevelopment.src.domain.models.ProfileModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

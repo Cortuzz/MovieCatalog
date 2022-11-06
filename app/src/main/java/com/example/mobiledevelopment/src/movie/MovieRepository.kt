@@ -1,9 +1,9 @@
 package com.example.mobiledevelopment.src.movie
 
 import android.util.Log
+import com.example.mobiledevelopment.src.domain.models.MovieDetailsModel
+import com.example.mobiledevelopment.src.domain.models.ReviewModifyModel
 import com.example.mobiledevelopment.src.domain.retrofit.Common
-import com.example.mobiledevelopment.src.domain.retrofit.MovieDetailsModel
-import com.example.mobiledevelopment.src.domain.retrofit.ReviewModifyModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

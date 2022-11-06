@@ -30,14 +30,13 @@ import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.mobiledevelopment.R
-import com.example.mobiledevelopment.src.domain.retrofit.MovieElementModel
-import com.example.mobiledevelopment.src.domain.ColorGenerator
+import com.example.mobiledevelopment.src.domain.utils.ColorGenerator
 import com.example.mobiledevelopment.src.domain.composes.*
 import com.example.mobiledevelopment.src.domain.main.favoriteBlockText
 import com.example.mobiledevelopment.src.domain.main.galleryBlockText
-import com.example.mobiledevelopment.src.utils.noRippleClickable
+import com.example.mobiledevelopment.src.domain.models.MovieElementModel
+import com.example.mobiledevelopment.src.domain.utils.noRippleClickable
 import com.example.mobiledevelopment.ui.theme.*
-import com.example.mobiledevelopment.ui.theme.composes.*
 
 private var viewModel: MainViewModel = MainViewModel()
 private lateinit var navigateToMovie: () -> Unit

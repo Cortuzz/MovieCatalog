@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.mobiledevelopment.src.domain.Screen
+import com.example.mobiledevelopment.src.domain.utils.Screen
 import com.example.mobiledevelopment.src.login.LoginScreen
 import com.example.mobiledevelopment.src.main.MainScreen
 import com.example.mobiledevelopment.src.movie.MovieScreen

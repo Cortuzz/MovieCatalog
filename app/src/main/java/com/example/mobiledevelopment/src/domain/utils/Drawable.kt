@@ -1,4 +1,4 @@
-package com.example.mobiledevelopment.src.domain
+package com.example.mobiledevelopment.src.domain.utils
 
 import androidx.compose.runtime.Composable
 
