@@ -135,4 +135,10 @@ interface RetrofitServices {
 
     @DELETE("movie/{movieId}/review/{reviewId}/delete/")
     fun deleteReview(@Header("Authorization") authToken: String, @Path("movieId") movieId: String, @Path("reviewId") reviewId: String): Call<Void>
+
+    @PUT("account/profile/")
+    fun updateProfile(@Header("Authorization") authToken: String, @Body profileModel: ProfileModel): Call<Void>
+
+    @POST("account/logout/")
+    fun logout(@Header("Authorization") authToken: String): Call<Void>
 }
