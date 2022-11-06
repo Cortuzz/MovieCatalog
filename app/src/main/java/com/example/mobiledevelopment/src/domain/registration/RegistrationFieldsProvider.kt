@@ -1,9 +1,11 @@
 package com.example.mobiledevelopment.src.domain.registration
 
+import android.widget.DatePicker
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.mobiledevelopment.src.domain.utils.FieldsProvider
 import com.example.mobiledevelopment.src.domain.models.UserRegisterModel
+import com.example.mobiledevelopment.src.domain.utils.DateProviderService
 import com.example.mobiledevelopment.src.domain.utils.Utils
 
 class RegistrationFieldsProvider : FieldsProvider<ViewField, UserRegisterModel> {
@@ -71,7 +73,7 @@ class RegistrationFieldsProvider : FieldsProvider<ViewField, UserRegisterModel> 
             name = viewFields[ViewField.Name]!!.value,
             password = viewFields[ViewField.Password]!!.value,
             email = viewFields[ViewField.Email]!!.value,
-            birthDate = Utils.formatDate(viewFields[ViewField.DateOfBirth]!!.value),
+            birthDate = DateProviderService.format(viewFields[ViewField.DateOfBirth]!!.value),
             gender = viewFields[ViewField.Gender]?.value?.toInt()
         )
     }
@@ -85,6 +87,6 @@ class RegistrationFieldsProvider : FieldsProvider<ViewField, UserRegisterModel> 
     }
 
     private fun checkDate(date: String): Boolean {
-        return Utils.isValidBirthDate(date)
+        return DateProviderService.isValidBirth(date)
     }
 }

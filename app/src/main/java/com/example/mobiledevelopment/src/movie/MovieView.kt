@@ -22,6 +22,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.mobiledevelopment.R
 import com.example.mobiledevelopment.src.domain.composes.*
 import com.example.mobiledevelopment.src.domain.models.ReviewModel
+import com.example.mobiledevelopment.src.domain.utils.DateProviderService
 import com.example.mobiledevelopment.src.domain.utils.Utils
 import com.example.mobiledevelopment.src.domain.utils.noRippleClickable
 import com.example.mobiledevelopment.ui.theme.*
@@ -192,7 +193,7 @@ fun ReviewFooter(review: ReviewModel) {
             .requiredHeight(24.dp)
     ) {
         AboutText(
-            text = Utils.parseTimestamp(review.createDateTime),
+            text = DateProviderService.parseTimestamp(review.createDateTime),
             color = Color(0xFFB7B7B7),
             modifier = Modifier.offset(y = 5.dp)
         )

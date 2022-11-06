@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.mobiledevelopment.src.domain.composes.*
 import com.example.mobiledevelopment.src.domain.login.*
-import com.example.mobiledevelopment.ui.theme.composes.*
 
 private var viewModel: LoginViewModel = LoginViewModel()
 private lateinit var navigateToMain: () -> Unit

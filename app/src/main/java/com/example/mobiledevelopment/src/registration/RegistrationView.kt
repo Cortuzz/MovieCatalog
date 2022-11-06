@@ -17,7 +17,6 @@ import com.example.mobiledevelopment.src.domain.composes.*
 import com.example.mobiledevelopment.src.domain.registration.*
 import com.example.mobiledevelopment.src.domain.registration.RegistrationState
 import com.example.mobiledevelopment.ui.theme.*
-import com.example.mobiledevelopment.ui.theme.composes.*
 
 private val viewModel: RegistrationViewModel = RegistrationViewModel()
 private lateinit var navigateToMain: () -> Unit

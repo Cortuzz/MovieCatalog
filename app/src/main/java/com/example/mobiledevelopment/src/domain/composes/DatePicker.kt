@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.mobiledevelopment.R
+import com.example.mobiledevelopment.src.domain.utils.DateProviderService
 import com.example.mobiledevelopment.src.domain.utils.Utils
 import java.util.*
 
@@ -26,7 +27,7 @@ fun DatePicker(date: MutableState<String>, modifier: Modifier = Modifier) {
 
     val mCalendar = Calendar.getInstance()
 
-    val parsedDate = Utils.tryParseDate(date.value)
+    val parsedDate = DateProviderService.tryParse(date.value)
 
     if (parsedDate.isNullOrEmpty()) {
         mYear = mCalendar.get(Calendar.YEAR)
