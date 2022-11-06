@@ -56,6 +56,14 @@ interface RetrofitServices {
         @Body reviewModel: ReviewModifyModel
     ): Call<Void>
 
+    @PUT("movie/{movieId}/review/{reviewId}/edit/")
+    fun editReview(
+        @Header("Authorization") authToken: String,
+        @Path("movieId") movieId: String,
+        @Path("reviewId") reviewId: String,
+        @Body reviewModel: ReviewModifyModel
+    ): Call<Void>
+
     @DELETE("movie/{movieId}/review/{reviewId}/delete/")
     fun deleteReview(
         @Header("Authorization") authToken: String,

@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -44,9 +45,9 @@ private lateinit var navigateToMain: () -> Unit
 private lateinit var navigateToLogin: () -> Unit
 
 @Composable
-fun HeaderPopup(value: Boolean) {
+fun HeaderPopup(state: Boolean) {
     val alpha by animateFloatAsState(
-        targetValue = if (value) 1f else 0f,
+        targetValue = if (state) 1f else 0f,
         animationSpec = tween(1000)
     )
 
@@ -106,19 +107,29 @@ fun BackButton() {
 @Composable
 fun FavouriteButton() {
     Image(
-        painter = painterResource(id = R.drawable.heart),
+        painter = if (viewModel.getFavouriteStatus().value) painterResource(id = R.drawable.heart_filled)
+                else painterResource(id = R.drawable.heart),
         contentDescription = "Favourite button",
         modifier = Modifier
             .offset(y = 10.dp)
-            .noRippleClickable { }
+            .noRippleClickable { viewModel.changeFavouritesStatus { navigateToLogin() } }
     )
 }
 
 @Composable
-fun Header(headerState: Boolean) {
+fun Header(headerState: Boolean, offset: Int) {
+    val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
+    val dpVal = offset.toFloat() / screenPixelDensity
     val movieModel = viewModel.getMovieModel().value ?: return
+    val alpha by animateFloatAsState(
+        targetValue = 1 - dpVal / 160,
+        animationSpec = tween(10)
+    )
 
-    Box(modifier = Modifier.requiredHeight(250.dp)) {
+    Box(modifier = Modifier
+        .requiredHeight(250.dp)
+        .alpha(alpha)
+    ) {
         MoviePoster(
             url = movieModel.poster ?: "",
             modifier = Modifier
@@ -141,7 +152,9 @@ fun LabelText(text: String, value: Boolean) {
     )
 
     Column(
-        modifier = Modifier.fillMaxHeight().alpha(alpha),
+        modifier = Modifier
+            .fillMaxHeight()
+            .alpha(alpha),
         verticalArrangement = Arrangement.Bottom
     ) {
         Text(
@@ -295,7 +308,9 @@ fun EditReviewBlock(review: ReviewModel) {
         Image(
             painter = painterResource(id = R.drawable.edit_review_button),
             contentDescription = "Edit review",
-            modifier = Modifier.noRippleClickable {  }
+            modifier = Modifier.noRippleClickable {
+                viewModel.openEditDialog(review)
+            }
         )
 
         Spacer(Modifier.width(8.dp))
@@ -391,27 +406,32 @@ fun MainContent() {
 }
 
 @Composable
-fun MovieScreen(navToLogin: () -> Unit, navToMain: () -> Unit) {
-    viewModel.getMovie()
-    navigateToLogin = navToLogin
-    navigateToMain = navToMain
-
+fun MovieScreenContent() {
     if (viewModel.getReviewDialogState().value)
         ReviewDialog { viewModel.getReviewDialogState().value = false }
 
-    val scrollState = rememberLazyListState()
-    val value = remember { derivedStateOf { scrollState.firstVisibleItemIndex } }.value != 0 ||
+    val scrollState = rememberForeverLazyListState(key = "movie_screen")
+    val popupState = remember { derivedStateOf { scrollState.firstVisibleItemIndex } }.value != 0 ||
             remember { derivedStateOf { scrollState.firstVisibleItemScrollOffset } }.value > 0
 
     LazyColumn(
         state = scrollState
     ) {
-        item { Header(!value) }
+        item { Header(!popupState, scrollState.firstVisibleItemScrollOffset) }
         item { Spacer(modifier = Modifier.height(15.3.dp)) }
         item { MainContent() }
     }
 
-    HeaderPopup(value)
+    HeaderPopup(popupState)
+}
+
+@Composable
+fun MovieScreen(navToLogin: () -> Unit, navToMain: () -> Unit) {
+    viewModel.getMovie()
+    navigateToLogin = navToLogin
+    navigateToMain = navToMain
+
+    MovieScreenContent()
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -441,8 +461,11 @@ fun ReviewDialog(onDismissRequest: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
 
-                SecondaryButton(name = "Очистить",
-                    action = { viewModel.clearReview() },
+                SecondaryButton(name = "Отмена",
+                    action = {
+                        onDismissRequest()
+                        viewModel.clearReview()
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(16.dp))

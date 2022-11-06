@@ -17,6 +17,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mobiledevelopment.R
 import com.example.mobiledevelopment.src.domain.composes.*
+import com.example.mobiledevelopment.src.domain.main.mainText
+import com.example.mobiledevelopment.src.domain.profile.logoutText
+import com.example.mobiledevelopment.src.domain.profile.profileText
+import com.example.mobiledevelopment.src.domain.profile.saveText
 import com.example.mobiledevelopment.ui.theme.*
 
 
@@ -111,45 +115,18 @@ fun Buttons() {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         PrimaryButton(
-            name = "Сохранить",
+            name = saveText,
             action = { viewModel.updateProfile { navigateToLogin() } },
             modifier = Modifier.fillMaxWidth()
         )
 
         SecondaryButton(
-            name = "Выйти из аккаунта",
+            name = logoutText,
             action = { viewModel.logout { navigateToLogin() } },
             modifier = Modifier.fillMaxWidth()
         )
     }
 
-}
-
-@Composable
-fun NavigationBlock() {
-    Row(
-        modifier = Modifier.fillMaxSize(),
-        verticalAlignment = Alignment.Bottom,
-    ) {
-        Row(
-            modifier = Modifier
-                .background(NavigationColor)
-                .fillMaxWidth(),
-        ) {
-            NavigationButton(
-                name = "Главное",
-                onClick = { /*TODO*/ },
-                painter = painterResource(id = R.drawable.main_page),
-                fraction = 0.5f,
-            )
-            NavigationButton(
-                name = "Профиль",
-                onClick = { /*TODO*/ },
-                painter = painterResource(id = R.drawable.profile_page),
-                fraction = 1f,
-            )
-        }
-    }
 }
 
 @Composable
@@ -163,16 +140,18 @@ fun Navigation() {
 
             ) {
             NavigationButton(
-                name = "Главное",
+                name = mainText,
                 onClick = { navigateToMain() },
                 painter = painterResource(id = R.drawable.main_page),
                 fraction = 0.5f,
+                color = OutlineColor
             )
             NavigationButton(
-                name = "Профиль",
+                name = profileText,
                 onClick = {  },
-                painter = painterResource(id = R.drawable.profile_page),
+                painter = painterResource(id = R.drawable.profile_page_active),
                 fraction = 1f,
+                color = AccentColor
             )
         }
     }

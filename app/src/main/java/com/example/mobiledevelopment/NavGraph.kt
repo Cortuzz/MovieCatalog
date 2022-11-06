@@ -1,4 +1,4 @@
-package com.example.mobiledevelopment.src
+package com.example.mobiledevelopment
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -14,7 +14,8 @@ import com.example.mobiledevelopment.src.registration.RegistrationScreen
 
 @Composable
 fun SetupNavGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    startDestination: String
 ) {
     val navigateToLogin = { navController.navigate("login_screen") { popUpTo(0) } }
     val navigateToRegistration = { navController.navigate("registration_screen") { popUpTo(0) } }
@@ -24,7 +25,7 @@ fun SetupNavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Login.route
+        startDestination = startDestination
     ) {
         composable(route = Screen.Login.route) {
             LoginScreen(

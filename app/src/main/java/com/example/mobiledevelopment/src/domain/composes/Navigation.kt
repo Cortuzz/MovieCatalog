@@ -9,6 +9,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -21,7 +22,8 @@ fun NavigationButton(
     name: String,
     onClick: () -> Unit,
     painter: Painter,
-    fraction: Float
+    fraction: Float,
+    color: Color
 ) {
     TextButton(
         onClick = onClick,
@@ -44,7 +46,7 @@ fun NavigationButton(
                 fontFamily = IBMPlex,
                 fontWeight = FontWeight.Medium,
                 fontSize = 14.sp,
-                color = OutlineColor,
+                color = color,
             )
         }
     }

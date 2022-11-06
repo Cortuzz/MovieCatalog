@@ -256,7 +256,11 @@ class RequestsProviderService {
         onFailureAction: () -> Unit,
         onBadResponseAction: (Int, ResponseBody) -> Unit
     ) {
-        service.addReview( "Bearer ${SharedStorage.userToken}",id, reviewModifyModel).enqueue(object : Callback<Void> {
+        service.addReview(
+            "Bearer ${SharedStorage.userToken}",
+            id,
+            reviewModifyModel
+        ).enqueue(object : Callback<Void> {
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 Log.e("Network manager", "Sending review failed with exception: $t")
                 onFailureAction()
@@ -275,13 +279,48 @@ class RequestsProviderService {
         })
     }
 
+    fun editReview(
+        id: String,
+        reviewModifyModel: ReviewModifyModel,
+        onResponseAction: (Int) -> Unit,
+        onFailureAction: () -> Unit,
+        onBadResponseAction: (Int, ResponseBody) -> Unit
+    ) {
+        service.editReview(
+            "Bearer ${SharedStorage.userToken}",
+            SharedStorage.currentMovieId,
+            id,
+            reviewModifyModel
+        ).enqueue(object : Callback<Void> {
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e("Network manager", "Editing review failed with exception: $t")
+                onFailureAction()
+            }
+
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (!response.isSuccessful) {
+                    Log.w("Network manager", "Editing review failed with response: ${response.errorBody()?.charStream()?.readText()}")
+                    onBadResponseAction(response.code(), response.errorBody() as ResponseBody)
+                    return
+                }
+
+                Log.i("Network manager", "Editing success. Response: ${response.body()}")
+                onResponseAction(response.code())
+            }
+        })
+    }
+
     fun deleteReview(
         id: String,
         onResponseAction: (Int) -> Unit,
         onFailureAction: () -> Unit,
         onBadResponseAction: (Int, ResponseBody) -> Unit
     ) {
-        service.deleteReview( "Bearer ${SharedStorage.userToken}", SharedStorage.currentMovieId, id).enqueue(object : Callback<Void> {
+        service.deleteReview(
+            "Bearer ${SharedStorage.userToken}",
+            SharedStorage.currentMovieId,
+            id
+        ).enqueue(object : Callback<Void> {
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 Log.e("Network manager", "Deleting review failed with exception: $t")
                 onFailureAction()

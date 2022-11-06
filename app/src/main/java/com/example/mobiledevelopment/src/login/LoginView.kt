@@ -22,10 +22,9 @@ fun LoginFailDialog() {
         return
 
     Dialog(
-        title = "Авторизация отклонена",
+        title = errorTitleText,
         text = if (viewModel.authState.value == AuthState.Error)
-            "Нет подключения к интернету или сервер недоступен"
-            else "Введены некорректные данные",
+            errorText else badRequestText,
         onDismissRequest = {
             viewModel.authState.value = AuthState.Idle
         }
