@@ -5,11 +5,13 @@ import android.view.ContextThemeWrapper
 import android.widget.DatePicker
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import com.example.mobiledevelopment.R
 import com.example.mobiledevelopment.src.utils.Utils
 import java.util.*
@@ -48,7 +50,7 @@ fun DatePicker(date: MutableState<String>, modifier: Modifier = Modifier) {
     mDatePickerDialog.window?.setBackgroundDrawableResource(R.drawable.shape)
 
     Image(
-        modifier = modifier.clickable {  mDatePickerDialog.show() },
+        modifier = modifier.clickable {  mDatePickerDialog.show() }.offset(y = 2.dp),
         painter = painterResource(id = R.drawable.date_picker),
         contentDescription = "Date picker",
     )

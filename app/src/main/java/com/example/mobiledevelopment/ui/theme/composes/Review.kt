@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mobiledevelopment.R
+import com.example.mobiledevelopment.src.utils.noRippleClickable
 import com.example.mobiledevelopment.ui.theme.*
 
 @Composable
@@ -51,7 +52,14 @@ fun Star(index: Int, rating: MutableState<Int>) {
             Image(
                 painter = painterResource(R.drawable.filled_star),
                 contentDescription = "Filled star",
-                modifier =  Modifier.clickable { rating.value = index + 1 }
+                modifier =  Modifier.noRippleClickable {
+                    val ind = index + 1
+                    if (ind == rating.value) {
+                        rating.value = 0
+                        return@noRippleClickable
+                    }
+                    rating.value = index + 1
+                }
             )
             return@Box
         }
@@ -61,7 +69,7 @@ fun Star(index: Int, rating: MutableState<Int>) {
             contentDescription = "Star",
             modifier = Modifier
                 .offset(y = (-1).dp)
-                .clickable { rating.value = index + 1 }
+                .noRippleClickable { rating.value = index + 1 }
         )
     }
 }
@@ -142,7 +150,7 @@ fun ReviewCheckbox(checkboxState: MutableState<Boolean>) {
                 modifier = Modifier
                     .size(24.dp)
                     .background(DialogColor)
-                    .clickable {
+                    .noRippleClickable {
                         checkboxState.value = !checkboxState.value
                     },
                 contentAlignment = Center
