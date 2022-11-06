@@ -1,8 +1,9 @@
 package com.example.mobiledevelopment.src.profile
 
-import com.example.mobiledevelopment.include.retrofit.Common
-import com.example.mobiledevelopment.include.retrofit.ProfileModel
-import com.example.mobiledevelopment.src.TokenManager
+import com.example.mobiledevelopment.src.domain.retrofit.Common
+import com.example.mobiledevelopment.src.domain.utils.TokenManager
+import com.example.mobiledevelopment.src.domain.models.ProfileModel
+import com.example.mobiledevelopment.src.domain.utils.SharedStorage
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -15,7 +16,7 @@ class ProfileRepository {
         onFailureAction: () -> Unit,
         onBadResponseAction: (Int) -> Unit
     ) {
-        service.getProfile("Bearer ${Common.userToken}").enqueue(object :
+        service.getProfile("Bearer ${SharedStorage.userToken}").enqueue(object :
             Callback<ProfileModel> {
             override fun onFailure(call: Call<ProfileModel>, t: Throwable) {
                 onFailureAction()
@@ -27,7 +28,7 @@ class ProfileRepository {
                     return
                 }
 
-                Common.userId = response.body()?.id ?: ""
+                SharedStorage.userId = response.body()?.id ?: ""
                 response.body()?.let { onResponseAction(it) }
             }
         })
@@ -39,7 +40,7 @@ class ProfileRepository {
         onBadResponseAction: (Int) -> Unit,
         profileModel: ProfileModel
     ) {
-        service.updateProfile("Bearer ${Common.userToken}", profileModel).enqueue(object :
+        service.updateProfile("Bearer ${SharedStorage.userToken}", profileModel).enqueue(object :
             Callback<Void> {
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 onFailureAction()
@@ -57,7 +58,7 @@ class ProfileRepository {
     }
 
     fun logout(action: () -> Unit) {
-        service.logout("Bearer ${Common.userToken}").enqueue(object : Callback<Void> {
+        service.logout("Bearer ${SharedStorage.userToken}").enqueue(object : Callback<Void> {
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 action()
 

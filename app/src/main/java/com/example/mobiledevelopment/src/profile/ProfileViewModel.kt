@@ -2,10 +2,10 @@ package com.example.mobiledevelopment.src.profile
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.example.mobiledevelopment.include.retrofit.Common
-import com.example.mobiledevelopment.include.retrofit.ProfileModel
-import com.example.mobiledevelopment.src.registration.domain.ViewField
-import com.example.mobiledevelopment.src.utils.Utils
+import com.example.mobiledevelopment.src.domain.models.ProfileModel
+import com.example.mobiledevelopment.src.domain.utils.DateProviderService
+import com.example.mobiledevelopment.src.domain.utils.GenderProviderService
+import com.example.mobiledevelopment.src.domain.utils.Utils
 
 class ProfileViewModel {
     private val repository = ProfileRepository()
@@ -60,10 +60,10 @@ class ProfileViewModel {
         if (!checkCorrect()) return null
 
         model.avatarLink = avatarLink.value
-        model.gender = Utils.parseGenderToInt(gender.value)
+        model.gender = GenderProviderService.parseToInt(gender.value)
         model.name = name.value
         model.email = email.value
-        model.birthDate = Utils.formatDate(birthDate.value)
+        model.birthDate = DateProviderService.format(birthDate.value)
 
         return model
     }
@@ -76,9 +76,9 @@ class ProfileViewModel {
         avatarLink.value = profile.avatarLink ?: ""
 
         if (profile.birthDate != null)
-            birthDate.value = Utils.parseTimestamp(profile.birthDate!!)
+            birthDate.value = DateProviderService.parseTimestamp(profile.birthDate!!)
         if (profile.gender != null)
-            gender.value = Utils.parseGender(profile.gender!!)
+            gender.value = GenderProviderService.parse(profile.gender!!)
 
         checkCorrect()
     }
@@ -129,6 +129,6 @@ class ProfileViewModel {
     }
 
     private fun checkDate(date: String): Boolean {
-        return Utils.isValidBirthDate(date)
+        return DateProviderService.isValidBirth(date)
     }
 }

@@ -3,8 +3,9 @@ package com.example.mobiledevelopment.src.registration
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.dp
-import com.example.mobiledevelopment.src.main.domain.RegistrationState
-import com.example.mobiledevelopment.src.registration.domain.ViewField
+import com.example.mobiledevelopment.src.domain.registration.RegistrationFieldsProvider
+import com.example.mobiledevelopment.src.domain.registration.RegistrationState
+import com.example.mobiledevelopment.src.domain.registration.ViewField
 
 
 class RegistrationViewModel {

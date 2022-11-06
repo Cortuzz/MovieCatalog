@@ -16,8 +16,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mobiledevelopment.R
+import com.example.mobiledevelopment.src.domain.composes.*
 import com.example.mobiledevelopment.ui.theme.*
-import com.example.mobiledevelopment.ui.theme.composes.*
 
 
 private val viewModel = ProfileViewModel()

@@ -1,10 +1,11 @@
 package com.example.mobiledevelopment.src.login
 
 import android.util.Log
-import com.example.mobiledevelopment.include.retrofit.Common
-import com.example.mobiledevelopment.include.retrofit.UserLoginModel
-import com.example.mobiledevelopment.include.retrofit.UserTokenModel
-import com.example.mobiledevelopment.src.TokenManager
+import com.example.mobiledevelopment.src.domain.retrofit.Common
+import com.example.mobiledevelopment.src.domain.utils.TokenManager
+import com.example.mobiledevelopment.src.domain.models.UserLoginModel
+import com.example.mobiledevelopment.src.domain.models.UserTokenModel
+import com.example.mobiledevelopment.src.domain.utils.SharedStorage
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -31,7 +32,7 @@ class LoginRepository {
                     return
                 }
                 Log.i("Network manager", "Login successful. Response: ${response.body()}")
-                Common.userToken = response.body()!!.token
+                SharedStorage.userToken = response.body()!!.token
                 TokenManager.getInstance().saveToken()
                 onResponseAction()
             }

@@ -1,10 +1,10 @@
 package com.example.mobiledevelopment.src.movie
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import com.example.mobiledevelopment.include.retrofit.*
-import com.example.mobiledevelopment.src.TokenManager
+import com.example.mobiledevelopment.src.domain.models.MovieDetailsModel
+import com.example.mobiledevelopment.src.domain.models.ReviewModifyModel
+import com.example.mobiledevelopment.src.domain.retrofit.Common
+import com.example.mobiledevelopment.src.domain.utils.SharedStorage
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -16,7 +16,7 @@ class MovieRepository {
         onResponseAction: (Response<MovieDetailsModel>) -> Unit,
         onFailureAction: () -> Unit,
     ) {
-        service.getMovie(Common.currentMovieId).enqueue(object : Callback<MovieDetailsModel> {
+        service.getMovie(SharedStorage.currentMovieId).enqueue(object : Callback<MovieDetailsModel> {
             override fun onFailure(call: Call<MovieDetailsModel>, t: Throwable) {
                 Log.e("Network manager", "Fetching movie failed with exception: $t")
                 onFailureAction()
@@ -42,7 +42,7 @@ class MovieRepository {
         onFailureAction: () -> Unit,
         onBadResponseAction: (Int) -> Unit
     ) {
-        service.addReview( "Bearer ${Common.userToken}",id, reviewModifyModel).enqueue(object : Callback<Void> {
+        service.addReview( "Bearer ${SharedStorage.userToken}",id, reviewModifyModel).enqueue(object : Callback<Void> {
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 Log.e("Network manager", "Sending review failed with exception: $t")
                 onFailureAction()
@@ -67,7 +67,7 @@ class MovieRepository {
         onFailureAction: () -> Unit,
         onBadResponseAction: (Int) -> Unit
     ) {
-        service.deleteReview( "Bearer ${Common.userToken}", Common.currentMovieId, id).enqueue(object : Callback<Void> {
+        service.deleteReview( "Bearer ${SharedStorage.userToken}", SharedStorage.currentMovieId, id).enqueue(object : Callback<Void> {
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 Log.e("Network manager", "Deleting review failed with exception: $t")
                 onFailureAction()
@@ -87,6 +87,6 @@ class MovieRepository {
     }
 
     fun getUserId(): String {
-        return Common.userId
+        return SharedStorage.userId
     }
 }

@@ -1,22 +1,15 @@
 package com.example.mobiledevelopment.src.login
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import com.example.mobiledevelopment.src.domain.Drawable
-import com.example.mobiledevelopment.src.login.domain.*
-import com.example.mobiledevelopment.ui.theme.composes.*
+import com.example.mobiledevelopment.src.domain.composes.*
+import com.example.mobiledevelopment.src.domain.login.*
 
 private var viewModel: LoginViewModel = LoginViewModel()
 private lateinit var navigateToMain: () -> Unit
