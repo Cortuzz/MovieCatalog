@@ -2,8 +2,9 @@ package com.example.mobiledevelopment.src.login
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.dp
-import com.example.mobiledevelopment.src.login.domain.AuthState
-import com.example.mobiledevelopment.src.login.domain.ViewField
+import com.example.mobiledevelopment.src.domain.login.AuthState
+import com.example.mobiledevelopment.src.domain.login.LoginFieldsProvider
+import com.example.mobiledevelopment.src.domain.login.ViewField
 
 class LoginViewModel {
     private val repository = LoginRepository()

@@ -1,4 +1,4 @@
-package com.example.mobiledevelopment.src.movie.domain
+package com.example.mobiledevelopment.src.domain.movie
 
 import com.example.mobiledevelopment.include.retrofit.ReviewModel
 

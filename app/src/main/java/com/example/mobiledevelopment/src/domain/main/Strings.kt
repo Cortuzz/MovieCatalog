@@ -1,4 +1,4 @@
-package com.example.mobiledevelopment.src.main.domain
+package com.example.mobiledevelopment.src.domain.main
 
 const val favoriteBlockText = "Избранное"
 const val galleryBlockText = "Галерея"

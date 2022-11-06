@@ -22,7 +22,7 @@ import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.mobiledevelopment.R
-import com.example.mobiledevelopment.src.main.domain.noImageText
+import com.example.mobiledevelopment.src.domain.main.noImageText
 import com.example.mobiledevelopment.ui.theme.AccentColor
 import com.example.mobiledevelopment.ui.theme.IBMPlex
 

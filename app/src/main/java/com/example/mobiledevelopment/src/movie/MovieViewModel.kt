@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.example.mobiledevelopment.include.retrofit.MovieDetailsModel
 import com.example.mobiledevelopment.include.retrofit.ReviewModel
 import com.example.mobiledevelopment.include.retrofit.ReviewModifyModel
-import com.example.mobiledevelopment.src.movie.domain.ReviewCheckerService
+import com.example.mobiledevelopment.src.domain.movie.ReviewCheckerService
 
 class MovieViewModel: ViewModel() {
     private var movieModel: MutableState<MovieDetailsModel?> = mutableStateOf(null)

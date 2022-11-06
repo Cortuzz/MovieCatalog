@@ -2,9 +2,7 @@ package com.example.mobiledevelopment.src.profile
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.example.mobiledevelopment.include.retrofit.Common
 import com.example.mobiledevelopment.include.retrofit.ProfileModel
-import com.example.mobiledevelopment.src.registration.domain.ViewField
 import com.example.mobiledevelopment.src.utils.Utils
 
 class ProfileViewModel {

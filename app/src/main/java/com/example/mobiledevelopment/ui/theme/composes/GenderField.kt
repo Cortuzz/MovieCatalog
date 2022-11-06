@@ -18,10 +18,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mobiledevelopment.src.registration.domain.GenderViewData
-import com.example.mobiledevelopment.src.registration.domain.ViewField
-import com.example.mobiledevelopment.src.registration.domain.femaleOptionText
-import com.example.mobiledevelopment.src.registration.domain.maleOptionText
+import com.example.mobiledevelopment.src.domain.registration.GenderViewData
+import com.example.mobiledevelopment.src.domain.registration.ViewField
+import com.example.mobiledevelopment.src.domain.registration.femaleOptionText
+import com.example.mobiledevelopment.src.domain.registration.maleOptionText
 import com.example.mobiledevelopment.ui.theme.*
 
 @Composable

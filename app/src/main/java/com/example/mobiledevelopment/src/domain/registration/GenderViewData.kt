@@ -1,4 +1,4 @@
-package com.example.mobiledevelopment.src.registration.domain
+package com.example.mobiledevelopment.src.domain.registration
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.Dp

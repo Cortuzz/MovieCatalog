@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
@@ -32,9 +31,9 @@ import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.mobiledevelopment.R
 import com.example.mobiledevelopment.include.retrofit.MovieElementModel
-import com.example.mobiledevelopment.src.main.domain.ColorGenerator
-import com.example.mobiledevelopment.src.main.domain.favoriteBlockText
-import com.example.mobiledevelopment.src.main.domain.galleryBlockText
+import com.example.mobiledevelopment.src.domain.ColorGenerator
+import com.example.mobiledevelopment.src.domain.main.favoriteBlockText
+import com.example.mobiledevelopment.src.domain.main.galleryBlockText
 import com.example.mobiledevelopment.src.utils.noRippleClickable
 import com.example.mobiledevelopment.ui.theme.*
 import com.example.mobiledevelopment.ui.theme.composes.*

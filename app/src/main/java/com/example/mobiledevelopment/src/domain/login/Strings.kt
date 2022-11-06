@@ -1,4 +1,4 @@
-package com.example.mobiledevelopment.src.login.domain
+package com.example.mobiledevelopment.src.domain.login
 
 const val loginText = "Логин"
 const val passwordText = "Пароль"

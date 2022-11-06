@@ -1,10 +1,9 @@
-package com.example.mobiledevelopment.src.registration
+package com.example.mobiledevelopment.src.domain.registration
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.mobiledevelopment.include.retrofit.UserRegisterModel
 import com.example.mobiledevelopment.src.domain.FieldsProvider
-import com.example.mobiledevelopment.src.registration.domain.ViewField
 import com.example.mobiledevelopment.src.utils.Utils
 
 class RegistrationFieldsProvider : FieldsProvider<ViewField, UserRegisterModel> {

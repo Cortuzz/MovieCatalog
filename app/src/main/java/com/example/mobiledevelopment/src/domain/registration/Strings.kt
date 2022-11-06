@@ -1,4 +1,4 @@
-package com.example.mobiledevelopment.src.registration.domain
+package com.example.mobiledevelopment.src.domain.registration
 
 const val loginText = "Логин"
 const val emailText = "E-mail"
