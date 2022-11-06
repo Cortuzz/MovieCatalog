@@ -72,7 +72,7 @@ class RegistrationFieldsProvider : FieldsProvider<ViewField, UserRegisterModel> 
             name = viewFields[ViewField.Name]!!.value,
             password = viewFields[ViewField.Password]!!.value,
             email = viewFields[ViewField.Email]!!.value,
-            birthDate = formatDate(viewFields[ViewField.DateOfBirth]!!.value),
+            birthDate = Utils.formatDate(viewFields[ViewField.DateOfBirth]!!.value),
             gender = viewFields[ViewField.Gender]?.value?.toInt()
         )
     }
@@ -81,13 +81,8 @@ class RegistrationFieldsProvider : FieldsProvider<ViewField, UserRegisterModel> 
         return correctValues[field]!!
     }
 
-    private fun formatDate(date: String?): String? {
-        val sDate = date?.split('.')?.reversed()
-        return sDate?.joinToString("-")
-    }
-
     private fun checkEmail(email: String): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        return Utils.isValidEmail(email)
     }
 
     private fun checkDate(date: String): Boolean {
