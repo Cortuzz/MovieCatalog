@@ -14,6 +14,8 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mobiledevelopment.ui.theme.AccentColor
@@ -35,13 +37,12 @@ fun InputText(label: String, value: String, onChange: (value: String) -> Unit, i
                 fontWeight = FontWeight(400),
                 fontSize = 14.sp,
                 lineHeight = 12.sp,
-                modifier = Modifier.offset(y = (-3).dp),
                 color = TextColor
             )
         },
 
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).onFocusChanged {
-                focus -> focusState = focus.isFocused }.height(50.dp),
+                focus -> focusState = focus.isFocused }.height(54.dp),
         colors = getInputTextColors(),
         value = text,
         onValueChange = { text = it; onChange(it) },
@@ -65,17 +66,41 @@ fun InputText(label: String, value: MutableState<String>, onChange: () -> Unit, 
                     fontWeight = FontWeight(400),
                     fontSize = 14.sp,
                     lineHeight = 12.sp,
-                    modifier = Modifier.offset(y = (-3).dp),
                     color = TextColor
                 )
             },
 
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).onFocusChanged {
-                    focus -> focusState = focus.isFocused }.height(50.dp),
+                    focus -> focusState = focus.isFocused }.height(54.dp),
             colors = getInputTextColors(),
             value = value.value,
             onValueChange = { value.value = it; onChange() },
             visualTransformation = if (isHidden) PasswordVisualTransformation() else VisualTransformation.None,
+
+            shape = RoundedCornerShape(8.dp)
+        )
+
+        Row(
+            modifier = Modifier.fillMaxSize().offset(y = 16.dp, x = (-34.25).dp),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (isDate) DatePicker(date = value)
+        }
+    }
+}
+
+@Composable
+fun ProfileInputText(value: MutableState<String>, isDate: Boolean = false) {
+    var focusState by rememberSaveable { mutableStateOf(false) }
+
+    Box {
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth().onFocusChanged {
+                    focus -> focusState = focus.isFocused }.height(54.dp),
+            colors = getInputTextColors(),
+            value = value.value,
+            onValueChange = { value.value = it; },
 
             shape = RoundedCornerShape(8.dp)
         )
