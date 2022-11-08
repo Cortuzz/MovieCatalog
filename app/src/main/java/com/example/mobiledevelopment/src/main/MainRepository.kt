@@ -1,100 +1,54 @@
 package com.example.mobiledevelopment.src.main
 
-import com.example.mobiledevelopment.include.retrofit.Common
-import com.example.mobiledevelopment.include.retrofit.MovieElementModel
-import com.example.mobiledevelopment.include.retrofit.MoviesListModel
-import com.example.mobiledevelopment.include.retrofit.MoviesPageListModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.mobiledevelopment.src.domain.models.MovieElementModel
+import com.example.mobiledevelopment.src.domain.models.MoviesListModel
+import com.example.mobiledevelopment.src.domain.models.MoviesPageListModel
+import com.example.mobiledevelopment.src.domain.utils.SharedStorage
+import com.example.mobiledevelopment.src.domain.utils.services.RequestsProviderService
 
 class MainRepository {
-    private val service = Common.retrofitService
+    private val service = RequestsProviderService()
 
     fun getMovies(
         page: Int,
-        onResponseAction: (Response<MoviesPageListModel>) -> Unit,
+        onResponseAction: (MoviesPageListModel) -> Unit,
         onFailureAction: () -> Unit,
     ) {
-        service.getMoviesList(page).enqueue(object : Callback<MoviesPageListModel> {
-            override fun onFailure(call: Call<MoviesPageListModel>, t: Throwable) {
-                onFailureAction()
-            }
-
-            override fun onResponse(call: Call<MoviesPageListModel>, response: Response<MoviesPageListModel>) {
-                if (!response.isSuccessful || response.body() == null) {
-                    onFailureAction()
-                    return
-                }
-
-                onResponseAction(response)
-            }
-        })
+       service.getMovies(
+           page = page,
+           onResponseAction = { _, body -> onResponseAction(body) },
+           onFailureAction = { onFailureAction() },
+           onBadResponseAction = { _, _ -> onFailureAction() }
+       )
     }
 
     fun getFavouriteMovies(
-        onResponseAction: (Response<MoviesListModel>) -> Unit,
+        onResponseAction: (MoviesListModel) -> Unit,
         onFailureAction: () -> Unit,
+        onBadResponseAction: (Int) -> Unit
     ) {
-        service.getFavouritesMovies("Bearer ${Common.userToken}").enqueue(object : Callback<MoviesListModel> {
-            override fun onFailure(call: Call<MoviesListModel>, t: Throwable) {
-                onFailureAction()
-            }
-
-            override fun onResponse(call: Call<MoviesListModel>, response: Response<MoviesListModel>) {
-                if (!response.isSuccessful || response.body() == null) {
-                    onFailureAction()
-                    return
-                }
-
-                onResponseAction(response)
-            }
-        })
+        service.getFavouriteMovies(
+            onResponseAction = { _, body -> onResponseAction(body) },
+            onFailureAction = { onFailureAction() },
+            onBadResponseAction = { code, _ -> onBadResponseAction(code) }
+        )
     }
 
     fun setCurrentMovie(movieElementModel: MovieElementModel) {
-        Common.currentMovieId = movieElementModel.id
-    }
-
-    fun addMovieToFavourites(
-        id: String,
-        onResponseAction: (Response<Void>) -> Unit,
-        onFailureAction: () -> Unit,
-    ) {
-        service.addToFavourites("Bearer ${Common.userToken}", id).enqueue(object : Callback<Void> {
-            override fun onFailure(call: Call<Void>, t: Throwable) {
-                onFailureAction()
-            }
-
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                if (!response.isSuccessful) {
-                    onFailureAction()
-                    return
-                }
-
-                onResponseAction(response)
-            }
-        })
+        SharedStorage.currentMovieId = movieElementModel.id
     }
 
     fun removeMovieFromFavourites(
         id: String,
-        onResponseAction: (Response<Void>) -> Unit,
+        onResponseAction: () -> Unit,
+        onBadResponseAction: (Int) -> Unit,
         onFailureAction: () -> Unit,
     ) {
-        service.removeFromFavourites("Bearer ${Common.userToken}", id).enqueue(object : Callback<Void> {
-            override fun onFailure(call: Call<Void>, t: Throwable) {
-                onFailureAction()
-            }
-
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                if (!response.isSuccessful) {
-                    onFailureAction()
-                    return
-                }
-
-                onResponseAction(response)
-            }
-        })
+        service.removeMovieFromFavourites(
+            id = id,
+            onResponseAction = { onResponseAction() },
+            onBadResponseAction = { code, _ -> onBadResponseAction(code) },
+            onFailureAction = { onFailureAction() }
+        )
     }
 }

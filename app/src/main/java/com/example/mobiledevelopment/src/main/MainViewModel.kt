@@ -4,30 +4,33 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.example.mobiledevelopment.include.retrofit.MovieElementModel
-import com.example.mobiledevelopment.include.retrofit.MoviesListModel
-import com.example.mobiledevelopment.include.retrofit.MoviesPageListModel
+import com.example.mobiledevelopment.src.domain.models.MovieElementModel
+import com.example.mobiledevelopment.src.domain.models.MoviesPageListModel
 
 class MainViewModel {
     private val repository: MainRepository = MainRepository()
     private var promotedMovie: MutableState<MovieElementModel?> = mutableStateOf(null)
     private var movieList = mutableStateListOf<MovieElementModel>()
     private var favouriteMovieList = mutableStateListOf<MovieElementModel>()
-    private var pageObtained = 1
+    private var pageObtained = mutableStateOf(1)
+    private var totalPages = mutableStateOf(0)
 
     init {
-       init()
+       init { }
     }
 
-    private fun init() {
+    private fun init(onUnauthorized: () -> Unit) {
         repository.getFavouriteMovies(
             onResponseAction = {
-                val moviesPageModel = it.body() as MoviesListModel
+                val moviesPageModel = it
                 val movies = moviesPageModel.movies
 
                 for (movie in movies) {
                     favouriteMovieList.add(movie)
                 }
+            },
+            onBadResponseAction = {
+                if (it == 401) onUnauthorized()
             },
             onFailureAction = {
 
@@ -35,17 +38,18 @@ class MainViewModel {
         )
     }
 
-    fun refresh() {
-        pageObtained = 1
+    fun refresh(onUnauthorized: () -> Unit) {
+        pageObtained.value = 1
         favouriteMovieList.clear()
         movieList.clear()
-        init()
+        init(onUnauthorized)
     }
 
-    private fun parseMoviesModel(moviesPageModel: MoviesPageListModel, addToPromoted: Boolean = false) {
+    private fun parseMoviesModel(moviesPageModel: MoviesPageListModel) {
         val movies = (moviesPageModel.movies).toMutableList()
+        totalPages.value = moviesPageModel.pageInfo.pageCount
 
-        if (addToPromoted) {
+        if (pageObtained.value == 1) {
             promotedMovie.value = movies.removeFirst()
         }
 
@@ -55,10 +59,10 @@ class MainViewModel {
     }
 
     fun fetchNextPage() {
-        repository.getMovies(pageObtained,
+        repository.getMovies(pageObtained.value,
             onResponseAction = {
-                parseMoviesModel(it.body() as MoviesPageListModel, pageObtained == 1)
-                pageObtained++
+                parseMoviesModel(it)
+                pageObtained.value++
             },
             onFailureAction = {
                 // todo: throw Exception()
@@ -70,32 +74,23 @@ class MainViewModel {
         repository.setCurrentMovie(movieElementModel)
     }
 
-    fun addToFavourites(movieElementModel: MovieElementModel) {
-        val movieId = movieElementModel.id
-
-        repository.addMovieToFavourites(
-            id = movieId,
-            onFailureAction = {
-
-            },
-            onResponseAction = {
-                favouriteMovieList.add(movieElementModel)
-            }
-        )
-    }
-
-    fun removeFromFavourites(movieElementModel: MovieElementModel) {
+    fun removeFromFavourites(movieElementModel: MovieElementModel, onUnauthorized: () -> Unit) {
         val movieId = movieElementModel.id
 
         repository.removeMovieFromFavourites(
             id = movieId,
-            onFailureAction = {
-
-            },
-            onResponseAction = {
-                favouriteMovieList.remove(movieElementModel)
-            }
+            onFailureAction = { },
+            onBadResponseAction =  { if (it == 401) onUnauthorized() },
+            onResponseAction = { favouriteMovieList.remove(movieElementModel) }
         )
+    }
+
+    fun getCurrentPage(): MutableState<Int> {
+        return pageObtained
+    }
+
+    fun getTotalPages(): MutableState<Int> {
+        return totalPages
     }
 
     fun getMovieList(): SnapshotStateList<MovieElementModel> {

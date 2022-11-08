@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <style name="Theme.MobileDevelopment" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:colorAccent">@color/accent_color</item>
+
         <item name="android:windowTranslucentStatus">true</item>
         <!-- <item name="android:windowTranslucentNavigation">true</item> -->
-        <item name="android:windowSplashScreenBackground">@color/background_color</item>
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+    </style>
+
+    <style name="Theme.MobileDevelopment.Calendar" parent="android:Theme.Material.Light.Dialog">
+        <item name="android:colorAccent">@color/accent_color</item>
+        <item name="android:calendarTextColor">@color/accent_color</item>
+        <item name="android:textColorPrimary">#FFD1D1D1</item>
+        <item name="android:textColorSecondary">@color/accent_color</item>
     </style>
 </resources>

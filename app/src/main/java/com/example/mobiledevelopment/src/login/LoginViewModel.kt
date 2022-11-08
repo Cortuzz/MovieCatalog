@@ -1,14 +1,17 @@
 package com.example.mobiledevelopment.src.login
 
 import androidx.compose.runtime.mutableStateOf
-import com.example.mobiledevelopment.src.login.domain.AuthState
-import com.example.mobiledevelopment.src.login.domain.ViewField
+import androidx.compose.ui.unit.dp
+import com.example.mobiledevelopment.src.domain.login.AuthState
+import com.example.mobiledevelopment.src.domain.login.LoginFieldsProvider
+import com.example.mobiledevelopment.src.domain.login.ViewField
 
 class LoginViewModel {
     private val repository = LoginRepository()
-    private val fieldsModel = LoginFieldsProvider()
+    private var fieldsModel = LoginFieldsProvider()
     var authState = mutableStateOf(AuthState.Idle)
     var fullness = mutableStateOf(false)
+    var logoSize = mutableStateOf(0.dp)
 
     fun handleLoginClick(onResponse: () -> Unit) {
         authState.value = AuthState.Loading
@@ -21,6 +24,9 @@ class LoginViewModel {
                 authState.value = AuthState.WrongData
             },
             onResponseAction = {
+                authState.value = AuthState.Idle
+                fullness.value = false
+                fieldsModel = LoginFieldsProvider()
                 onResponse()
             }
         )
@@ -33,5 +39,13 @@ class LoginViewModel {
     fun changeField(field: ViewField, value: String) {
         fieldsModel.changeField(field, value)
         fullness.value =  "" !in fieldsModel.getFields().values
+    }
+
+    fun handleRegistrationScreenClick() {
+        logoSize.value = 100.dp
+    }
+
+    fun restoreSize() {
+        logoSize.value = 170.dp
     }
 }

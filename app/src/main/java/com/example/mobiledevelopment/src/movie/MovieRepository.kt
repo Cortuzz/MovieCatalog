@@ -1,44 +1,49 @@
 package com.example.mobiledevelopment.src.movie
 
-import com.example.mobiledevelopment.include.retrofit.*
-import com.example.mobiledevelopment.src.TokenManager
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.mobiledevelopment.src.domain.models.MovieDetailsModel
+import com.example.mobiledevelopment.src.domain.models.MovieElementModel
+import com.example.mobiledevelopment.src.domain.models.ReviewModifyModel
+import com.example.mobiledevelopment.src.domain.utils.SharedStorage
+import com.example.mobiledevelopment.src.domain.utils.services.RequestsProviderService
 
 class MovieRepository {
-    private val service = Common.retrofitService
-    private lateinit var userModel: ProfileModel
+    private val service = RequestsProviderService()
 
-    init {
-        TokenManager.getInstance().checkToken(
-            onFailureAction = {
-                TokenManager.getInstance().baseOnFailureAction()
-            },
-            onSuccessAction = {
-                userModel = it
-            }
+    fun getMovie(
+        onResponseAction: (MovieDetailsModel) -> Unit,
+        onFailureAction: () -> Unit,
+    ) {
+        service.getMovie(
+            onFailureAction = { onFailureAction() },
+            onResponseAction = { _, body -> onResponseAction(body) },
+            onBadResponseAction = { _, _ -> onFailureAction() }
         )
     }
 
-    fun getMovie(
-        onResponseAction: (Response<MovieDetailsModel>) -> Unit,
+    fun addMovieToFavourites(
+        onResponseAction: (Int) -> Unit,
         onFailureAction: () -> Unit,
+        onBadResponseAction: (Int) -> Unit
     ) {
-        service.getMovie(Common.currentMovieId).enqueue(object : Callback<MovieDetailsModel> {
-            override fun onFailure(call: Call<MovieDetailsModel>, t: Throwable) {
-                onFailureAction()
-            }
+        service.addMovieToFavourites(
+            id = SharedStorage.currentMovieId,
+            onBadResponseAction = { code, _ -> onBadResponseAction(code) },
+            onFailureAction = { onFailureAction() },
+            onResponseAction = { code -> onResponseAction(code) }
+        )
+    }
 
-            override fun onResponse(call: Call<MovieDetailsModel>, response: Response<MovieDetailsModel>) {
-                if (!response.isSuccessful || response.body() == null) {
-                    onFailureAction()
-                    return
-                }
-
-                onResponseAction(response)
-            }
-        })
+    fun removeMovieFromFavourites(
+        onResponseAction: (Int) -> Unit,
+        onFailureAction: () -> Unit,
+        onBadResponseAction: (Int) -> Unit
+    ) {
+        service.removeMovieFromFavourites(
+            id = SharedStorage.currentMovieId,
+            onBadResponseAction = { code, _ -> onBadResponseAction(code) },
+            onFailureAction = { onFailureAction() },
+            onResponseAction = { code -> onResponseAction(code) }
+        )
     }
 
     fun sendReview(
@@ -48,23 +53,66 @@ class MovieRepository {
         onFailureAction: () -> Unit,
         onBadResponseAction: (Int) -> Unit
     ) {
-        service.addReview( "Bearer ${Common.userToken}",id, reviewModifyModel).enqueue(object : Callback<Void> {
-            override fun onFailure(call: Call<Void>, t: Throwable) {
-                onFailureAction()
-            }
+        service.sendReview(
+            id = id,
+            reviewModifyModel = reviewModifyModel,
+            onBadResponseAction = { code, _ -> onBadResponseAction(code) },
+            onFailureAction = { onFailureAction() },
+            onResponseAction = { onResponseAction() }
+        )
+    }
 
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                if (!response.isSuccessful) {
-                    onBadResponseAction(response.code())
-                    return
+    fun editReview(
+        id: String,
+        reviewModifyModel: ReviewModifyModel,
+        onResponseAction: () -> Unit,
+        onFailureAction: () -> Unit,
+        onBadResponseAction: (Int) -> Unit
+    ) {
+        service.editReview(
+            id = id,
+            reviewModifyModel = reviewModifyModel,
+            onResponseAction = { onResponseAction() },
+            onFailureAction = { onFailureAction() },
+            onBadResponseAction = { code, _ -> onBadResponseAction(code) }
+        )
+    }
+
+    fun deleteReview(
+        id: String,
+        onResponseAction: () -> Unit,
+        onFailureAction: () -> Unit,
+        onBadResponseAction: (Int) -> Unit
+    ) {
+        service.deleteReview(
+            id = id,
+            onResponseAction = { onResponseAction() },
+            onFailureAction = { onFailureAction() },
+            onBadResponseAction = { code, _ -> onBadResponseAction(code) }
+        )
+    }
+
+    fun isInFavourites(
+        falseCallback: () -> Unit = { },
+        trueCallback: () -> Unit = { }
+    ) {
+        service.getFavouriteMovies(
+            onFailureAction = { },
+            onBadResponseAction = {_, _ -> },
+            onResponseAction = { _, body ->
+
+                for (movie in body.movies) {
+                    if (movie.id == SharedStorage.currentMovieId) {
+                        trueCallback()
+                        return@getFavouriteMovies
+                    }
                 }
-
-                onResponseAction()
+                falseCallback()
             }
-        })
+        )
     }
 
     fun getUserId(): String {
-        return userModel.id
+        return SharedStorage.userId
     }
 }

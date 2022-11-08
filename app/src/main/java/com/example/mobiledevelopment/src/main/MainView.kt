@@ -1,16 +1,14 @@
 package com.example.mobiledevelopment.src.main
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -20,61 +18,44 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.mobiledevelopment.R
-import com.example.mobiledevelopment.include.retrofit.MovieElementModel
-import com.example.mobiledevelopment.src.domain.Drawable
-import com.example.mobiledevelopment.src.main.domain.ColorGenerator
-import com.example.mobiledevelopment.src.main.domain.favoriteBlockText
-import com.example.mobiledevelopment.src.main.domain.galleryBlockText
-import com.example.mobiledevelopment.ui.theme.AccentColor
-import com.example.mobiledevelopment.ui.theme.BackgroundColor
-import com.example.mobiledevelopment.ui.theme.IBMPlex
-import com.example.mobiledevelopment.ui.theme.OutlineColor
-import com.example.mobiledevelopment.ui.theme.composes.ErrorMoviePoster
-import com.example.mobiledevelopment.ui.theme.composes.MoviePoster
-import com.example.mobiledevelopment.ui.theme.composes.RatingShape
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.example.mobiledevelopment.src.domain.utils.services.RatingProviderService
+import com.example.mobiledevelopment.src.domain.composes.*
+import com.example.mobiledevelopment.src.domain.main.*
+import com.example.mobiledevelopment.src.domain.models.MovieElementModel
+import com.example.mobiledevelopment.src.domain.profile.profileText
+import com.example.mobiledevelopment.src.domain.utils.Utils
+import com.example.mobiledevelopment.src.domain.utils.noRippleClickable
+import com.example.mobiledevelopment.ui.theme.*
 
-class MainView(private val navController: NavHostController): Drawable {
-    companion object {
-        private var instance: MainView? = null
+private var viewModel: MainViewModel = MainViewModel()
+private lateinit var navigateToMovie: () -> Unit
+private lateinit var navigateToLogin: () -> Unit
+private lateinit var navigateToProfile: () -> Unit
 
-        fun getInstance(nav: NavHostController): MainView {
-            if (instance == null)
-                instance = MainView(nav)
+@Composable
+fun PromotedMovie(movieElement: MutableState<MovieElementModel?>) {
+    val gradient = Brush.verticalGradient(
+        colors = listOf(Color.Transparent, BackgroundColor),
+        startY = with(LocalDensity.current) { 250.dp.toPx() },
+        endY = with(LocalDensity.current) { 320.dp.toPx() }
+    )
 
-            return instance as MainView
-        }
-    }
-
-    private var viewModel: MainViewModel = MainViewModel()
-
-    @Composable
-    fun PromotedMovie(movieElement: MutableState<MovieElementModel?>) {
-        if (movieElement.value == null)
-            return
-
-        val gradient = Brush.verticalGradient(
-            colors = listOf(Color.Transparent, BackgroundColor),
-            startY = with(LocalDensity.current) { 250.dp.toPx() },
-            endY = with(LocalDensity.current) { 320.dp.toPx() }
-        )
-
-        Box {
+    Box(
+        modifier = Modifier.defaultMinSize(minHeight = 320.dp)
+    ) {
+        if (movieElement.value != null) {
             MoviePoster(
                 url = movieElement.value!!.poster!!,
                 modifier = Modifier
@@ -86,264 +67,329 @@ class MainView(private val navController: NavHostController): Drawable {
             Box(modifier = Modifier
                 .matchParentSize()
                 .background(gradient))
-        }
 
+            Row (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .offset(y = 244.dp),
+                horizontalArrangement = Arrangement.Center) {
+                PrimaryButton(
+                    name = promotedMovieButtonText,
+                    action = {
+                        if (movieElement.value != null) {
+                            viewModel.openMovie(movieElement.value!!)
+                            navigateToMovie()
+                        }
+                    },
+                    modifier = Modifier.defaultMinSize(minHeight = 44.dp, minWidth = 160.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun Favourites(movies: SnapshotStateList<MovieElementModel>) {
+    Column(
+        modifier = Modifier.padding(start = 16.dp)
+    ) {
+        CategoryText(name = favoriteBlockText)
+        FavouritesContent(movies)
+    }
+}
+
+@Composable
+fun FavouritesContent(movies: SnapshotStateList<MovieElementModel>) {
+    val state = rememberForeverLazyListState(key = "favourites")
+    val startIndex by remember(remember { derivedStateOf { state.firstVisibleItemIndex } }) {
+        derivedStateOf {
+            state.layoutInfo.visibleItemsInfo.run {
+                val firstVisibleIndex = state.firstVisibleItemIndex
+                if (isEmpty()) -1 else firstVisibleIndex + (last().index - firstVisibleIndex) / 2
+            }
+        }
     }
 
-    @Composable
-    fun Favourites(movies: SnapshotStateList<MovieElementModel>) {
-        Column(
-            modifier = Modifier.padding(start = 16.dp)
-        ) {
-            CategoryText(name = favoriteBlockText)
-            FavouritesContent(movies)
-        }
-    }
-
-    @Composable
-    fun FavouritesContent(movies: SnapshotStateList<MovieElementModel>) {
-        val state = rememberLazyListState()
-        val startIndex by remember(remember { derivedStateOf { state.firstVisibleItemIndex } }) {
-            derivedStateOf {
-                state.layoutInfo.visibleItemsInfo.run {
-                    val firstVisibleIndex = state.firstVisibleItemIndex
-                    if (isEmpty()) -1 else firstVisibleIndex + (last().index - firstVisibleIndex) / 2
-                }
+    Box {
+        if (movies.size == 0) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .fillMaxSize()
+                    .requiredHeight(180.dp)
+                    .padding(top = 8.dp)
+                    .offset(y = (-10).dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                NoDataText(text = noFavouritesMoviesText)
             }
         }
 
         LazyRow(
             state = state,
             modifier = Modifier
-                .fillMaxHeight()
+                .requiredHeight(180.dp)
+                .fillMaxWidth()
                 .padding(top = 8.dp)
         ) {
+            item {
+
+            }
+
             items(movies.size) {
-                if (startIndex == it) 
-                    FavouriteMovieElement(movieElement = movies[it], 120.dp, 172.dp, 0.dp)
-                else
-                    FavouriteMovieElement(movieElement = movies[it])
+                val height by animateDpAsState(
+                    targetValue = if (startIndex == it) 172.dp else 144.dp,
+                    animationSpec = tween(300),
+                )
+                val width by animateDpAsState(
+                    targetValue = if (startIndex == it) 120.dp else 100.dp,
+                    animationSpec = tween(300),
+                )
+                val padding by animateDpAsState(
+                    targetValue = if (startIndex == it) 0.dp else 14.dp,
+                    animationSpec = tween(300),
+                )
+
+                val modifier = Modifier
+                    .padding(end = 16.dp, top = padding)
+                    .requiredSize(width, height)
+                    .clip(shape = RoundedCornerShape(16.dp))
+                    .noRippleClickable {
+                        viewModel.openMovie(movies[it])
+                        navigateToMovie()
+                    }
+
+                FavouriteMovieElement(movieElement = movies[it], modifier)
             }
         }
     }
+}
 
-    @Composable
-    fun FavouriteMovieElement(
-        movieElement: MovieElementModel,
-        width: Dp = 100.dp,
-        height: Dp = 144.dp,
-        padding: Dp = 14.dp) {
-
-
-        SubcomposeAsyncImage(
-            contentScale = ContentScale.FillBounds,
-            model = "${movieElement.poster}",
-            contentDescription = null,
-            modifier = Modifier
-                .padding(end = 16.dp, top = padding)
-                .animateContentSize()
-                .requiredSize(width, height)
-                .clip(shape = RoundedCornerShape(16.dp)),
-        ) {
-            when (painter.state) {
-                is AsyncImagePainter.State.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.offset(y = 20.dp), color = AccentColor)
-                }
-                is AsyncImagePainter.State.Error -> ErrorMoviePoster()
-                else -> {
-                    SubcomposeAsyncImageContent()
-                    RemoveButton { viewModel.removeFromFavourites(movieElement) }
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun RemoveButton(onClick: () -> Unit) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 6.dp, end = 6.dp),
-            verticalAlignment = Alignment.Top,
-            horizontalArrangement = Arrangement.End
-        ) {
-            Image(
-                modifier = Modifier
-                    .requiredSize(16.dp)
-                    .clickable { onClick() },
-                painter = painterResource(id = R.drawable.remove_button),
-                contentDescription = "Remove",
-            )
-        }
-    }
-
-    @Composable
-    fun Gallery(movies: SnapshotStateList<MovieElementModel>) {
-        Column(
-            modifier = Modifier.padding(start = 16.dp)
-        ) {
-            CategoryText(name = galleryBlockText)
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            for (movie in movies) {
-               MovieElement(movieElement = movie)
-                Spacer(Modifier.height(16.dp))
-            }
-
-            Spacer(Modifier.height(50.dp))
-        }
-    }
-
-    @Composable
-    fun CategoryText(name: String) {
-        Text(text = name,
-            color = AccentColor,
-            fontFamily = IBMPlex,
-            fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
-            lineHeight = 32.sp,
-            letterSpacing = 0.5.sp,
-        )
-    }
-
-    @Composable
-    fun TitleText(name: String) {
-        Text(text = name,
-            color = Color.White,
-            fontFamily = IBMPlex,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp,
-            lineHeight = 24.sp,
-            letterSpacing = 0.5.sp,
-        )
-    }
-
-    @Composable
-    fun DescriptionText(name: String) {
-        Text(text = name,
-            color = Color.White,
-            fontFamily = IBMPlex,
-            fontWeight = FontWeight.Normal,
-            fontSize = 14.sp,
-            lineHeight = 18.sp,
-            letterSpacing = 0.5.sp,
-        )
-    }
-
-    @Composable
-    fun MovieElement(movieElement: MovieElementModel) {
-        var parsedGenres = ""
-        for (genre in movieElement.genres!!) {
-            parsedGenres += "${genre.name}, " // todo: переделать
-        }
-        parsedGenres = parsedGenres.dropLast(2)
-
-        val rating = ColorGenerator.getRating(movieElement.reviews ?: listOf())
-        val height = remember { mutableStateOf(30) }
-        val heightDp = with(LocalDensity.current) { height.value.toDp() }
-
-        Row {
-            MoviePoster(url = movieElement.poster!!, modifier = Modifier
-                .onGloballyPositioned { height.value = it.size.height }
-                .requiredSize(100.dp, 144.dp)
-                .clip(shape = RoundedCornerShape(16.dp))
-                .clickable { viewModel.openMovie(movieElement); navController.navigate("movie_screen") }
-            )
-
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .offset(y = (-6).dp)
-                    .defaultMinSize(minHeight = heightDp),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    TitleText(name = movieElement.name!!)
-                    Spacer(modifier = Modifier.height(3.dp))
-                    DescriptionText(name = "${movieElement.year} • ${movieElement.country}")
-                    Spacer(modifier = Modifier.height(3.dp))
-                    DescriptionText(name = parsedGenres)
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-                RatingShape(rating = rating, modifier = Modifier.size(height = 28.dp, width = 56.dp))
-            }
-        }
-    }
-
-    @Composable
-    fun Navigation() {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            NavigationButton(
-                name = "Главное",
-                onClick = { /*TODO*/ },
-                painter = painterResource(id = R.drawable.main_page)
-            )
-            NavigationButton(
-                name = "Профиль",
-                onClick = { /*TODO*/ },
-                painter = painterResource(id = R.drawable.profile_page)
-            )
-        }
-
-    }
-
-    @Composable
-    fun NavigationButton(
-        name: String,
-        onClick: () -> Unit,
-        painter: Painter
+@Composable
+fun FavouriteMovieElement(movieElement: MovieElementModel, modifier: Modifier) {
+    SubcomposeAsyncImage(
+        contentScale = ContentScale.FillBounds,
+        model = "${movieElement.poster}",
+        contentDescription = null,
+        modifier = modifier
     ) {
-        Button(
-            onClick = onClick,
-            modifier = Modifier.width(150.dp),
-            colors = ButtonDefaults.buttonColors(backgroundColor = BackgroundColor)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    painter = painter,
-                    contentDescription = null,
-                )
-
-                Text(
-                    text = name,
-                    color = OutlineColor,
-                )
+        when (painter.state) {
+            is AsyncImagePainter.State.Loading -> {
+                CircularProgressIndicator(modifier = Modifier.offset(y = 20.dp), color = AccentColor)
+            }
+            is AsyncImagePainter.State.Error -> ErrorMoviePoster()
+            else -> {
+                SubcomposeAsyncImageContent()
+                RemoveButton {
+                    viewModel.removeFromFavourites(movieElement) {
+                        navigateToLogin()
+                    }
+                }
             }
         }
     }
+}
 
-    @Composable
-    override fun Draw() {
-        val scrollState = rememberLazyListState()
-        val endOfListReached by remember {
-            derivedStateOf {
-                scrollState.layoutInfo.visibleItemsInfo.lastIndex
-            }
+@Composable
+fun RemoveButton(onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 6.dp, end = 6.dp),
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.End
+    ) {
+        Image(
+            modifier = Modifier
+                .requiredSize(16.dp)
+                .noRippleClickable { onClick() },
+            painter = painterResource(id = R.drawable.remove_button),
+            contentDescription = removeText,
+        )
+    }
+}
+
+@Composable
+fun Gallery(movies: SnapshotStateList<MovieElementModel>) {
+    Column(
+        modifier = Modifier.padding(start = 16.dp)
+    ) {
+        CategoryText(name = galleryBlockText)
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        for (movie in movies) {
+           MovieElement(movieElement = movie)
+            Spacer(Modifier.height(16.dp))
         }
+    }
+}
 
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(false),
-            onRefresh = { viewModel.refresh() },
+@Composable
+fun CategoryText(name: String) {
+    Text(text = name,
+        color = AccentColor,
+        fontFamily = IBMPlex,
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+        lineHeight = 32.sp,
+        letterSpacing = 0.5.sp,
+    )
+}
+
+@Composable
+fun TitleText(name: String) {
+    Text(text = name,
+        color = Color.White,
+        fontFamily = IBMPlex,
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp,
+    )
+}
+
+@Composable
+fun DescriptionText(name: String) {
+    Text(text = name,
+        color = Color.White,
+        fontFamily = IBMPlex,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 18.sp,
+        letterSpacing = 0.5.sp,
+    )
+}
+
+@Composable
+fun MovieElement(movieElement: MovieElementModel) {
+    val rating = RatingProviderService.getRating(movieElement.reviews ?: listOf())
+    val height = remember { mutableStateOf(30) }
+    val positioned = remember { mutableStateOf(false) }
+    val heightDp = with(LocalDensity.current) { height.value.toDp() }
+
+    Row(
+        modifier = Modifier.noRippleClickable {
+            viewModel.openMovie(movieElement)
+            navigateToMovie()
+        }
+    ) {
+        MoviePoster(url = movieElement.poster ?: "", modifier = Modifier
+            .onGloballyPositioned {
+                height.value = it.size.height
+                positioned.value = true
+            }
+            .requiredSize(100.dp, 144.dp)
+            .clip(shape = RoundedCornerShape(16.dp))
+        )
+
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .offset(y = (-6).dp)
+                .defaultMinSize(minHeight = heightDp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            LazyColumn {
-                item { PromotedMovie(viewModel.getPromotedMovie()) }
-                item { Favourites(viewModel.getFavouriteMovieList()) }
-                item { Gallery(viewModel.getMovieList()) }
-                item { viewModel.fetchNextPage() }
+            Column {
+                TitleText(name = movieElement.name ?: noTitleText)
+                Spacer(modifier = Modifier.height(3.dp))
+                DescriptionText(name = "${movieElement.year} • ${movieElement.country}")
+                Spacer(modifier = Modifier.height(3.dp))
+                DescriptionText(name = Utils.parseGenres(movieElement.genres ?: listOf()))
             }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            if (positioned.value)
+                RatingShape(
+                    rating = rating,
+                    modifier = Modifier.size(height = 28.dp, width = 56.dp)
+                )
+        }
+    }
+}
+
+@Composable
+fun Navigation() {
+    Row(
+      modifier = Modifier.fillMaxSize(),
+      verticalAlignment = Alignment.Bottom,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(NavigationColor),
+
+        ) {
+            NavigationButton(
+                name = mainText,
+                onClick = {  },
+                painter = painterResource(id = R.drawable.main_page_active),
+                fraction = 0.5f,
+                color = AccentColor
+            )
+            NavigationButton(
+                name = profileText,
+                onClick = { navigateToProfile() },
+                painter = painterResource(id = R.drawable.profile_page),
+                fraction = 1f,
+                color = OutlineColor
+            )
+        }
+    }
+}
+
+@Composable
+fun MoviesLoadingIndicator() {
+    val isEndObtained = viewModel.getTotalPages().value < viewModel.getCurrentPage().value
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        LoadingIndicator(modifier = Modifier.requiredSize(150.dp)) { !isEndObtained }
+        if (isEndObtained) {
+            Spacer(Modifier.height(25.dp))
+            NoDataText(text = noMoviesText)
+        }
+    }
+}
+
+@Composable 
+fun NoDataText(text: String) {
+    Text(
+        text = text,
+        fontFamily = IBMPlex,
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+        letterSpacing = 0.5.sp,
+        textAlign = TextAlign.Center,
+        color = Color.White
+    )
+}
+
+@Composable
+fun MainScreen(navToLogin: () -> Unit, navToMovie: () -> Unit, navToProfile: () -> Unit) {
+    navigateToLogin = navToLogin
+    navigateToMovie = navToMovie
+    navigateToProfile = navToProfile
+    val state = rememberForeverLazyListState(key = "main_screen")
+
+    PullRefresh(onRefresh = { viewModel.refresh { navToLogin() } }) {
+        LazyColumn(
+            state = state
+        ) {
+            item { PromotedMovie(viewModel.getPromotedMovie()) }
+            item { Favourites(viewModel.getFavouriteMovieList()) }
+            item { Gallery(viewModel.getMovieList()) }
+            item { MoviesLoadingIndicator() }
+            item { Spacer(Modifier.height(80.dp)) }
+            item { viewModel.fetchNextPage() }
         }
 
-
-
-
-        //Navigation()
+        Navigation()
     }
 }
