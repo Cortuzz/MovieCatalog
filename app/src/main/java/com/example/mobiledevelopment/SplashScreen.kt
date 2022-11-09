@@ -27,12 +27,12 @@ import kotlinx.coroutines.delay
 @SuppressLint("CustomSplashScreen")
 class SplashScreen: ComponentActivity() {
     private val authManager = TokenProviderService.getInstance(this)
-    private lateinit var splashScreen: androidx.core.splashscreen.SplashScreen
+    private var splashScreen: androidx.core.splashscreen.SplashScreen? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
             splashScreen = installSplashScreen()
-            splashScreen.setKeepOnScreenCondition { true }
+            splashScreen?.setKeepOnScreenCondition { true }
         }
         super.onCreate(savedInstanceState)
 
@@ -49,7 +49,7 @@ class SplashScreen: ComponentActivity() {
     }
 
     private fun tokenChecker() {
-        //authManager.loadToken()
+        authManager.loadToken()
         authManager.checkServerAndToken(
             onResponseAction = {
                 SharedStorage.isTokenValid = true
@@ -60,7 +60,7 @@ class SplashScreen: ComponentActivity() {
                 goToApplication()
             },
             onFailureAction = {
-                splashScreen.setKeepOnScreenCondition { false }
+                splashScreen?.setKeepOnScreenCondition { false }
                 alert()
             }
         )

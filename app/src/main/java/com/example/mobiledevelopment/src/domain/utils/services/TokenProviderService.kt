@@ -75,6 +75,7 @@ class TokenProviderService(private val activity: ComponentActivity) {
                     return
                 }
 
+                SharedStorage.userId = response.body()?.id ?: ""
                 onResponseAction()
             }
         })
