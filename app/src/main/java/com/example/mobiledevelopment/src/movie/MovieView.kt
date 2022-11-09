@@ -410,7 +410,10 @@ fun MainContent() {
 @Composable
 fun MovieScreenContent() {
     if (viewModel.getReviewDialogState().value)
-        ReviewDialog { viewModel.getReviewDialogState().value = false }
+        ReviewDialog {
+            viewModel.getReviewDialogState().value = false
+            viewModel.clearReview()
+        }
 
     val scrollState = rememberForeverLazyListState(key = "movie_screen")
     val popupState = remember { derivedStateOf { scrollState.firstVisibleItemIndex } }.value != 0 ||
@@ -458,6 +461,7 @@ fun ReviewDialog(onDismissRequest: () -> Unit) {
                     action = {
                         viewModel.sendReview { navigateToLogin() }
                         viewModel.getReviewDialogState().value = false
+                        viewModel.clearReview()
                      },
                     modifier = Modifier.fillMaxWidth()
                 )
