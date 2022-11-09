@@ -18,9 +18,7 @@ import androidx.compose.ui.unit.sp
 import com.example.mobiledevelopment.R
 import com.example.mobiledevelopment.src.domain.composes.*
 import com.example.mobiledevelopment.src.domain.main.mainText
-import com.example.mobiledevelopment.src.domain.profile.logoutText
-import com.example.mobiledevelopment.src.domain.profile.profileText
-import com.example.mobiledevelopment.src.domain.profile.saveText
+import com.example.mobiledevelopment.src.domain.profile.*
 import com.example.mobiledevelopment.ui.theme.*
 
 
@@ -58,14 +56,14 @@ fun Header() {
 }
 
 @Composable
-fun FieldLabel(text: String) {
+fun FieldLabel(text: String, color: Color = OutlineColor) {
     Text(
         text = text,
         fontFamily = IBMPlex,
         fontSize = 16.sp,
         fontWeight = FontWeight.Medium,
         lineHeight = 20.sp,
-        color = OutlineColor
+        color = color
     )
 }
 
@@ -77,40 +75,47 @@ fun MainData() {
         .padding(bottom = 200.dp)
         .verticalScroll(rememberScrollState())) {
 
-        FieldLabel(text = "E-mail")
-        Spacer(Modifier.height(8.dp))
-        ProfileInputText(viewModel.getEmail())
-        Spacer(Modifier.height(2.dp))
-        WrongFieldText(text = "Некорректный E-mail", correct = viewModel.getEmailCorrectChecker())
-        Spacer(Modifier.height(16.dp))
+        for (field in viewModel.fields) {
+            val changeIndicator =
+                if (field.initialValue.value != field.value.value)
+                    changeIndicatorText
+                else ""
 
-        FieldLabel(text = "Ссылка на аватарку")
-        Spacer(Modifier.height(8.dp))
-        ProfileInputText(viewModel.getAvatarLink())
-        Spacer(Modifier.height(12.dp))
+            Row {
+                FieldLabel(text = field.label)
+                FieldLabel(text = changeIndicator, color = AccentColor)
+            }
 
-        FieldLabel(text = "Имя")
-        Spacer(Modifier.height(8.dp))
-        ProfileInputText(viewModel.getName())
-        Spacer(Modifier.height(12.dp))
 
-        FieldLabel(text = "Дата рождения")
-        Spacer(Modifier.height(8.dp))
-        ProfileInputText(viewModel.getBirthDate())
-        Spacer(Modifier.height(2.dp))
-        WrongFieldText(text = "Некорректная дата рождения", correct = viewModel.getBirthDateCorrectChecker())
-        Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
+            ProfileInputText(field.value, isDate = field.isDate)
+            Spacer(Modifier.height(2.dp))
+            WrongFieldText(text = field.wrongText, correct = field.isCorrect)
+            Spacer(Modifier.height(16.dp))
+        }
 
-        FieldLabel(text = "Пол")
+        val genderChangeIndicator =
+            if (viewModel.gender.initialValue.value != viewModel.gender.value.value)
+                changeIndicatorText
+            else ""
+
+        Row {
+            FieldLabel(text = genderText)
+            FieldLabel(text = genderChangeIndicator, color = AccentColor)
+        }
+
         Spacer(Modifier.height(8.dp))
-        GenderField(viewModel.getGender())
+        GenderField(viewModel.gender.value)
     }
 }
 
 @Composable
 fun Buttons() {
     Column(
-        modifier = Modifier.fillMaxSize().padding(bottom = 70.dp).padding(horizontal = 16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 70.dp)
+            .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -129,39 +134,10 @@ fun Buttons() {
 
 }
 
-@Composable
-fun Navigation() {
-    Row(
-        modifier = Modifier.fillMaxSize(),
-        verticalAlignment = Alignment.Bottom,
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().background(NavigationColor),
-
-            ) {
-            NavigationButton(
-                name = mainText,
-                onClick = { navigateToMain() },
-                painter = painterResource(id = R.drawable.main_page),
-                fraction = 0.5f,
-                color = OutlineColor
-            )
-            NavigationButton(
-                name = profileText,
-                onClick = {  },
-                painter = painterResource(id = R.drawable.profile_page_active),
-                fraction = 1f,
-                color = AccentColor
-            )
-        }
-    }
-}
 
 @Composable
-fun ProfileScreen(navToLogin: () -> Unit, navToMain: () -> Unit) {
+fun ProfileScreen(navToLogin: () -> Unit) {
     navigateToLogin = navToLogin
-    navigateToMain = navToMain
-    Navigation()
     viewModel.getProfile {  }
     if (viewModel.getProfileModel().value == null) return
 

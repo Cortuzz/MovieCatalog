@@ -32,6 +32,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.mobiledevelopment.R
 import com.example.mobiledevelopment.src.domain.composes.*
 import com.example.mobiledevelopment.src.domain.models.ReviewModel
+import com.example.mobiledevelopment.src.domain.movie.*
 import com.example.mobiledevelopment.src.domain.utils.services.DateProviderService
 import com.example.mobiledevelopment.src.domain.utils.Utils
 import com.example.mobiledevelopment.src.domain.utils.noRippleClickable
@@ -97,7 +98,7 @@ fun HeaderPopup(state: Boolean) {
 fun BackButton() {
     Image(
         painter = painterResource(id = R.drawable.back_button),
-        contentDescription = "Back button",
+        contentDescription = backButtonDescription,
         modifier = Modifier
             .offset(y = 10.dp)
             .noRippleClickable { navigateToMain() }
@@ -109,7 +110,7 @@ fun FavouriteButton() {
     Image(
         painter = if (viewModel.getFavouriteStatus().value) painterResource(id = R.drawable.heart_filled)
                 else painterResource(id = R.drawable.heart),
-        contentDescription = "Favourite button",
+        contentDescription = favouriteButtonDescription,
         modifier = Modifier
             .offset(y = 10.dp)
             .noRippleClickable { viewModel.changeFavouritesStatus { navigateToLogin() } }
@@ -181,17 +182,17 @@ fun About() {
     val movieModel = viewModel.getMovieModel().value ?: return
 
     Column {
-        CategoryText(text = "О фильме")
+        CategoryText(text = aboutText)
         Spacer(modifier = Modifier.height(8.dp))
 
-        AboutPair(title = "Год", value = movieModel.year.toString())
-        AboutPair(title = "Страна", value = movieModel.country)
-        AboutPair(title = "Время", value = "${movieModel.time} мин.")
-        AboutPair(title = "Слоган", value = movieModel.tagline)
-        AboutPair(title = "Режиссер", value = movieModel.director)
-        AboutPair(title = "Бюджет", value = Utils.parseMoney(movieModel.budget))
-        AboutPair(title = "Сборы в мире", value = Utils.parseMoney(movieModel.fees))
-        AboutPair(title = "Возраст", value = "${movieModel.ageLimit}+")
+        AboutPair(title = yearText, value = movieModel.year.toString())
+        AboutPair(title = countryText, value = movieModel.country)
+        AboutPair(title = timeText, value = "${movieModel.time} $timePointsText")
+        AboutPair(title = taglineText, value = movieModel.tagline)
+        AboutPair(title = directorText, value = movieModel.director)
+        AboutPair(title = budgetText, value = Utils.parseMoney(movieModel.budget))
+        AboutPair(title = feesText, value = Utils.parseMoney(movieModel.fees))
+        AboutPair(title = ageLimitText, value = "${movieModel.ageLimit}+")
     }
 }
 
@@ -206,7 +207,7 @@ fun AboutPair(title: String, value: String?) {
         Spacer(modifier = Modifier.width(8.dp))
 
         AboutText(
-            text = if (value.isNullOrBlank()) "Нет информации" else value,
+            text = if (value.isNullOrBlank()) noDataText else value,
             color = Color.White
         )
     }
@@ -231,7 +232,7 @@ fun Genres() {
     val movieModel = viewModel.getMovieModel().value ?: return
 
     Column {
-        CategoryText(text = "Жанры")
+        CategoryText(text = genresText)
         FlowRow {
             for (genre in movieModel.genres) {
                 GenreBlock(text = genre.name ?: "")
@@ -262,12 +263,13 @@ fun ReviewHeader(review: ReviewModel) {
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 CategoryText(
-                    text = if (review.isAnonymous) "Анонимный пользователь" else review.author?.nickName ?: "Анонимный пользователь",
+                    text = if (review.isAnonymous) anonymousUserText
+                    else review.author?.nickName ?: anonymousUserText,
                     modifier = Modifier.offset(y = (-1).dp)
                 )
 
                 if (viewModel.compareIds(review.author?.userId ?: ""))
-                    AboutText(text = "мой отзыв", color = OutlineColor)
+                    AboutText(text = myReviewText, color = OutlineColor)
             }
 
         }
@@ -307,7 +309,7 @@ fun EditReviewBlock(review: ReviewModel) {
     Row {
         Image(
             painter = painterResource(id = R.drawable.edit_review_button),
-            contentDescription = "Edit review",
+            contentDescription = editReviewDescription,
             modifier = Modifier.noRippleClickable {
                 viewModel.openEditDialog(review)
             }
@@ -317,7 +319,7 @@ fun EditReviewBlock(review: ReviewModel) {
 
         Image(
             painter = painterResource(id = R.drawable.delete_review_button),
-            contentDescription = "Delete review",
+            contentDescription = deleteReviewDescription,
             modifier = Modifier.noRippleClickable {
                 viewModel.deleteReview(review.id)
                 { navigateToLogin() }
@@ -355,7 +357,7 @@ fun AddReviewButton() {
 
     Image(
         painter = painterResource(id = R.drawable.plus),
-        contentDescription = "Добавить",
+        contentDescription = addReviewDescription,
         modifier = Modifier.noRippleClickable { viewModel.getReviewDialogState().value = true }
     )
 }
@@ -370,7 +372,7 @@ fun Reviews() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            CategoryText(text = "Отзывы")
+            CategoryText(text = reviewsText)
             AddReviewButton()
         }
 
@@ -452,7 +454,7 @@ fun ReviewDialog(onDismissRequest: () -> Unit) {
         },
         buttons = {
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                PrimaryButton(name = "Сохранить",
+                PrimaryButton(name = saveReviewText,
                     action = {
                         viewModel.sendReview { navigateToLogin() }
                         viewModel.getReviewDialogState().value = false
@@ -461,7 +463,7 @@ fun ReviewDialog(onDismissRequest: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
 
-                SecondaryButton(name = "Отмена",
+                SecondaryButton(name = cancelReviewText,
                     action = {
                         onDismissRequest()
                         viewModel.clearReview()
@@ -491,16 +493,16 @@ fun TitleText(text: String, modifier: Modifier = Modifier) {
 @Composable
 fun ReviewDialogContent() {
     Column {
-        TitleText(text = "Оставить отзыв", Modifier.padding(bottom = 16.dp))
+        TitleText(text = reviewDialogTitleText, Modifier.padding(bottom = 16.dp))
         Spacer(modifier = Modifier.height(4.dp))
 
         StarBlock(rating = viewModel.getReviewInputRating())
         Spacer(modifier = Modifier.height(10.dp))
 
-        ReviewTextField(label = "Отзыв", value = viewModel.getReviewInputText()) { }
+        ReviewTextField(label = reviewDialogText, value = viewModel.getReviewInputText()) { }
         Spacer(modifier = Modifier.height(16.dp))
 
-        ReviewCheckboxContent(text = "Анонимный отзыв", checkboxState = viewModel.getReviewInputAnonymous())
+        ReviewCheckboxContent(text = anonymousReviewText, checkboxState = viewModel.getReviewInputAnonymous())
     }
 }
 

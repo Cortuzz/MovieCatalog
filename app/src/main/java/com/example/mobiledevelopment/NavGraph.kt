@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.mobiledevelopment.src.domain.utils.Screen
 import com.example.mobiledevelopment.src.login.LoginScreen
+import com.example.mobiledevelopment.src.main.FullMainScreen
 import com.example.mobiledevelopment.src.main.MainScreen
 import com.example.mobiledevelopment.src.movie.MovieScreen
 import com.example.mobiledevelopment.src.profile.ProfileScreen
@@ -17,11 +18,10 @@ fun SetupNavGraph(
     navController: NavHostController,
     startDestination: String
 ) {
-    val navigateToLogin = { navController.navigate("login_screen") { popUpTo(0) } }
-    val navigateToRegistration = { navController.navigate("registration_screen") { popUpTo(0) } }
-    val navigateToMain = { navController.navigate("main_screen") { popUpTo(0) } }
-    val navigateToProfile = { navController.navigate("profile_screen") { popUpTo(0) } }
-    val navigateToMovie = { navController.navigate("movie_screen") }
+    val navigateToLogin = { navController.navigate(Screen.Login.route) { popUpTo(0) } }
+    val navigateToRegistration = { navController.navigate(Screen.Registration.route) { popUpTo(0) } }
+    val navigateToMain = { navController.navigate(Screen.FullMain.route) { popUpTo(0) } }
+    val navigateToMovie = { navController.navigate(Screen.Movie.route) }
 
     NavHost(
         navController = navController,
@@ -39,20 +39,18 @@ fun SetupNavGraph(
                 navToMain = navigateToMain
             )
         }
-        composable(route = Screen.Main.route) {
-
-            MainScreen(
+        composable(route = Screen.FullMain.route) {
+            FullMainScreen(
                 navToLogin = navigateToLogin,
                 navToMovie = navigateToMovie,
-                navToProfile = navigateToProfile
             )
         }
-        composable(route = Screen.Profile.route) {
-            ProfileScreen(
-                navToLogin = navigateToLogin,
-                navToMain = navigateToMain
-            )
-        }
+//        composable(route = Screen.Profile.route) {
+//            ProfileScreen(
+//                navToLogin = navigateToLogin,
+//                navToMain = navigateToMain
+//            )
+//        }
         composable(route = Screen.Movie.route) {
             //viewModel.getMovie()
             //viewModel.clearReview()
