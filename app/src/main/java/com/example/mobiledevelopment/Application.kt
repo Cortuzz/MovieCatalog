@@ -24,7 +24,7 @@ class Application : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         if (SharedStorage.isTokenValid) {
-            launchApp(Screen.Main.route)
+            launchApp(Screen.FullMain.route)
             return
         }
         launchApp(Screen.Login.route)

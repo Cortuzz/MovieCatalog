@@ -24,4 +24,6 @@ const val emailWrongText = "Некорректный E-mail"
 const val nameWrongText = "Имя слишком короткое"
 const val passwordWrongText = "Ненадежный пароль"
 const val repeatPasswordWrongText = "Пароли не совпадают"
-const val birthDateWrongText = "Неверная дата рождения"
+const val birthDateWrongText = "Некорректная дата рождения"
+
+const val serverUserDuplicateText = "DuplicateUserName"

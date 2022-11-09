@@ -13,13 +13,18 @@ class MainViewModel {
     private var movieList = mutableStateListOf<MovieElementModel>()
     private var favouriteMovieList = mutableStateListOf<MovieElementModel>()
     private var pageObtained = mutableStateOf(1)
-    private var totalPages = mutableStateOf(0)
+
+    var totalPages = mutableStateOf(-1)
+    var isMovieFetched = mutableStateOf(false)
 
     init {
        init { }
     }
 
     private fun init(onUnauthorized: () -> Unit) {
+        totalPages.value = -1
+        isMovieFetched.value = false
+
         repository.getFavouriteMovies(
             onResponseAction = {
                 val moviesPageModel = it
@@ -28,6 +33,7 @@ class MainViewModel {
                 for (movie in movies) {
                     favouriteMovieList.add(movie)
                 }
+                isMovieFetched.value = true
             },
             onBadResponseAction = {
                 if (it == 401) onUnauthorized()
@@ -87,10 +93,6 @@ class MainViewModel {
 
     fun getCurrentPage(): MutableState<Int> {
         return pageObtained
-    }
-
-    fun getTotalPages(): MutableState<Int> {
-        return totalPages
     }
 
     fun getMovieList(): SnapshotStateList<MovieElementModel> {
