@@ -5,4 +5,5 @@ object SharedStorage {
     var currentMovieId: String = ""
     var userId: String = ""
     var isTokenValid = false
+    var isRefreshNeeded = false
 }

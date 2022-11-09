@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.example.mobiledevelopment.src.domain.models.MovieElementModel
 import com.example.mobiledevelopment.src.domain.models.MoviesPageListModel
+import com.example.mobiledevelopment.src.domain.utils.SharedStorage
 
 class MainViewModel {
     private val repository: MainRepository = MainRepository()
@@ -45,6 +46,7 @@ class MainViewModel {
     }
 
     fun refresh(onUnauthorized: () -> Unit) {
+        SharedStorage.isRefreshNeeded = false
         pageObtained.value = 1
         favouriteMovieList.clear()
         movieList.clear()

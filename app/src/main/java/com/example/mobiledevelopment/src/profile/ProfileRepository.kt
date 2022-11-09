@@ -43,6 +43,8 @@ class ProfileRepository {
             onFailureAction = { action() },
             onResponseAction = { action() }
         )
+
+        SharedStorage.isRefreshNeeded = true
         TokenProviderService.getInstance().dropToken()
     }
 }

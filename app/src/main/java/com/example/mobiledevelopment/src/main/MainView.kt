@@ -41,6 +41,7 @@ import com.example.mobiledevelopment.src.domain.main.*
 import com.example.mobiledevelopment.src.domain.models.MovieElementModel
 import com.example.mobiledevelopment.src.domain.profile.profileText
 import com.example.mobiledevelopment.src.domain.utils.Screen
+import com.example.mobiledevelopment.src.domain.utils.SharedStorage
 import com.example.mobiledevelopment.src.domain.utils.Utils
 import com.example.mobiledevelopment.src.domain.utils.noRippleClickable
 import com.example.mobiledevelopment.src.profile.ProfileScreen
@@ -401,8 +402,6 @@ fun MainScreen(navToLogin: () -> Unit, navToMovie: () -> Unit) {
             item { Spacer(Modifier.height(80.dp)) }
             item { viewModel.fetchNextPage() }
         }
-
-        //
     }
 }
 
@@ -412,6 +411,8 @@ fun MainScreen(navToLogin: () -> Unit, navToMovie: () -> Unit) {
 fun FullMainScreen(navToLogin: () -> Unit, navToMovie: () -> Unit) {
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     val navController = rememberNavController(bottomSheetNavigator)
+
+    if (SharedStorage.isRefreshNeeded) viewModel.refresh(navToLogin)
 
     val navigateToMain = { navController.navigate("main_screen") { popUpTo(0) } }
     val navigateToProfile = { navController.navigate("profile_screen") { popUpTo(0) } }
