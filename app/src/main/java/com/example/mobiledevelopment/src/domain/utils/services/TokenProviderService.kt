@@ -58,19 +58,34 @@ class TokenProviderService(private val activity: ComponentActivity) {
         })
     }
 
+    fun checkServerAndToken(
+        onFailureAction: () -> Unit = {  },
+        onResponseAction: () -> Unit = {  },
+        onBadResponseAction: () -> Unit = {  }
+    ) {
+        service.getProfile("Bearer ${SharedStorage.userToken}").enqueue(object :
+            Callback<ProfileModel> {
+            override fun onFailure(call: Call<ProfileModel>, t: Throwable) {
+                onFailureAction()
+            }
+
+            override fun onResponse(call: Call<ProfileModel>, response: Response<ProfileModel>) {
+                if (response.code() == 401) {
+                    onBadResponseAction()
+                    return
+                }
+
+                onResponseAction()
+            }
+        })
+    }
+
     fun checkTokenSynchronously(): Boolean {
-        if (SharedStorage.userToken.isEmpty())
+        val callback = service.getProfile("Bearer ${SharedStorage.userToken}").execute()
+        if (!callback.isSuccessful)
             return false
 
-        try {
-            val callback = service.getProfile("Bearer ${SharedStorage.userToken}").execute()
-            if (!callback.isSuccessful)
-                return false
-
-            return true
-        } catch (e: Exception) {
-            return false
-        }
+        return true
     }
 
     fun dropToken() {

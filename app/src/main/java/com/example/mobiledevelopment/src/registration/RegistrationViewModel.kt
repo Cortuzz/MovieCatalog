@@ -6,6 +6,7 @@ import androidx.compose.ui.unit.dp
 import com.example.mobiledevelopment.src.domain.registration.RegistrationFieldsProvider
 import com.example.mobiledevelopment.src.domain.registration.RegistrationState
 import com.example.mobiledevelopment.src.domain.registration.ViewField
+import com.example.mobiledevelopment.src.domain.registration.serverUserDuplicateText
 
 
 class RegistrationViewModel {
@@ -25,7 +26,7 @@ class RegistrationViewModel {
         repository.registerUser(
             registerModel = fieldsModel.getModel(),
             onBadResponseAction = { code, body ->
-                if (code == 400 && body.string().contains("DuplicateUserName")) {
+                if (code == 400 && body.string().contains(serverUserDuplicateText)) {
                     registrationState.value = RegistrationState.UserExist
                     return@registerUser
                 }

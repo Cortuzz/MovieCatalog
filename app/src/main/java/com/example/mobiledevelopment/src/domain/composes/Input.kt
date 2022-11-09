@@ -90,12 +90,9 @@ fun InputText(label: String, value: MutableState<String>, onChange: () -> Unit, 
 
 @Composable
 fun ProfileInputText(value: MutableState<String>, isDate: Boolean = false) {
-    var focusState by rememberSaveable { mutableStateOf(false) }
-
     Box {
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth().onFocusChanged {
-                    focus -> focusState = focus.isFocused }.height(54.dp),
+            modifier = Modifier.fillMaxWidth().height(54.dp),
             colors = getInputTextColors(),
             value = value.value,
             onValueChange = { value.value = it; },
@@ -104,7 +101,7 @@ fun ProfileInputText(value: MutableState<String>, isDate: Boolean = false) {
         )
 
         Row(
-            modifier = Modifier.fillMaxSize().offset(y = 16.dp, x = (-34.25).dp),
+            modifier = Modifier.fillMaxSize().offset(y = 16.dp, x = (-18).dp),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {

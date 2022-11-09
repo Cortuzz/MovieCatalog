@@ -1,5 +1,6 @@
 package com.example.mobiledevelopment.src.main
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -10,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -26,6 +28,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
@@ -35,9 +40,15 @@ import com.example.mobiledevelopment.src.domain.composes.*
 import com.example.mobiledevelopment.src.domain.main.*
 import com.example.mobiledevelopment.src.domain.models.MovieElementModel
 import com.example.mobiledevelopment.src.domain.profile.profileText
+import com.example.mobiledevelopment.src.domain.utils.Screen
 import com.example.mobiledevelopment.src.domain.utils.Utils
 import com.example.mobiledevelopment.src.domain.utils.noRippleClickable
+import com.example.mobiledevelopment.src.profile.ProfileScreen
 import com.example.mobiledevelopment.ui.theme.*
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.ModalBottomSheetLayout
+import com.google.accompanist.navigation.material.bottomSheet
+import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 
 private var viewModel: MainViewModel = MainViewModel()
 private lateinit var navigateToMovie: () -> Unit
@@ -105,13 +116,13 @@ fun FavouritesContent(movies: SnapshotStateList<MovieElementModel>) {
         derivedStateOf {
             state.layoutInfo.visibleItemsInfo.run {
                 val firstVisibleIndex = state.firstVisibleItemIndex
-                if (isEmpty()) -1 else firstVisibleIndex + (last().index - firstVisibleIndex) / 2
+                if (isEmpty()) -1 else firstVisibleIndex
             }
         }
     }
 
     Box {
-        if (movies.size == 0) {
+        if (movies.size == 0 && viewModel.isMovieFetched.value) {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -311,7 +322,7 @@ fun MovieElement(movieElement: MovieElementModel) {
 }
 
 @Composable
-fun Navigation() {
+fun Navigation(navToMain: () -> Unit, navToProfile: () -> Unit, isOnMain: MutableState<Boolean>) {
     Row(
       modifier = Modifier.fillMaxSize(),
       verticalAlignment = Alignment.Bottom,
@@ -324,17 +335,19 @@ fun Navigation() {
         ) {
             NavigationButton(
                 name = mainText,
-                onClick = {  },
-                painter = painterResource(id = R.drawable.main_page_active),
+            onClick = { if (!isOnMain.value) navToMain() },
+                painter = painterResource(id = if (isOnMain.value) R.drawable.main_page_active
+                                               else R.drawable.main_page),
                 fraction = 0.5f,
-                color = AccentColor
+                color = if (isOnMain.value) AccentColor else OutlineColor
             )
             NavigationButton(
                 name = profileText,
-                onClick = { navigateToProfile() },
-                painter = painterResource(id = R.drawable.profile_page),
+                onClick = { if (isOnMain.value) navToProfile() },
+                painter = painterResource(id = if (isOnMain.value) R.drawable.profile_page
+                                               else R.drawable.profile_page_active),
                 fraction = 1f,
-                color = OutlineColor
+                color = if (!isOnMain.value) AccentColor else OutlineColor
             )
         }
     }
@@ -342,7 +355,7 @@ fun Navigation() {
 
 @Composable
 fun MoviesLoadingIndicator() {
-    val isEndObtained = viewModel.getTotalPages().value < viewModel.getCurrentPage().value
+    val isEndObtained = viewModel.totalPages.value < viewModel.getCurrentPage().value
 
     Row(
         modifier = Modifier
@@ -351,7 +364,7 @@ fun MoviesLoadingIndicator() {
         horizontalArrangement = Arrangement.Center
     ) {
         LoadingIndicator(modifier = Modifier.requiredSize(150.dp)) { !isEndObtained }
-        if (isEndObtained) {
+        if (isEndObtained && viewModel.isMovieFetched.value && viewModel.totalPages.value > -1) {
             Spacer(Modifier.height(25.dp))
             NoDataText(text = noMoviesText)
         }
@@ -372,10 +385,9 @@ fun NoDataText(text: String) {
 }
 
 @Composable
-fun MainScreen(navToLogin: () -> Unit, navToMovie: () -> Unit, navToProfile: () -> Unit) {
+fun MainScreen(navToLogin: () -> Unit, navToMovie: () -> Unit) {
     navigateToLogin = navToLogin
     navigateToMovie = navToMovie
-    navigateToProfile = navToProfile
     val state = rememberForeverLazyListState(key = "main_screen")
 
     PullRefresh(onRefresh = { viewModel.refresh { navToLogin() } }) {
@@ -390,6 +402,34 @@ fun MainScreen(navToLogin: () -> Unit, navToMovie: () -> Unit, navToProfile: () 
             item { viewModel.fetchNextPage() }
         }
 
-        Navigation()
+        //
     }
+}
+
+@SuppressLint("UnrememberedMutableState")
+@OptIn(ExperimentalMaterialNavigationApi::class)
+@Composable
+fun FullMainScreen(navToLogin: () -> Unit, navToMovie: () -> Unit) {
+    val bottomSheetNavigator = rememberBottomSheetNavigator()
+    val navController = rememberNavController(bottomSheetNavigator)
+
+    val navigateToMain = { navController.navigate("main_screen") { popUpTo(0) } }
+    val navigateToProfile = { navController.navigate("profile_screen") { popUpTo(0) } }
+    val state = mutableStateOf(true)
+
+    ModalBottomSheetLayout(bottomSheetNavigator) {
+        NavHost(navController, Screen.Main.route) {
+            composable(route = Screen.Main.route) {
+                MainScreen(navToLogin = navToLogin, navToMovie = navToMovie)
+                state.value = true
+            }
+
+            composable(route = Screen.Profile.route) {
+                ProfileScreen(navToLogin = navToLogin)
+                state.value = false
+            }
+        }
+    }
+
+    Navigation(navigateToMain, navigateToProfile, state)
 }
