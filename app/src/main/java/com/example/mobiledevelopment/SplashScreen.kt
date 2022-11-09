@@ -49,7 +49,7 @@ class SplashScreen: ComponentActivity() {
     }
 
     private fun tokenChecker() {
-        //authManager.loadToken()
+        authManager.loadToken()
         authManager.checkServerAndToken(
             onResponseAction = {
                 SharedStorage.isTokenValid = true
