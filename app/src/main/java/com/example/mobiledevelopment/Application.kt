@@ -15,6 +15,7 @@ import com.example.mobiledevelopment.src.domain.utils.Screen
 import com.example.mobiledevelopment.src.domain.utils.SharedStorage
 import com.example.mobiledevelopment.ui.theme.AccentColor
 import com.example.mobiledevelopment.ui.theme.BackgroundColor
+import com.example.mobiledevelopment.ui.theme.MobileDevelopmentTheme
 
 
 class Application : ComponentActivity() {
@@ -32,7 +33,7 @@ class Application : ComponentActivity() {
 
     private fun launchApp(route: String) {
         setContent {
-            MaterialTheme(colors = darkColors(primary = AccentColor, secondary = AccentColor)) {
+            MobileDevelopmentTheme {
                 navController = rememberNavController()
 
                 Surface(color = BackgroundColor,
