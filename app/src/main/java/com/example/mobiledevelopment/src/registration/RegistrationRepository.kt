@@ -21,6 +21,7 @@ class RegistrationRepository {
                 onResponseAction()
                 SharedStorage.userToken = body.token
                 TokenProviderService.getInstance().saveToken()
+                TokenProviderService.getInstance().checkServerAndToken {  }
             },
             onFailureAction = { onFailureAction() },
             registerModel = registerModel

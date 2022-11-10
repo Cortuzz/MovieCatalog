@@ -2,6 +2,7 @@ package com.example.mobiledevelopment.src.domain.composes
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldColors
@@ -12,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -74,6 +76,9 @@ fun InputText(label: String, value: MutableState<String>, onChange: () -> Unit, 
             value = value.value,
             onValueChange = { value.value = it; onChange() },
             visualTransformation = if (isHidden) PasswordVisualTransformation() else VisualTransformation.None,
+            keyboardOptions = KeyboardOptions.Default.copy
+                (keyboardType = if (isDate) KeyboardType.Number else KeyboardType.Text
+            ),
 
             shape = RoundedCornerShape(8.dp)
         )
@@ -89,13 +94,16 @@ fun InputText(label: String, value: MutableState<String>, onChange: () -> Unit, 
 }
 
 @Composable
-fun ProfileInputText(value: MutableState<String>, isDate: Boolean = false) {
+fun ProfileInputText(value: MutableState<String>, isDate: Boolean = false, isNumber: Boolean = false) {
     Box {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth().height(54.dp),
             colors = getInputTextColors(),
             value = value.value,
             onValueChange = { value.value = it; },
+            keyboardOptions = KeyboardOptions.Default.copy
+                (keyboardType = if (isDate || isNumber) KeyboardType.Number else KeyboardType.Text
+            ),
 
             shape = RoundedCornerShape(8.dp)
         )

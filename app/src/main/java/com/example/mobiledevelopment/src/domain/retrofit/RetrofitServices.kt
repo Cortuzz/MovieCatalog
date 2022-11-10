@@ -81,4 +81,15 @@ interface RetrofitServices {
     fun logout(
         @Header("Authorization") authToken: String
     ): Call<Void>
+
+    @GET("admin/getGenres/")
+    fun getGenres(
+        @Header("Authorization") authToken: String
+    ): Call<GenresModel>
+
+    @POST("admin/addMovie/")
+    fun addMovie(
+        @Header("Authorization") authToken: String,
+        @Body insertModel: InsertMovieModel
+    ): Call<Void>
 }

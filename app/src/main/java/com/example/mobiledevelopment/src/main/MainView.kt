@@ -39,6 +39,7 @@ import com.example.mobiledevelopment.src.domain.utils.services.RatingProviderSer
 import com.example.mobiledevelopment.src.domain.composes.*
 import com.example.mobiledevelopment.src.domain.main.*
 import com.example.mobiledevelopment.src.domain.models.MovieElementModel
+import com.example.mobiledevelopment.src.domain.movie.addReviewDescription
 import com.example.mobiledevelopment.src.domain.profile.profileText
 import com.example.mobiledevelopment.src.domain.utils.Screen
 import com.example.mobiledevelopment.src.domain.utils.SharedStorage
@@ -54,7 +55,7 @@ import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 private var viewModel: MainViewModel = MainViewModel()
 private lateinit var navigateToMovie: () -> Unit
 private lateinit var navigateToLogin: () -> Unit
-private lateinit var navigateToProfile: () -> Unit
+private lateinit var navigateToAdmin: () -> Unit
 
 @Composable
 fun PromotedMovie(movieElement: MutableState<MovieElementModel?>) {
@@ -223,11 +224,35 @@ fun RemoveButton(onClick: () -> Unit) {
 }
 
 @Composable
+fun AddMovieButton() {
+    if (!SharedStorage.isAdmin)
+        return
+
+    Image(
+        painter = painterResource(id = R.drawable.plus),
+        contentDescription = addReviewDescription,
+        modifier = Modifier
+            .offset(y = 10.dp)
+            .noRippleClickable { navigateToAdmin() }
+    )
+}
+
+@Composable
 fun Gallery(movies: SnapshotStateList<MovieElementModel>) {
     Column(
         modifier = Modifier.padding(start = 16.dp)
     ) {
-        CategoryText(name = galleryBlockText)
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(end = 16.dp)
+            ,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            CategoryText(name = galleryBlockText)
+            AddMovieButton()
+        }
+
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -386,9 +411,10 @@ fun NoDataText(text: String) {
 }
 
 @Composable
-fun MainScreen(navToLogin: () -> Unit, navToMovie: () -> Unit) {
+fun MainScreen(navToLogin: () -> Unit, navToMovie: () -> Unit, navToAdmin: () -> Unit) {
     navigateToLogin = navToLogin
     navigateToMovie = navToMovie
+    navigateToAdmin = navToAdmin
     val state = rememberForeverLazyListState(key = "main_screen")
 
     PullRefresh(onRefresh = { viewModel.refresh { navToLogin() } }) {
@@ -408,7 +434,7 @@ fun MainScreen(navToLogin: () -> Unit, navToMovie: () -> Unit) {
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
-fun FullMainScreen(navToLogin: () -> Unit, navToMovie: () -> Unit) {
+fun FullMainScreen(navToLogin: () -> Unit, navToMovie: () -> Unit, navToAdmin: () -> Unit) {
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     val navController = rememberNavController(bottomSheetNavigator)
 
@@ -421,7 +447,7 @@ fun FullMainScreen(navToLogin: () -> Unit, navToMovie: () -> Unit) {
     ModalBottomSheetLayout(bottomSheetNavigator) {
         NavHost(navController, Screen.Main.route) {
             composable(route = Screen.Main.route) {
-                MainScreen(navToLogin = navToLogin, navToMovie = navToMovie)
+                MainScreen(navToLogin = navToLogin, navToMovie = navToMovie, navToAdmin = navToAdmin)
                 state.value = true
             }
 

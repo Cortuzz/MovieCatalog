@@ -7,4 +7,5 @@ sealed class Screen(val route: String) {
     object FullMain: Screen(route = "full_main_screen")
     object Movie: Screen(route = "movie_screen")
     object Profile: Screen(route = "profile_screen")
+    object Admin: Screen(route = "admin_screen")
 }

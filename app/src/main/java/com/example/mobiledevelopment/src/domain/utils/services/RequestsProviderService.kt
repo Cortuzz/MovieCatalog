@@ -11,6 +11,32 @@ import retrofit2.Response
 
 class RequestsProviderService {
     private val service = Common.retrofitService
+    
+    private fun getToken(): String {
+        return "Bearer ${SharedStorage.userToken}"
+    }
+
+    fun addMovie(
+        model: InsertMovieModel,
+        onFailureAction: () -> Unit,
+        onBadResponseAction: (Int, ResponseBody) -> Unit,
+        onResponseAction: (Int) -> Unit,
+    ) {
+        service.addMovie(getToken(), model).enqueue(object : Callback<Void> {
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                onFailureAction()
+            }
+
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (!response.isSuccessful) {
+                    onBadResponseAction(response.code(), response.errorBody() as ResponseBody)
+                    return
+                }
+
+                onResponseAction(response.code())
+            }
+        })
+    }
 
     fun registerUser(
         registerModel: UserRegisterModel,
@@ -67,7 +93,7 @@ class RequestsProviderService {
         onFailureAction: () -> Unit,
         onBadResponseAction: (Int, ResponseBody) -> Unit
     ) {
-        service.getProfile("Bearer ${SharedStorage.userToken}").enqueue(object :
+        service.getProfile(getToken()).enqueue(object :
             Callback<ProfileModel> {
             override fun onFailure(call: Call<ProfileModel>, t: Throwable) {
                 onFailureAction()
@@ -90,7 +116,7 @@ class RequestsProviderService {
         onBadResponseAction: (Int, ResponseBody) -> Unit,
         profileModel: ProfileModel
     ) {
-        service.updateProfile("Bearer ${SharedStorage.userToken}", profileModel).enqueue(object :
+        service.updateProfile(getToken(), profileModel).enqueue(object :
             Callback<Void> {
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 onFailureAction()
@@ -112,7 +138,7 @@ class RequestsProviderService {
         onFailureAction: () -> Unit,
         onBadResponseAction: (Int, ResponseBody) -> Unit,
     ) {
-        service.logout("Bearer ${SharedStorage.userToken}").enqueue(object : Callback<Void> {
+        service.logout(getToken()).enqueue(object : Callback<Void> {
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 onFailureAction()
 
@@ -178,12 +204,36 @@ class RequestsProviderService {
         })
     }
 
+    fun getGenres(
+        onResponseAction: (Int, GenresModel) -> Unit,
+        onBadResponseAction: (Int, ResponseBody) -> Unit,
+        onFailureAction: () -> Unit,
+    ) {
+        service.getGenres(getToken()).enqueue(object : Callback<GenresModel> {
+            override fun onFailure(call: Call<GenresModel>, t: Throwable) {
+                Log.e("Network manager", "Fetching movies failed with exception: $t")
+                onFailureAction()
+            }
+
+            override fun onResponse(call: Call<GenresModel>, response: Response<GenresModel>) {
+                if (!response.isSuccessful || response.body() == null) {
+                    Log.w("Network manager", "Fetching movies failed with response: ${response.errorBody()?.charStream()?.readText()}")
+                    onBadResponseAction(response.code(), response.errorBody() as ResponseBody)
+                    return
+                }
+
+                Log.i("Network manager", "Movies fetched successfully. Response: ${response.body()}")
+                onResponseAction(response.code(), response.body() as GenresModel)
+            }
+        })
+    }
+
     fun getFavouriteMovies(
         onResponseAction: (Int, MoviesListModel) -> Unit,
         onFailureAction: () -> Unit,
         onBadResponseAction: (Int, ResponseBody) -> Unit
     ) {
-        service.getFavouritesMovies("Bearer ${SharedStorage.userToken}").enqueue(object : Callback<MoviesListModel> {
+        service.getFavouritesMovies(getToken()).enqueue(object : Callback<MoviesListModel> {
             override fun onFailure(call: Call<MoviesListModel>, t: Throwable) {
                 onFailureAction()
                 Log.e("Network manager", "Fetching favourites movies failed with exception: $t")
@@ -208,7 +258,7 @@ class RequestsProviderService {
         onFailureAction: () -> Unit,
         onBadResponseAction: (Int, ResponseBody) -> Unit
     ) {
-        service.addToFavourites("Bearer ${SharedStorage.userToken}", id).enqueue(object : Callback<Void> {
+        service.addToFavourites(getToken(), id).enqueue(object : Callback<Void> {
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 onFailureAction()
             }
@@ -230,7 +280,7 @@ class RequestsProviderService {
         onBadResponseAction: (Int, ResponseBody) -> Unit,
         onFailureAction: () -> Unit,
     ) {
-        service.removeFromFavourites("Bearer ${SharedStorage.userToken}", id).enqueue(object : Callback<Void> {
+        service.removeFromFavourites(getToken(), id).enqueue(object : Callback<Void> {
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 Log.e("Network manager", "Removing movie from favourites failed with exception: $t")
                 onFailureAction()
@@ -257,7 +307,7 @@ class RequestsProviderService {
         onBadResponseAction: (Int, ResponseBody) -> Unit
     ) {
         service.addReview(
-            "Bearer ${SharedStorage.userToken}",
+            getToken(),
             id,
             reviewModifyModel
         ).enqueue(object : Callback<Void> {
@@ -287,7 +337,7 @@ class RequestsProviderService {
         onBadResponseAction: (Int, ResponseBody) -> Unit
     ) {
         service.editReview(
-            "Bearer ${SharedStorage.userToken}",
+            getToken(),
             SharedStorage.currentMovieId,
             id,
             reviewModifyModel
@@ -317,7 +367,7 @@ class RequestsProviderService {
         onBadResponseAction: (Int, ResponseBody) -> Unit
     ) {
         service.deleteReview(
-            "Bearer ${SharedStorage.userToken}",
+            getToken(),
             SharedStorage.currentMovieId,
             id
         ).enqueue(object : Callback<Void> {

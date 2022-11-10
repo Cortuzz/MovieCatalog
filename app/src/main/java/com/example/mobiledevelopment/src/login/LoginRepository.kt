@@ -19,6 +19,7 @@ class LoginRepository {
                onResponseAction()
                 SharedStorage.userToken = body.token
                 TokenProviderService.getInstance().saveToken()
+                TokenProviderService.getInstance().checkServerAndToken {  }
             },
             onFailureAction = { onFailureAction() },
             onBadResponseAction = { _, _ -> onBadResponseAction() },

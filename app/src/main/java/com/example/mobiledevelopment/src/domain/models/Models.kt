@@ -2,7 +2,8 @@ package com.example.mobiledevelopment.src.domain.models
 
 data class GenreModel(
     var id: String,
-    var name: String?
+    var name: String?,
+    var isActive: Boolean = false
 )
 
 data class UserShortModel(
@@ -59,7 +60,8 @@ data class ProfileModel(
     var avatarLink: String?,
     var name: String,
     var birthDate: String?,
-    var gender: Int?
+    var gender: Int?,
+    var role: String?
 )
 
 data class UserLoginModel(
@@ -100,4 +102,23 @@ data class ReviewModifyModel(
     var reviewText: String,
     var rating: Int,
     var isAnonymous: Boolean,
+)
+
+data class GenresModel(
+    var genres: List<GenreModel>
+)
+
+data class InsertMovieModel(
+    var name: String,
+    var poster: String,
+    var year: Int,
+    var country: String,
+    var time: Int,
+    var tagline: String,
+    var description: String,
+    var director: String,
+    var budget: Int,
+    var fees: Int,
+    var ageLimit: Int,
+    var genres: List<GenreModel>
 )

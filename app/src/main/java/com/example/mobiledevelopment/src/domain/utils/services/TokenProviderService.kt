@@ -31,7 +31,7 @@ class TokenProviderService(private val activity: ComponentActivity) {
     }
     private val service = Common.retrofitService
 
-    fun checkToken(
+    private fun checkToken(
         onFailureAction: () -> Unit = {  },
         onSuccessAction: (model: ProfileModel) -> Unit
     ) {
@@ -76,6 +76,7 @@ class TokenProviderService(private val activity: ComponentActivity) {
                 }
 
                 SharedStorage.userId = response.body()?.id ?: ""
+                SharedStorage.isAdmin = response.body()?.role == "admin"
                 onResponseAction()
             }
         })

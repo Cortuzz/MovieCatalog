@@ -6,4 +6,5 @@ object SharedStorage {
     var userId: String = ""
     var isTokenValid = false
     var isRefreshNeeded = false
+    var isAdmin = false
 }
